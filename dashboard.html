@@ -163,15 +163,15 @@ form button:hover {
   cursor: pointer;
 }
 
-.work-actions button.delete {
+     .work-actions button.delete {
   background-color: #e74c3c;
 }
 
-.work-actions button:hover {
+    .work-actions button:hover {
   opacity: 0.9;
 }
 
-#editProfileModal {
+   #editProfileModal {
   background: #fff7e6;
   border: 1px solid #f1c40f;
   padding: 15px;
@@ -242,8 +242,15 @@ form button:hover {
 
   <script>
     // 🚀 Replace placeholders with your config values:
-    const firebaseConfig = { /* Your Firebase config here */ };
-    const UPLOADTHING_TOKEN = "YOUR_UPLOADTHING_TOKEN";
+    const firebaseConfig = { 
+      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+      authDomain: "studentdashboard-final.firebaseapp.com",
+      projectId: "studentdashboard-final",
+      storageBucket: "studentdashboard-final.firebasestorage.app",
+      messagingSenderId: "576065271267",
+      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+      measurementId: "G-PQXQE19D1F" };
+    const uploadingToken = "a1b2c3d4-e5f6-7890-gh12-ijk345lmno67";
     const EMAILJS_SERVICE = "service_m6b648v";
     const EMAILJS_TEMPLATE = "template_iahgvur";
     const EMAILJS_KEY = "rai8QxGoPo_kArORG";
@@ -258,10 +265,10 @@ form button:hover {
 
     async function initDashboard(){
       const index = sessionStorage.getItem("currentIndex");
-      if(!index){ location.href="official.html"; return; }
+      if(!index){ location.href="index.html"; return; }
 
       const userSnap = await db.collection("users").doc(index).get();
-      if(!userSnap.exists){ alert("User not found. Redirecting..."); location.href="official.html"; return; }
+      if(!userSnap.exists){ alert("User not found. Redirecting..."); location.href="index.html"; return; }
       currentUser = userSnap.data();
 
       allUsers = (await db.collection("users").orderBy("index").get()).docs.map(d=>d.data());
