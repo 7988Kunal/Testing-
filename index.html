@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <title>Student Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -17,81 +15,101 @@
       margin: 0;
     }
     .box {
+      display: flex;
+      flex-direction: column;
       background: white;
       padding: 30px;
       border-radius: 8px;
-      max-width: 400px;
       width: 100%;
+      max-width: 400px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    input, button {
+    input {
       padding: 12px;
       margin: 10px 0;
       font-size: 16px;
-      width: 100%;
     }
     button {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
       background-color: #007bff;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-    .error { color: red; }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
   </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
 <div class="box">
-  <h2>Login with Special Code</h2>
+  <h2>Login by Special Code</h2>
   <input type="text" id="indexInput" placeholder="Enter Special Code" />
   <button onclick="login()">Login</button>
   <p class="error" id="errorMsg"></p>
 </div>
 
 <script>
+  // Firebase Config
   const firebaseConfig = {
-    apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
-    authDomain: "studentdashboard-681a8.firebaseapp.com",
-    projectId: "studentdashboard-681a8",
-    storageBucket: "studentdashboard-681a8.appspot.com",
-    messagingSenderId: "171483691299",
-    appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
-    measurementId: "G-RVFB0Z9TFS"
+    apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+    authDomain: "studentdashboard-final.firebaseapp.com",
+    projectId: "studentdashboard-final",
+    storageBucket: "studentdashboard-final.firebasestorage.app",
+    messagingSenderId: "576065271267",
+    appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+    measurementId: "G-PQXQE19D1F"
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
+  const allowedIndexes = ["40062kv", "90052am", "30043dv", "60056kn"];
   const cutoff = new Date("2025-06-30T23:59:59");
 
-  function login() {
-    const index = document.getElementById("indexInput").value.trim().toLowerCase();
-    const errorMsg = document.getElementById("errorMsg");
-    errorMsg.textContent = "";
+  window.onload = function() {
+    alert("Reminder: Registration is open until 30 June 2025, 11:59 PM. Please complete your registration before the deadline.");
+  };
 
-    if (!index) {
-      errorMsg.textContent = "Please enter your index.";
+  async function login() {
+    const index = document.getElementById("indexInput").value.trim().toLowerCase();
+    const error = document.getElementById("errorMsg");
+    error.textContent = "";
+
+    if (!allowedIndexes.includes(index)) {
+      error.textContent = "You are not authorized.";
       return;
     }
 
-    db.collection("students").doc(index).get().then(doc => {
-      if (doc.exists) {
-        sessionStorage.setItem("currentIndex", index);
+    sessionStorage.setItem("currentIndex", index);
+
+    try {
+      const docRef = await db.collection("students").doc(index).get();
+      if (docRef.exists) {
         window.location.href = "dashboard.html";
       } else {
         const now = new Date();
         if (now <= cutoff) {
-          sessionStorage.setItem("currentIndex", index);
           window.location.href = "register.html";
         } else {
-          errorMsg.textContent = "Registration closed.";
+          error.textContent = "Your time of registration has expired. You cannot login.";
         }
       }
-    }).catch(e => {
-      errorMsg.textContent = "Error connecting to database.";
-      console.error("Login error:", e);
-    });
+    } catch (e) {
+      error.textContent = "Error accessing database. Try again.";
+      console.error("Firebase error:", e);
+    }
   }
 </script>
+
 </body>
 </html>
