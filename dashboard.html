@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+  <h2>Welcome</h2>
+  <div id="userDetails"></div>
+
+  <script type="module">
+    import { db } from './firebase.js';
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    const index = sessionStorage.getItem("currentIndex");
+    const div = document.getElementById("userDetails");
+
+    async function loadDashboard() {
+      if (!index) {
+        div.innerHTML = "No session found. Please login.";
+        return;
+      }
+
+      const docRef = doc(db, "students", index);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        div.innerHTML = `
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Branch:</strong> ${data.branch}</p>
+          <p><strong>Index:</strong> ${data.index}</p>
+          <img src="${data.photo}" alt="Photo" width="150" />
+        `;
+      } else {
+        div.innerHTML = "User data not found.";
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
