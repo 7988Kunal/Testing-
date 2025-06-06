@@ -1,49 +1,408 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Student Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <title>Student Dashboard</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    .profile-box { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #eef2f7;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboard {
+  max-width: 960px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2, h3 {
+  text-align: center;
+  color: #2c3e50;
+}
+
+.profile-photo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.profile-photo img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #3498db;
+  object-fit: cover;
+}
+
+.btn-edit-profile {
+  margin-top: 10px;
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.user-info {
+  margin: 20px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+form {
+  margin-top: 20px;
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+form label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+}
+
+form input[type="text"],
+form input[type="file"],
+form select,
+form textarea {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+form textarea {
+  resize: vertical;
+}
+
+form button {
+  margin-top: 15px;
+  padding: 10px 16px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #27ae60;
+}
+
+.filter-sort {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.filter-sort select {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+#worksList {
+  margin-top: 20px;
+}
+
+.work-item {
+  background: #f1f8ff;
+  border: 1px solid #d6eaf8;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.work-header {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.work-meta {
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 5px;
+}
+
+.work-text {
+  margin: 10px 0;
+  white-space: pre-wrap;
+}
+
+.file-preview a {
+  display: inline-block;
+  margin-top: 5px;
+  color: #2980b9;
+  text-decoration: underline;
+}
+
+.work-actions {
+  margin-top: 10px;
+}
+
+.work-actions button {
+  background: #e67e22;
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  margin-right: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.work-actions button.delete {
+  background-color: #e74c3c;
+}
+
+.work-actions button:hover {
+  opacity: 0.9;
+}
+
+#editProfileModal {
+  background: #fff7e6;
+  border: 1px solid #f1c40f;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+}
   </style>
 </head>
-<body>
+<body onload="initDashboard()">
+  <div class="dashboard">
+    <h2>Student Dashboard</h2>
+    <!-- Profile Section -->
+    <div class="profile-photo">
+      <img id="profileImage" src="" alt="Profile Photo" />
+      <button id="btnEditProfile" class="btn-edit-profile">Edit Profile</button>
+    </div>
+    <div class="user-info">
+      <p><strong>Name:</strong> <span id="userName"></span></p>
+      <p><strong>Index Number:</strong> <span id="userIndex"></span></p>
+      <p><strong>Class / Branch:</strong> <span id="userClass"></span></p>
+    </div>
 
-<div class="profile-box">
-  <h2>Welcome, <span id="studentName">...</span></h2>
-  <p>Index: <span id="studentIndex"></span></p>
-  <p>Class: <span id="studentClass"></span></p>
-</div>
+    <!-- Edit Profile Section (Hidden by Default) -->
+    <div id="editProfileModal" style="display:none;">
+      <h3>Edit Profile</h3>
+      <form id="editProfileForm">
+        <label>Name:</label><input type="text" id="editName" required/>
+        <label>Class / Branch:</label><input type="text" id="editClass" required/>
+        <label>Profile Photo:</label><input type="file" id="editPhoto" accept="image/*"/>
+        <button type="submit">Save</button>
+        <button type="button" id="btnCancelEdit">Cancel</button>
+      </form>
+    </div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
-    authDomain: "studentdashboard-681a8.firebaseapp.com",
-    projectId: "studentdashboard-681a8",
-    storageBucket: "studentdashboard-681a8.appspot.com",
-    messagingSenderId: "171483691299",
-    appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
-    measurementId: "G-RVFB0Z9TFS"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+    <hr/>
 
-  const index = sessionStorage.getItem("currentIndex");
-  if (!index) window.location.href = "login.html";
+    <!-- Upload Work Section -->
+    <form id="uploadWorkForm">
+      <h3>Upload New Work</h3>
+      <label>Description:</label>
+      <textarea id="workText" rows="3" placeholder="Describe your work..."></textarea>
+      <label>File (optional):</label>
+      <input type="file" id="workFile"/>
+      <label>Send To:</label>
+      <select id="recipientIndex">
+        <option value="">-- Public --</option>
+      </select>
+      <button type="submit">Upload</button>
+    </form>
 
-  db.collection("students").doc(index).get().then(doc => {
-    if (doc.exists) {
-      const data = doc.data();
-      document.getElementById("studentName").textContent = data.name;
-      document.getElementById("studentIndex").textContent = data.index;
-      document.getElementById("studentClass").textContent = data.class;
+    <hr/>
+
+    <!-- Filters -->
+    <div class="filter-sort">
+      <select id="filterSender"><option value="all">Sender: All</option></select>
+      <select id="filterRecipient"><option value="all">Recipient: All</option><option value="public">Public</option></select>
+      <select id="sortOrder"><option value="desc">Date: Newest First</option><option value="asc">Date: Oldest First</option></select>
+    </div>
+
+    <div id="worksList"><p>Loading works...</p></div>
+  </div>
+
+  <!-- External Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.uploadthing.com/uploadthing.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+  <script>
+    // 🚀 Replace placeholders with your config values:
+    const firebaseConfig = { /* Your Firebase config here */ };
+    const UPLOADTHING_TOKEN = "YOUR_UPLOADTHING_TOKEN";
+    const EMAILJS_SERVICE = "service_m6b648v";
+    const EMAILJS_TEMPLATE = "template_iahgvur";
+    const EMAILJS_KEY = "rai8QxGoPo_kArORG";
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    emailjs.init(EMAILJS_KEY);
+    const ut = new UploadThing({ apiKey: UPLOADTHING_TOKEN });
+
+    let currentUser = null, allUsers = [], allWorks = [];
+
+    async function initDashboard(){
+      const index = sessionStorage.getItem("currentIndex");
+      if(!index){ location.href="official.html"; return; }
+
+      const userSnap = await db.collection("users").doc(index).get();
+      if(!userSnap.exists){ alert("User not found. Redirecting..."); location.href="index.html"; return; }
+      currentUser = userSnap.data();
+
+      allUsers = (await db.collection("users").orderBy("index").get()).docs.map(d=>d.data());
+      setupProfileSection(); setupRecipients();
+      await loadAndDisplayWorks();
+
+      document.getElementById("uploadWorkForm").onsubmit = onUploadSubmit;
+      document.getElementById("filterSender").onchange = loadAndDisplayWorks;
+      document.getElementById("filterRecipient").onchange = loadAndDisplayWorks;
+      document.getElementById("sortOrder").onchange = loadAndDisplayWorks;
     }
-  });
-</script>
+
+    function setupProfileSection(){
+      document.getElementById("profileImage").src = currentUser.photoURL || "https://via.placeholder.com/120";
+      document.getElementById("userName").textContent = currentUser.name;
+      document.getElementById("userIndex").textContent = currentUser.index;
+      document.getElementById("userClass").textContent = currentUser.classBranch;
+
+      document.getElementById("btnEditProfile").onclick = ()=> {
+        document.getElementById("editName").value = currentUser.name;
+        document.getElementById("editClass").value = currentUser.classBranch;
+        document.getElementById("editProfileModal").style.display = "block";
+      };
+      document.getElementById("btnCancelEdit").onclick = ()=> {
+        document.getElementById("editProfileModal").style.display = "none";
+      };
+      document.getElementById("editProfileForm").onsubmit = async e=>{
+        e.preventDefault();
+        let updates = {
+          name: document.getElementById("editName").value.trim(),
+          classBranch: document.getElementById("editClass").value.trim()
+        };
+        const file = document.getElementById("editPhoto").files[0];
+        if(file){
+          const resp = await ut.upload(file);
+          updates.photoURL = resp.fileUrl;
+        }
+        await db.collection("users").doc(currentUser.index).update(updates);
+        Object.assign(currentUser, updates);
+        setupProfileSection();
+        alert("Profile updated!");
+        document.getElementById("editProfileModal").style.display = "none";
+      };
+    }
+
+    function setupRecipients(){
+      const sel = document.getElementById("recipientIndex");
+      sel.innerHTML = "<option value=''>-- Public --</option>";
+      allUsers.forEach(u=>{
+        if(u.index !== currentUser.index){
+          sel.innerHTML += `<option value="${u.index}">${u.name} (${u.index})</option>`;
+        }
+      });
+    }
+
+    async function onUploadSubmit(e){
+      e.preventDefault();
+      const text = document.getElementById("workText").value.trim();
+      const file = document.getElementById("workFile").files[0];
+      const recipient = document.getElementById("recipientIndex").value;
+      if(!text && !file){ alert("Add text or file!"); return; }
+
+      let fileUrl = "";
+      if(file){
+        const resp = await ut.upload(file);
+        fileUrl = resp.fileUrl;
+      }
+
+      const work = {
+        senderIndex: currentUser.index,
+        senderName: currentUser.name,
+        recipientIndex: recipient || null,
+        recipientName: recipient ? allUsers.find(u=>u.index===recipient).name : null,
+        text, fileUrl,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection("works").add(work);
+      emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+        message: text || "(file uploaded)",
+        from_index: currentUser.index,
+        to_index: recipient || "public",
+        time: new Date().toLocaleString()
+      });
+      alert("Work uploaded!");
+      document.getElementById("workText").value = "";
+      document.getElementById("workFile").value = "";
+      await loadAndDisplayWorks();
+    }
+
+    async function loadAndDisplayWorks(){
+      const snap = await db.collection("works").orderBy("timestamp", sortOrder.value).get();
+      allWorks = snap.docs.map(d=>({ id: d.id, ...d.data() }));
+      renderWorks(allWorks);
+    }
+
+    function renderWorks(list){
+      const container = document.getElementById("worksList");
+      if(!list.length){
+        container.innerHTML = "<p>No works available.</p>"; return;
+      }
+      const fs = filterSender.value, fr = filterRecipient.value;
+      container.innerHTML = "";
+      list.forEach(w=>{
+        if(fs!=="all" && w.senderIndex!==fs) return;
+        if(fr==="public" && w.recipientIndex) return;
+        if(fr!=="all" && fr!=="public" && w.recipientIndex!==fr) return;
+
+        const div = document.createElement("div");
+        div.className = "work-item";
+        div.innerHTML = `
+          <div class="work-header">${w.senderName} (${w.senderIndex}) ➔ ${w.recipientIndex ? w.recipientName+" ("+w.recipientIndex+")" : "Public"}</div>
+          <div class="work-meta">Date: ${w.timestamp?.toDate().toLocaleString() || "-"}</div>
+          <div class="work-text">${w.text ? escapeHtml(w.text) : "<i>No text</i>"}</div>
+          <div class="file-preview">${w.fileUrl? `<a href="${w.fileUrl}" target="_blank">View File</a>` : ""}</div>
+        `;
+        const actions = document.createElement("div");
+        actions.className = "work-actions";
+
+        if(w.senderIndex === currentUser.index){
+          const btnDel = document.createElement("button");
+          btnDel.textContent = "Delete"; btnDel.className="delete";
+          btnDel.onclick = async ()=>{ if(confirm("Confirm delete?")){ await db.collection("works").doc(w.id).delete(); loadAndDisplayWorks(); }};
+          const btnEdit = document.createElement("button");
+          btnEdit.textContent="Edit"; btnEdit.onclick = ()=> editWorkPrompt(w);
+          actions.append(btnEdit, btnDel);
+        }
+        div.appendChild(actions);
+        container.appendChild(div);
+      });
+    }
+
+    function escapeHtml(text){
+      const div=document.createElement("div");
+      div.textContent = text; return div.innerHTML;
+    }
+
+    function editWorkPrompt(w){
+      const nt = prompt("Edit description:", w.text||"");
+      if(nt===null) return;
+      db.collection("works").doc(w.id).update({ text: nt }).then(()=>{ alert("Updated"); loadAndDisplayWorks(); });
+    }
+  </script>
 </body>
 </html>
-
