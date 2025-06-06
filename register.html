@@ -1,215 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Register</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register</title>
   <style>
-    /* Reset some defaults */
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #4a90e2, #50a3f6);
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      font-family: Arial, sans-serif;
+      background: #eef2f7;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center; height: 100vh;
     }
-
-    .form-box {
-      background: #fff;
-      padding: 30px 40px;
+    form {
+      background: white;
+      padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      max-width: 480px;
-      width: 100%;
-      transition: box-shadow 0.3s ease;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      width: 320px;
     }
-    .form-box:hover {
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-    }
-
     h2 {
-      margin-bottom: 25px;
-      font-weight: 700;
-      font-size: 1.8rem;
-      color: #222;
       text-align: center;
-      letter-spacing: 0.03em;
+      margin-bottom: 20px;
+      color: #2c3e50;
     }
-
     label {
       display: block;
-      margin: 15px 0 8px;
-      font-weight: 600;
-      color: #555;
-      font-size: 0.9rem;
+      margin-top: 12px;
+      font-weight: bold;
+      color: #34495e;
     }
-
-    input[type="text"],
-    select,
-    input[type="file"] {
+    input[type="text"], input[type="file"] {
       width: 100%;
-      padding: 14px 16px;
-      font-size: 1rem;
-      border: 1.8px solid #ddd;
-      border-radius: 8px;
-      outline-offset: 2px;
-      outline-color: transparent;
-      transition: border-color 0.3s ease;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+      box-sizing: border-box;
     }
-    input[type="text"]:focus,
-    select:focus,
-    input[type="file"]:focus {
-      border-color: #4a90e2;
-      outline-color: #4a90e2;
-    }
-
-    select[disabled] {
-      background: #f9f9f9;
-      color: #888;
-      cursor: not-allowed;
-    }
-
-    input[type="file"] {
-      padding: 8px 12px;
-    }
-
-    img#preview {
-      display: block;
-      margin: 20px auto 30px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #4a90e2;
-      box-shadow: 0 3px 8px rgba(74, 144, 226, 0.4);
-      transition: transform 0.3s ease;
-    }
-    img#preview:hover {
-      transform: scale(1.05);
-    }
-
     button {
+      margin-top: 20px;
       width: 100%;
-      padding: 14px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: white;
-      background: #4a90e2;
+      padding: 10px;
+      background-color: #3498db;
       border: none;
-      border-radius: 10px;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s ease;
-      box-shadow: 0 5px 15px rgba(74, 144, 226, 0.5);
+      font-size: 16px;
     }
     button:hover {
-      background: #357abd;
-      box-shadow: 0 6px 20px rgba(53, 122, 189, 0.6);
+      background-color: #2980b9;
     }
-    button:active {
-      transform: scale(0.98);
-    }
-
-    /* Responsive */
-    @media (max-width: 520px) {
-      body {
-        padding: 15px;
-      }
-      .form-box {
-        padding: 25px 20px;
-      }
-      img#preview {
-        width: 100px;
-        height: 100px;
-        margin-bottom: 25px;
-      }
+    .msg {
+      margin-top: 15px;
+      text-align: center;
+      color: red;
     }
   </style>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
+  <form id="registerForm">
+    <h2>Register Student</h2>
+    <label for="indexInput">Index Number</label>
+    <input type="text" id="indexInput" placeholder="Enter index number" required />
 
-  <div class="form-box">
-    <h2>Student Registration</h2>
-    <input type="text" id="name" placeholder="Enter Full Name" required />
-    <select disabled>
-      <option>B.Tech. / B.E.</option>
-    </select>
-    <select disabled>
-      <option>CSE - AI & ML</option>
-    </select>
-    <label for="photo">Upload Photo</label>
-    <input type="file" id="photo" accept="image/*" onchange="previewPhoto(event)" />
-    <img id="preview" src="https://via.placeholder.com/100" alt="Preview" />
-    <button onclick="saveData()">Register</button>
-  </div>
+    <label for="nameInput">Full Name</label>
+    <input type="text" id="nameInput" placeholder="Enter your name" required />
+
+    <label for="classInput">Class / Branch</label>
+    <input type="text" id="classInput" placeholder="Enter class or branch" required />
+
+    <label for="photoInput">Profile Photo (optional)</label>
+    <input type="file" id="photoInput" accept="image/*" />
+
+    <button type="submit">Register</button>
+    <p class="msg" id="msg"></p>
+  </form>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.uploadthing.com/uploadthing.js"></script>
 
   <script>
-    // Firebase config
-    const firebaseConfig = {
+    const firebaseConfig = { 
       apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
       authDomain: "studentdashboard-final.firebaseapp.com",
       projectId: "studentdashboard-final",
-      storageBucket: "studentdashboard-final.firebasestorage.app",
+      storageBucket: "studentdashboard-final.appspot.com",
       messagingSenderId: "576065271267",
       appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-      measurementId: "G-PQXQE19D1F"
+      measurementId: "G-PQXQE19D1F" 
     };
+    const UPLOADTHING_TOKEN = "a1b2c3d4-e5f6-7890-gh12-ijk345lmno67";
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    let photoData = "";
-    const index = sessionStorage.getItem("currentIndex");
+    const ut = new UploadThing({ apiKey: UPLOADTHING_TOKEN });
 
-    if (!index) window.location.href = "index.html";
+    const form = document.getElementById('registerForm');
+    const msg = document.getElementById('msg');
 
-    function previewPhoto(event) {
-      const reader = new FileReader();
-      reader.onload = function() {
-        photoData = reader.result;
-        document.getElementById("preview").src = photoData;
-      };
-      reader.readAsDataURL(event.target.files[0]);
-    }
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      msg.textContent = "";
 
-    async function saveData() {
-      const name = document.getElementById("name").value.trim();
-      if (!name || !photoData) {
-        alert("Please fill in your name and upload a photo.");
+      const index = document.getElementById('indexInput').value.trim();
+      const name = document.getElementById('nameInput').value.trim();
+      const classBranch = document.getElementById('classInput').value.trim();
+      const photoFile = document.getElementById('photoInput').files[0];
+
+      if(!index || !name || !classBranch) {
+        msg.textContent = "Please fill all required fields.";
         return;
       }
 
-      const studentData = {
-        name,
-        class: "B.Tech. / B.E.",
-        branch: "CSE - Artificial Intelligence and Machine Learning",
-        photo: photoData,
-        index: index
-      };
-
       try {
-        const doc = await db.collection("students").doc(index).get();
-        if (doc.exists) {
-          alert("This index is already registered.");
-          window.location.href = "dashboard.html";
-        } else {
-          await db.collection("students").doc(index).set(studentData);
-          alert("Registration successful!");
-          window.location.href = "dashboard.html";
+        // Check if user already exists
+        const userDoc = await db.collection('users').doc(index).get();
+        if(userDoc.exists){
+          msg.textContent = "Index number already registered. Please login.";
+          return;
         }
-      } catch (e) {
-        alert("Registration failed. Please try again.");
-        console.error("Firebase error:", e);
-      }
-    }
-  </script>
 
+        let photoURL = "";
+        if(photoFile){
+          const resp = await ut.upload(photoFile);
+          photoURL = resp.fileUrl;
+        }
+
+        // Save user
+        await db.collection('users').doc(index).set({
+          index,
+          name,
+          classBranch,
+          photoURL
+        });
+
+        alert("Registration successful! You can now login.");
+        window.location.href = "login.html";
+
+      } catch(err){
+        console.error(err);
+        msg.textContent = "Error during registration. Try again.";
+      }
+    });
+  </script>
 </body>
 </html>
