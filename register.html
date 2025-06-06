@@ -2,59 +2,215 @@
 <html>
 <head>
   <meta charset="UTF-8" />
-  <title>Student Registration</title>
+  <title>Register</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
   <style>
-    body { font-family: Arial; padding: 20px; background: #eaeaea; }
-    .form-box { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 8px; }
-    input, button { width: 100%; padding: 10px; margin: 10px 0; }
+   /* Reset some defaults */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4a90e2, #50a3f6);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .form-box {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      max-width: 480px;
+      width: 100%;
+      transition: box-shadow 0.3s ease;
+    }
+    .form-box:hover {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #222;
+      text-align: center;
+      letter-spacing: 0.03em;
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 8px;
+      font-weight: 600;
+      color: #555;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"],
+    select,
+    input[type="file"] {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1.8px solid #ddd;
+      border-radius: 8px;
+      outline-offset: 2px;
+      outline-color: transparent;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    select:focus,
+    input[type="file"]:focus {
+      border-color: #4a90e2;
+      outline-color: #4a90e2;
+    }
+
+    select[disabled] {
+      background: #f9f9f9;
+      color: #888;
+      cursor: not-allowed;
+    }
+
+    input[type="file"] {
+      padding: 8px 12px;
+    }
+
+    img#preview {
+      display: block;
+      margin: 20px auto 30px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #4a90e2;
+      box-shadow: 0 3px 8px rgba(74, 144, 226, 0.4);
+      transition: transform 0.3s ease;
+    }
+    img#preview:hover {
+      transform: scale(1.05);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: white;
+      background: #4a90e2;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      box-shadow: 0 5px 15px rgba(74, 144, 226, 0.5);
+    }
+    button:hover {
+      background: #357abd;
+      box-shadow: 0 6px 20px rgba(53, 122, 189, 0.6);
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* Responsive */
+    @media (max-width: 520px) {
+      body {
+        padding: 15px;
+      }
+      .form-box {
+        padding: 25px 20px;
+      }
+      img#preview {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 25px;
+      }
+    }
   </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-<div class="form-box">
-  <h2>Register</h2>
-  <input type="text" id="name" placeholder="Full Name" />
-  <input type="text" id="class" placeholder="Class / Branch" />
-  <input type="file" id="photo" accept="image/*" />
-  <button onclick="register()">Submit</button>
-</div>
+  <div class="form-box">
+    <h2>Student Registration</h2>
+    <input type="text" id="name" placeholder="Enter Full Name" required />
+    <select disabled>
+      <option>B.Tech. / B.E.</option>
+    </select>
+    <select disabled>
+      <option>CSE - AI & ML</option>
+    </select>
+    <label for="photo">Upload Photo</label>
+    <input type="file" id="photo" accept="image/*" onchange="previewPhoto(event)" />
+    <img id="preview" src="https://via.placeholder.com/100" alt="Preview" />
+    <button onclick="saveData()">Register</button>
+  </div>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
-    authDomain: "studentdashboard-681a8.firebaseapp.com",
-    projectId: "studentdashboard-681a8",
-    storageBucket: "studentdashboard-681a8.appspot.com",
-    messagingSenderId: "171483691299",
-    appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
-    measurementId: "G-RVFB0Z9TFS"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+      authDomain: "studentdashboard-final.firebaseapp.com",
+      projectId: "studentdashboard-final",
+      storageBucket: "studentdashboard-final.firebasestorage.app",
+      messagingSenderId: "576065271267",
+      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+      measurementId: "G-PQXQE19D1F"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  function register() {
-    const name = document.getElementById("name").value.trim();
-    const cls = document.getElementById("class").value.trim();
+    let photoData = "";
     const index = sessionStorage.getItem("currentIndex");
 
-    if (!name || !cls || !index) return alert("Please fill all fields.");
+    if (!index) window.location.href = "index.html";
 
-    db.collection("students").doc(index).set({
-      name: name,
-      class: cls,
-      index: index,
-      registeredAt: new Date().toISOString()
-    }).then(() => {
-      alert("Registered successfully.");
-      window.location.href = "dashboard.html";
-    }).catch(e => {
-      console.error("Error saving data:", e);
-      alert("Error saving data.");
-    });
-  }
-</script>
+    function previewPhoto(event) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        photoData = reader.result;
+        document.getElementById("preview").src = photoData;
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    async function saveData() {
+      const name = document.getElementById("name").value.trim();
+      if (!name || !photoData) {
+        alert("Please fill in your name and upload a photo.");
+        return;
+      }
+
+      const studentData = {
+        name,
+        class: "B.Tech. / B.E.",
+        branch: "CSE - Artificial Intelligence and Machine Learning",
+        photo: photoData,
+        index: index
+      };
+
+      try {
+        const doc = await db.collection("students").doc(index).get();
+        if (doc.exists) {
+          alert("This index is already registered.");
+          window.location.href = "dashboard.html";
+        } else {
+          await db.collection("students").doc(index).set(studentData);
+          alert("Registration successful!");
+          window.location.href = "dashboard.html";
+        }
+      } catch (e) {
+        alert("Registration failed. Please try again.");
+        console.error("Firebase error:", e);
+      }
+    }
+  </script>
+
 </body>
 </html>
