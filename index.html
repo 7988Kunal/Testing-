@@ -3,19 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login</title>
+  <title>Student Login</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #eef2f7;
-      margin: 0; padding: 0;
-      display: flex; justify-content: center; align-items: center; height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-    form {
+    .login-box {
       background: white;
-      padding: 25px;
+      padding: 30px;
       border-radius: 12px;
-      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
       width: 320px;
     }
     h2 {
@@ -25,27 +28,24 @@
     }
     label {
       display: block;
-      margin-top: 12px;
+      margin: 12px 0 6px;
       font-weight: bold;
-      color: #34495e;
     }
     input[type="text"] {
       width: 100%;
       padding: 8px;
       border-radius: 6px;
       border: 1px solid #ccc;
-      margin-top: 5px;
       box-sizing: border-box;
     }
     button {
-      margin-top: 20px;
       width: 100%;
       padding: 10px;
+      margin-top: 20px;
       background-color: #3498db;
+      color: white;
       border: none;
       border-radius: 6px;
-      color: white;
-      font-weight: bold;
       cursor: pointer;
       font-size: 16px;
     }
@@ -65,67 +65,63 @@
       color: #3498db;
       text-decoration: none;
     }
-    .register-link a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
-  <form id="loginForm">
+  <div class="login-box">
     <h2>Student Login</h2>
-    <label for="indexLogin">Index Number</label>
-    <input type="text" id="indexLogin" placeholder="Enter index number" required />
-    <button type="submit">Login</button>
-    <p class="msg" id="msg"></p>
-    <p class="register-link">Don't have an account? <a href="register.html">Register here</a></p>
-  </form>
+    <form id="loginForm">
+      <label for="indexNumber">Index Number</label>
+      <input type="text" id="indexNumber" placeholder="Enter your index number" required />
+      <button type="submit">Login</button>
+    </form>
+    <div class="msg" id="loginMsg"></div>
+    <div class="register-link">
+      New user? <a href="register.html">Register here</a>
+    </div>
+  </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  <script>
-    const firebaseConfig = { 
+    const firebaseConfig = {
       apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
       authDomain: "studentdashboard-final.firebaseapp.com",
       projectId: "studentdashboard-final",
       storageBucket: "studentdashboard-final.appspot.com",
       messagingSenderId: "576065271267",
       appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-      measurementId: "G-PQXQE19D1F" 
+      measurementId: "G-PQXQE19D1F"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-    const form = document.getElementById('loginForm');
-    const msg = document.getElementById('msg');
+    const loginForm = document.getElementById("loginForm");
+    const loginMsg = document.getElementById("loginMsg");
 
-    form.addEventListener('submit', async e => {
+    loginForm.addEventListener("submit", async e => {
       e.preventDefault();
-      msg.textContent = "";
-
-      const index = document.getElementById('indexLogin').value.trim();
-      if(!index){
-        msg.textContent = "Please enter your index number.";
+      loginMsg.textContent = "";
+      const index = document.getElementById("indexNumber").value.trim();
+      if (!index) {
+        loginMsg.textContent = "Please enter your index number.";
         return;
       }
 
       try {
-        const userDoc = await db.collection('users').doc(index).get();
-        if(!userDoc.exists){
-          msg.textContent = "User not found. Please register first.";
-          return;
+        const userDoc = await getDoc(doc(db, "users", index));
+        if (userDoc.exists()) {
+          // Save current index in sessionStorage
+          sessionStorage.setItem("currentIndex", index);
+          // Redirect to dashboard
+          window.location.href = "dashboard.html";
+        } else {
+          loginMsg.textContent = "User not found. Please register first.";
         }
-
-        // Save index to sessionStorage for dashboard use
-        sessionStorage.setItem('currentIndex', index);
-
-        // Redirect to dashboard
-        window.location.href = "dashboard.html";
-
-      } catch(err) {
-        console.error(err);
-        msg.textContent = "Error during login. Try again.";
+      } catch (error) {
+        loginMsg.textContent = "Error during login: " + error.message;
       }
     });
   </script>
