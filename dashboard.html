@@ -163,15 +163,15 @@ form button:hover {
   cursor: pointer;
 }
 
-     .work-actions button.delete {
+.work-actions button.delete {
   background-color: #e74c3c;
 }
 
-    .work-actions button:hover {
+.work-actions button:hover {
   opacity: 0.9;
 }
 
-   #editProfileModal {
+#editProfileModal {
   background: #fff7e6;
   border: 1px solid #f1c40f;
   padding: 15px;
@@ -183,7 +183,6 @@ form button:hover {
 <body onload="initDashboard()">
   <div class="dashboard">
     <h2>Student Dashboard</h2>
-    <!-- Profile Section -->
     <div class="profile-photo">
       <img id="profileImage" src="" alt="Profile Photo" />
       <button id="btnEditProfile" class="btn-edit-profile">Edit Profile</button>
@@ -194,7 +193,6 @@ form button:hover {
       <p><strong>Class / Branch:</strong> <span id="userClass"></span></p>
     </div>
 
-    <!-- Edit Profile Section (Hidden by Default) -->
     <div id="editProfileModal" style="display:none;">
       <h3>Edit Profile</h3>
       <form id="editProfileForm">
@@ -208,7 +206,6 @@ form button:hover {
 
     <hr/>
 
-    <!-- Upload Work Section -->
     <form id="uploadWorkForm">
       <h3>Upload New Work</h3>
       <label>Description:</label>
@@ -224,7 +221,6 @@ form button:hover {
 
     <hr/>
 
-    <!-- Filters -->
     <div class="filter-sort">
       <select id="filterSender"><option value="all">Sender: All</option></select>
       <select id="filterRecipient"><option value="all">Recipient: All</option><option value="public">Public</option></select>
@@ -234,30 +230,29 @@ form button:hover {
     <div id="worksList"><p>Loading works...</p></div>
   </div>
 
-  <!-- External Scripts -->
+  <!-- Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://cdn.uploadthing.com/uploadthing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
   <script>
-    // 🚀 Replace placeholders with your config values:
     const firebaseConfig = { 
       apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
       authDomain: "studentdashboard-final.firebaseapp.com",
       projectId: "studentdashboard-final",
-      storageBucket: "studentdashboard-final.firebasestorage.app",
+      storageBucket: "studentdashboard-final.appspot.com",
       messagingSenderId: "576065271267",
       appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-      measurementId: "G-PQXQE19D1F" };
-    const uploadingToken = "a1b2c3d4-e5f6-7890-gh12-ijk345lmno67";
+      measurementId: "G-PQXQE19D1F" 
+    };
+    const UPLOADTHING_TOKEN = "a1b2c3d4-e5f6-7890-gh12-ijk345lmno67";
     const EMAILJS_SERVICE = "service_m6b648v";
     const EMAILJS_TEMPLATE = "template_iahgvur";
     const EMAILJS_KEY = "rai8QxGoPo_kArORG";
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
     emailjs.init(EMAILJS_KEY);
     const ut = new UploadThing({ apiKey: UPLOADTHING_TOKEN });
 
@@ -316,11 +311,14 @@ form button:hover {
 
     function setupRecipients(){
       const sel = document.getElementById("recipientIndex");
+      const fs = document.getElementById("filterSender");
       sel.innerHTML = "<option value=''>-- Public --</option>";
+      fs.innerHTML = `<option value="all">Sender: All</option>`;
       allUsers.forEach(u=>{
         if(u.index !== currentUser.index){
           sel.innerHTML += `<option value="${u.index}">${u.name} (${u.index})</option>`;
         }
+        fs.innerHTML += `<option value="${u.index}">${u.name} (${u.index})</option>`;
       });
     }
 
@@ -359,7 +357,7 @@ form button:hover {
     }
 
     async function loadAndDisplayWorks(){
-      const snap = await db.collection("works").orderBy("timestamp", sortOrder.value).get();
+      const snap = await db.collection("works").orderBy("timestamp", document.getElementById("sortOrder").value).get();
       allWorks = snap.docs.map(d=>({ id: d.id, ...d.data() }));
       renderWorks(allWorks);
     }
@@ -369,7 +367,8 @@ form button:hover {
       if(!list.length){
         container.innerHTML = "<p>No works available.</p>"; return;
       }
-      const fs = filterSender.value, fr = filterRecipient.value;
+      const fs = document.getElementById("filterSender").value;
+      const fr = document.getElementById("filterRecipient").value;
       container.innerHTML = "";
       list.forEach(w=>{
         if(fs!=="all" && w.senderIndex!==fs) return;
@@ -386,7 +385,6 @@ form button:hover {
         `;
         const actions = document.createElement("div");
         actions.className = "work-actions";
-
         if(w.senderIndex === currentUser.index){
           const btnDel = document.createElement("button");
           btnDel.textContent = "Delete"; btnDel.className="delete";
