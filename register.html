@@ -1,47 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8" />
   <title>Student Registration</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #eaeaea; }
+    .form-box { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 8px; }
+    input, button { width: 100%; padding: 10px; margin: 10px 0; }
+  </style>
 </head>
 <body>
-  <h2>Register Your Details</h2>
-  <form id="registerForm">
-    <input type="text" id="name" placeholder="Your Name" required><br>
-    <input type="text" id="branch" placeholder="Your Branch" required><br>
-    <input type="file" id="photo" accept="image/*" required><br>
-    <button type="submit">Submit</button>
-  </form>
-  <p id="message"></p>
 
-  <script type="module">
-    import { db } from './firebase.js';
-    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<div class="form-box">
+  <h2>Register</h2>
+  <input type="text" id="name" placeholder="Full Name" />
+  <input type="text" id="class" placeholder="Class / Branch" />
+  <input type="file" id="photo" accept="image/*" />
+  <button onclick="register()">Submit</button>
+</div>
 
-    const form = document.getElementById("registerForm");
-    const message = document.getElementById("message");
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
+    authDomain: "studentdashboard-681a8.firebaseapp.com",
+    projectId: "studentdashboard-681a8",
+    storageBucket: "studentdashboard-681a8.appspot.com",
+    messagingSenderId: "171483691299",
+    appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
+    measurementId: "G-RVFB0Z9TFS"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  function register() {
+    const name = document.getElementById("name").value.trim();
+    const cls = document.getElementById("class").value.trim();
     const index = sessionStorage.getItem("currentIndex");
 
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const name = document.getElementById("name").value;
-      const branch = document.getElementById("branch").value;
-      const photoInput = document.getElementById("photo");
+    if (!name || !cls || !index) return alert("Please fill all fields.");
 
-      const reader = new FileReader();
-      reader.onload = async function () {
-        const photoBase64 = reader.result;
-        await setDoc(doc(db, "students", index), {
-          name,
-          branch,
-          index,
-          photo: photoBase64
-        });
-        message.textContent = "Registered successfully!";
-        setTimeout(() => window.location.href = "dashboard.html", 1000);
-      };
-      reader.readAsDataURL(photoInput.files[0]);
-    };
-  </script>
+    db.collection("students").doc(index).set({
+      name: name,
+      class: cls,
+      index: index,
+      registeredAt: new Date().toISOString()
+    }).then(() => {
+      alert("Registered successfully.");
+      window.location.href = "dashboard.html";
+    }).catch(e => {
+      console.error("Error saving data:", e);
+      alert("Error saving data.");
+    });
+  }
+</script>
 </body>
 </html>
