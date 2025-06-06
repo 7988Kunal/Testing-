@@ -1,115 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Student Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+      background: #eef2f7;
+      margin: 0; padding: 0;
+      display: flex; justify-content: center; align-items: center; height: 100vh;
     }
-    .box {
-      display: flex;
-      flex-direction: column;
+    form {
       background: white;
-      padding: 30px;
-      border-radius: 8px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      width: 320px;
     }
-    input {
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+      color: #34495e;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+      box-sizing: border-box;
     }
     button {
+      margin-top: 20px;
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-      background-color: #007bff;
-      color: white;
+      padding: 10px;
+      background-color: #3498db;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
       cursor: pointer;
+      font-size: 16px;
     }
-    .error {
+    button:hover {
+      background-color: #2980b9;
+    }
+    .msg {
+      margin-top: 15px;
+      text-align: center;
       color: red;
-      margin-top: 10px;
+    }
+    .register-link {
+      margin-top: 15px;
+      text-align: center;
+    }
+    .register-link a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    .register-link a:hover {
+      text-decoration: underline;
     }
   </style>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
+  <form id="loginForm">
+    <h2>Student Login</h2>
+    <label for="indexLogin">Index Number</label>
+    <input type="text" id="indexLogin" placeholder="Enter index number" required />
+    <button type="submit">Login</button>
+    <p class="msg" id="msg"></p>
+    <p class="register-link">Don't have an account? <a href="register.html">Register here</a></p>
+  </form>
 
-<div class="box">
-  <h2>Login by Special Code</h2>
-  <input type="text" id="indexInput" placeholder="Enter Special Code" />
-  <button onclick="login()">Login</button>
-  <p class="error" id="errorMsg"></p>
-</div>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<script>
-  // Firebase Config
-  const firebaseConfig = {
-    apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
-    authDomain: "studentdashboard-final.firebaseapp.com",
-    projectId: "studentdashboard-final",
-    storageBucket: "studentdashboard-final.firebasestorage.app",
-    messagingSenderId: "576065271267",
-    appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-    measurementId: "G-PQXQE19D1F"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  <script>
+    const firebaseConfig = { 
+      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+      authDomain: "studentdashboard-final.firebaseapp.com",
+      projectId: "studentdashboard-final",
+      storageBucket: "studentdashboard-final.appspot.com",
+      messagingSenderId: "576065271267",
+      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+      measurementId: "G-PQXQE19D1F" 
+    };
 
-  const allowedIndexes = ["40062kv", "90052am", "30043dv", "60056kn","1007--"];
-  const cutoff = new Date("2025-06-30T23:59:59");
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  window.onload = function() {
-    alert("Reminder: Registration is open until 30 June 2025, 11:59 PM. Please complete your registration before the deadline.");
-  };
+    const form = document.getElementById('loginForm');
+    const msg = document.getElementById('msg');
 
-  async function login() {
-    const index = document.getElementById("indexInput").value.trim().toLowerCase();
-    const error = document.getElementById("errorMsg");
-    error.textContent = "";
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      msg.textContent = "";
 
-    if (!allowedIndexes.includes(index)) {
-      error.textContent = "You are not authorized.";
-      return;
-    }
-
-    sessionStorage.setItem("currentIndex", index);
-
-    try {
-      const docRef = await db.collection("students").doc(index).get();
-      if (docRef.exists) {
-        window.location.href = "dashboard.html";
-      } else {
-        const now = new Date();
-        if (now <= cutoff) {
-          window.location.href = "register.html";
-        } else {
-          error.textContent = "Your time of registration has expired. You cannot login.";
-        }
+      const index = document.getElementById('indexLogin').value.trim();
+      if(!index){
+        msg.textContent = "Please enter your index number.";
+        return;
       }
-    } catch (e) {
-      error.textContent = "Error accessing database. Try again.";
-      console.error("Firebase error:", e);
-    }
-  }
-</script>
 
+      try {
+        const userDoc = await db.collection('users').doc(index).get();
+        if(!userDoc.exists){
+          msg.textContent = "User not found. Please register first.";
+          return;
+        }
+
+        // Save index to sessionStorage for dashboard use
+        sessionStorage.setItem('currentIndex', index);
+
+        // Redirect to dashboard
+        window.location.href = "dashboard.html";
+
+      } catch(err) {
+        console.error(err);
+        msg.textContent = "Error during login. Try again.";
+      }
+    });
+  </script>
 </body>
 </html>
