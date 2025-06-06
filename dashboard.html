@@ -1,43 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8" />
   <title>Student Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .profile-box { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+  </style>
 </head>
 <body>
-  <h2>Welcome</h2>
-  <div id="userDetails"></div>
 
-  <script type="module">
-    import { db } from './firebase.js';
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<div class="profile-box">
+  <h2>Welcome, <span id="studentName">...</span></h2>
+  <p>Index: <span id="studentIndex"></span></p>
+  <p>Class: <span id="studentClass"></span></p>
+</div>
 
-    const index = sessionStorage.getItem("currentIndex");
-    const div = document.getElementById("userDetails");
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
+    authDomain: "studentdashboard-681a8.firebaseapp.com",
+    projectId: "studentdashboard-681a8",
+    storageBucket: "studentdashboard-681a8.appspot.com",
+    messagingSenderId: "171483691299",
+    appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
+    measurementId: "G-RVFB0Z9TFS"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    async function loadDashboard() {
-      if (!index) {
-        div.innerHTML = "No session found. Please login.";
-        return;
-      }
+  const index = sessionStorage.getItem("currentIndex");
+  if (!index) window.location.href = "login.html";
 
-      const docRef = doc(db, "students", index);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        div.innerHTML = `
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>Branch:</strong> ${data.branch}</p>
-          <p><strong>Index:</strong> ${data.index}</p>
-          <img src="${data.photo}" alt="Photo" width="150" />
-        `;
-      } else {
-        div.innerHTML = "User data not found.";
-      }
+  db.collection("students").doc(index).get().then(doc => {
+    if (doc.exists) {
+      const data = doc.data();
+      document.getElementById("studentName").textContent = data.name;
+      document.getElementById("studentIndex").textContent = data.index;
+      document.getElementById("studentClass").textContent = data.class;
     }
-
-    loadDashboard();
-  </script>
+  });
+</script>
 </body>
 </html>
+
