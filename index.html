@@ -1,56 +1,97 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8" />
   <title>Student Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      width: 100%;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .error { color: red; }
+  </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Login by Special Code</h2>
-    <input type="text" id="indexInput" placeholder="Enter Special Code" />
-    <button onclick="login()">Login</button>
-    <p class="error" id="errorMsg"></p>
-  </div>
 
-  <script type="module">
-    import { db } from './firebase.js';
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+<div class="box">
+  <h2>Login with Special Code</h2>
+  <input type="text" id="indexInput" placeholder="Enter Special Code" />
+  <button onclick="login()">Login</button>
+  <p class="error" id="errorMsg"></p>
+</div>
 
-    const allowedIndexes = ["40062kv", "90052am", "30043dv", "60056kn"];
-    const cutoff = new Date("2025-06-30T23:59:59");
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
+    authDomain: "studentdashboard-681a8.firebaseapp.com",
+    projectId: "studentdashboard-681a8",
+    storageBucket: "studentdashboard-681a8.appspot.com",
+    messagingSenderId: "171483691299",
+    appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
+    measurementId: "G-RVFB0Z9TFS"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    window.onload = () => {
-      alert("Reminder: Registration is open until 30 June 2025, 11:59 PM.");
-    };
+  const cutoff = new Date("2025-06-30T23:59:59");
 
-    async function login() {
-      const index = document.getElementById("indexInput").value.trim().toLowerCase();
-      const error = document.getElementById("errorMsg");
-      error.textContent = "";
+  function login() {
+    const index = document.getElementById("indexInput").value.trim().toLowerCase();
+    const errorMsg = document.getElementById("errorMsg");
+    errorMsg.textContent = "";
 
-      if (!allowedIndexes.includes(index)) {
-        error.textContent = "You are not authorized.";
-        return;
-      }
+    if (!index) {
+      errorMsg.textContent = "Please enter your index.";
+      return;
+    }
 
-      const docRef = doc(db, "students", index);
-      const docSnap = await getDoc(docRef);
-
-      sessionStorage.setItem("currentIndex", index);
-
-      if (docSnap.exists()) {
+    db.collection("students").doc(index).get().then(doc => {
+      if (doc.exists) {
+        sessionStorage.setItem("currentIndex", index);
         window.location.href = "dashboard.html";
       } else {
         const now = new Date();
         if (now <= cutoff) {
+          sessionStorage.setItem("currentIndex", index);
           window.location.href = "register.html";
         } else {
-          error.textContent = "Your time of registration has expired.";
+          errorMsg.textContent = "Registration closed.";
         }
       }
-    }
-
-    window.login = login;
-  </script>
+    }).catch(e => {
+      errorMsg.textContent = "Error connecting to database.";
+      console.error("Login error:", e);
+    });
+  }
+</script>
 </body>
 </html>
