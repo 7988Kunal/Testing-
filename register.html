@@ -1,163 +1,189 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Student Registration</title>
+  <meta charset="UTF-8"/>
+  <title>Register</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <style>
+     /* Reset some defaults */
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #eef2f7;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4a90e2, #50a3f6);
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
     }
-    .register-box {
-      background: white;
-      padding: 30px;
+
+    .form-box {
+      background: #fff;
+      padding: 30px 40px;
       border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-      width: 350px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      max-width: 480px;
+      width: 100%;
+      transition: box-shadow 0.3s ease;
     }
+    .form-box:hover {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    }
+
     h2 {
+      margin-bottom: 25px;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #222;
       text-align: center;
-      margin-bottom: 20px;
-      color: #2c3e50;
+      letter-spacing: 0.03em;
     }
+
     label {
       display: block;
-      margin: 12px 0 6px;
-      font-weight: bold;
+      margin: 15px 0 8px;
+      font-weight: 600;
+      color: #555;
+      font-size: 0.9rem;
     }
-    input[type="text"], input[type="file"], select {
+
+    input[type="text"],
+    select,
+    input[type="file"] {
       width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1.8px solid #ddd;
+      border-radius: 8px;
+      outline-offset: 2px;
+      outline-color: transparent;
+      transition: border-color 0.3s ease;
     }
+    input[type="text"]:focus,
+    select:focus,
+    input[type="file"]:focus {
+      border-color: #4a90e2;
+      outline-color: #4a90e2;
+    }
+
+    select[disabled] {
+      background: #f9f9f9;
+      color: #888;
+      cursor: not-allowed;
+    }
+
+    input[type="file"] {
+      padding: 8px 12px;
+    }
+
+    img#preview {
+      display: block;
+      margin: 20px auto 30px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #4a90e2;
+      box-shadow: 0 3px 8px rgba(74, 144, 226, 0.4);
+      transition: transform 0.3s ease;
+    }
+    img#preview:hover {
+      transform: scale(1.05);
+    }
+
     button {
       width: 100%;
-      padding: 10px;
-      margin-top: 20px;
-      background-color: #2ecc71;
+      padding: 14px;
+      font-size: 1.1rem;
+      font-weight: 700;
       color: white;
+      background: #4a90e2;
       border: none;
-      border-radius: 6px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 16px;
+      transition: background 0.3s ease;
+      box-shadow: 0 5px 15px rgba(74, 144, 226, 0.5);
     }
     button:hover {
-      background-color: #27ae60;
+      background: #357abd;
+      box-shadow: 0 6px 20px rgba(53, 122, 189, 0.6);
     }
-    .msg {
-      margin-top: 15px;
-      text-align: center;
-      color: red;
+    button:active {
+      transform: scale(0.98);
     }
-    .login-link {
-      margin-top: 15px;
-      text-align: center;
-    }
-    .login-link a {
-      color: #2ecc71;
-      text-decoration: none;
+
+    /* Responsive */
+    @media (max-width: 520px) {
+      body {
+        padding: 15px;
+      }
+      .form-box {
+        padding: 25px 20px;
+      }
+      img#preview {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 25px;
+      }
     }
   </style>
+  <!-- Firebase & UploadThing -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@uploadthing/client"></script>
+  <script>
+        // Import the functions you need from the SDKs you want to use
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+  authDomain: "studentdashboard-final.firebaseapp.com",
+  projectId: "studentdashboard-final",
+  storageBucket: "studentdashboard-final.firebasestorage.app",
+  messagingSenderId: "576065271267",
+  appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+  measurementId: "G-PQXQE19D1F"
+};
+
+  // Initialize Firebase
+   const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+    const db = firebase.firestore();
+
+    async function saveData(){
+      const name = document.getElementById("name").value.trim();
+      const file = document.getElementById("photo").files[0];
+      if(!name || !file){ alert("Name + photo required"); return; }
+      const idx = sessionStorage.getItem("currentIndex");
+      const { fileUrl } = await uploadthing("photoUploader").upload(file);
+      await db.doc(`students/${idx}`).set({
+        name, photo: fileUrl,
+        class: "B.Tech./B.E.", branch: "CSE-AI&ML", created: new Date()
+      });
+      window.location='dashboard.html';
+    }
+    function previewPhoto(e){
+      const reader = new FileReader();
+      reader.onload = () => document.getElementById("preview").src = reader.result;
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  </script>
 </head>
 <body>
-  <div class="register-box">
+  <div class="form-box">
     <h2>Student Registration</h2>
-    <form id="registerForm">
-      <label for="indexNumber">Index Number</label>
-      <input type="text" id="indexNumber" placeholder="Enter your index number" required />
-
-      <label for="name">Name</label>
-      <input type="text" id="name" placeholder="Your full name" required />
-
-      <label for="classBranch">Class / Branch</label>
-      <input type="text" id="classBranch" placeholder="e.g. B.Tech CSE" required />
-
-      <label for="photo">Profile Photo</label>
-      <input type="file" id="photo" accept="image/*" />
-
-      <button type="submit">Register</button>
-    </form>
-    <div class="msg" id="registerMsg"></div>
-    <div class="login-link">
-      Already registered? <a href="index.html">Login here</a>
-    </div>
+    <input id="name" placeholder="Full Name"/>
+    <label for="photo">Upload Photo</label>
+    <input id="photo" type="file" accept="image/*" onchange="previewPhoto(event)"/>
+    <img id="preview" src="https://via.placeholder.com/100" alt="Preview"/>
+    <button onclick="saveData()">Register</button>
   </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
-      authDomain: "studentdashboard-final.firebaseapp.com",
-      projectId: "studentdashboard-final",
-      storageBucket: "studentdashboard-final.appspot.com",
-      messagingSenderId: "576065271267",
-      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-      measurementId: "G-PQXQE19D1F"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    const registerForm = document.getElementById("registerForm");
-    const registerMsg = document.getElementById("registerMsg");
-
-    registerForm.addEventListener("submit", async e => {
-      e.preventDefault();
-      registerMsg.textContent = "";
-
-      const index = document.getElementById("indexNumber").value.trim();
-      const name = document.getElementById("name").value.trim();
-      const classBranch = document.getElementById("classBranch").value.trim();
-      const photoFile = document.getElementById("photo").files[0];
-
-      if (!index || !name || !classBranch) {
-        registerMsg.textContent = "Please fill all required fields.";
-        return;
-      }
-
-      try {
-        // Check if user exists
-        const userDoc = await getDoc(doc(db, "users", index));
-        if (userDoc.exists()) {
-          registerMsg.textContent = "Index number already registered. Please login.";
-          return;
-        }
-
-        // Upload photo if exists
-        let photoURL = "";
-        if (photoFile) {
-          const photoRef = ref(storage, `profilePhotos/${index}_${Date.now()}`);
-          await uploadBytes(photoRef, photoFile);
-          photoURL = await getDownloadURL(photoRef);
-        }
-
-        // Create user doc
-        await setDoc(doc(db, "users", index), {
-          index,
-          name,
-          classBranch,
-          photoURL
-        });
-
-        alert("Registration successful! You can now login.");
-        window.location.href = "index.html";
-
-      } catch (error) {
-        registerMsg.textContent = "Error during registration: " + error.message;
-      }
-    });
-  </script>
 </body>
 </html>
