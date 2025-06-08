@@ -1,189 +1,119 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8">
   <title>Register</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+      authDomain: "studentdashboard-final.firebaseapp.com",
+      projectId: "studentdashboard-final",
+      storageBucket: "studentdashboard-final.firebasestorage.app",
+      messagingSenderId: "576065271267",
+      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+      measurementId: "G-PQXQE19D1F"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.registerUser = async () => {
+      const name = document.getElementById("name").value.trim();
+      const index = document.getElementById("index").value.trim();
+      const branch = document.getElementById("branch").value.trim();
+      const photo = document.getElementById("photo").dataset.url;
+
+      if (!name || !index || !branch || !photo) {
+        alert("All fields and photo are required!");
+        return;
+      }
+
+      const docRef = doc(db, "students", index);
+      const existing = await getDoc(docRef);
+
+      if (existing.exists()) {
+        alert("Index already registered. Redirecting to login.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      await setDoc(docRef, { name, index, branch, photo });
+      sessionStorage.setItem("currentIndex", index);
+      localStorage.setItem(index, JSON.stringify({ name, index, branch, photo }));
+      alert("Registered successfully!");
+      window.location.href = "dashboard.html";
+    };
+
+    window.uploadPhoto = async () => {
+      const fileInput = document.getElementById("photoFile");
+      const file = fileInput.files[0];
+      if (!file) return alert("Please select a photo.");
+
+      const formData = new FormData();
+      formData.append("files", file);
+      const res = await fetch("https://uploadthing.com/api/upload", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer eyJhcGlLZXkiOiJza19saXZlXzU2YzIxNmNmOTc3OTE4YzRmZGE2NDM4ZTAzNDVlNTI0NWNiMDNiN2UyMzg5OGZmYjY4Yjc0OTkyYzFjZGJhN2UiLCJhcHBJZCI6Im43d3VvMmRjbDgiLCJyZWdpb25zIjpbInNlYTEiXX0="
+        },
+        body: formData
+      });
+
+      const json = await res.json();
+      const imageUrl = json[0]?.url;
+      if (imageUrl) {
+        document.getElementById("photo").src = imageUrl;
+        document.getElementById("photo").dataset.url = imageUrl;
+      } else {
+        alert("Upload failed.");
+      }
+    };
+  </script>
   <style>
-     /* Reset some defaults */
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #4a90e2, #50a3f6);
-      min-height: 100vh;
-      margin: 0;
+      font-family: sans-serif;
+      background: #f2f7fb;
       padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
-
-    .form-box {
-      background: #fff;
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-      max-width: 480px;
-      width: 100%;
-      transition: box-shadow 0.3s ease;
-    }
-    .form-box:hover {
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
-    }
-
-    h2 {
-      margin-bottom: 25px;
-      font-weight: 700;
-      font-size: 1.8rem;
-      color: #222;
-      text-align: center;
-      letter-spacing: 0.03em;
-    }
-
-    label {
-      display: block;
-      margin: 15px 0 8px;
-      font-weight: 600;
-      color: #555;
-      font-size: 0.9rem;
-    }
-
-    input[type="text"],
-    select,
-    input[type="file"] {
-      width: 100%;
-      padding: 14px 16px;
-      font-size: 1rem;
-      border: 1.8px solid #ddd;
+    .container {
+      max-width: 400px;
+      margin: auto;
+      background: white;
+      padding: 25px;
       border-radius: 8px;
-      outline-offset: 2px;
-      outline-color: transparent;
-      transition: border-color 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    input[type="text"]:focus,
-    select:focus,
-    input[type="file"]:focus {
-      border-color: #4a90e2;
-      outline-color: #4a90e2;
+    input, button, select {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
-
-    select[disabled] {
-      background: #f9f9f9;
-      color: #888;
-      cursor: not-allowed;
-    }
-
-    input[type="file"] {
-      padding: 8px 12px;
-    }
-
-    img#preview {
+    img {
       display: block;
-      margin: 20px auto 30px;
+      margin: 10px auto;
       width: 120px;
       height: 120px;
-      border-radius: 50%;
       object-fit: cover;
-      border: 3px solid #4a90e2;
-      box-shadow: 0 3px 8px rgba(74, 144, 226, 0.4);
-      transition: transform 0.3s ease;
-    }
-    img#preview:hover {
-      transform: scale(1.05);
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: white;
-      background: #4a90e2;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      box-shadow: 0 5px 15px rgba(74, 144, 226, 0.5);
-    }
-    button:hover {
-      background: #357abd;
-      box-shadow: 0 6px 20px rgba(53, 122, 189, 0.6);
-    }
-    button:active {
-      transform: scale(0.98);
-    }
-
-    /* Responsive */
-    @media (max-width: 520px) {
-      body {
-        padding: 15px;
-      }
-      .form-box {
-        padding: 25px 20px;
-      }
-      img#preview {
-        width: 100px;
-        height: 100px;
-        margin-bottom: 25px;
-      }
+      border-radius: 50%;
+      border: 2px solid #007bff;
     }
   </style>
-  <!-- Firebase & UploadThing -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@uploadthing/client"></script>
-  <script>
-        // Import the functions you need from the SDKs you want to use
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
-  authDomain: "studentdashboard-final.firebaseapp.com",
-  projectId: "studentdashboard-final",
-  storageBucket: "studentdashboard-final.firebasestorage.app",
-  messagingSenderId: "576065271267",
-  appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-  measurementId: "G-PQXQE19D1F"
-};
-
-  // Initialize Firebase
-   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-    const db = firebase.firestore();
-
-    async function saveData(){
-      const name = document.getElementById("name").value.trim();
-      const file = document.getElementById("photo").files[0];
-      if(!name || !file){ alert("Name + photo required"); return; }
-      const idx = sessionStorage.getItem("currentIndex");
-      const { fileUrl } = await uploadthing("photoUploader").upload(file);
-      await db.doc(`students/${idx}`).set({
-        name, photo: fileUrl,
-        class: "B.Tech./B.E.", branch: "CSE-AI&ML", created: new Date()
-      });
-      window.location='dashboard.html';
-    }
-    function previewPhoto(e){
-      const reader = new FileReader();
-      reader.onload = () => document.getElementById("preview").src = reader.result;
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  </script>
 </head>
 <body>
-  <div class="form-box">
+  <div class="container">
     <h2>Student Registration</h2>
-    <input id="name" placeholder="Full Name"/>
-    <label for="photo">Upload Photo</label>
-    <input id="photo" type="file" accept="image/*" onchange="previewPhoto(event)"/>
-    <img id="preview" src="https://via.placeholder.com/100" alt="Preview"/>
-    <button onclick="saveData()">Register</button>
+    <input type="text" id="name" placeholder="Full Name" />
+    <input type="text" id="index" placeholder="Index Number" />
+    <input type="text" id="branch" placeholder="Class / Branch" />
+    <input type="file" id="photoFile" accept="image/*" onchange="uploadPhoto()" />
+    <img id="photo" src="" alt="Photo" data-url="" />
+    <button onclick="registerUser()">Register</button>
   </div>
 </body>
 </html>
