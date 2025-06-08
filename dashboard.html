@@ -1,430 +1,197 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <title>Dashboard</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@uploadthing/client"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #e9f1f7;
+      background: #f0f4f8;
       margin: 0;
       padding: 20px;
     }
-    .dashboard {
-      max-width: 850px;
+    .container {
+      max-width: 800px;
       margin: auto;
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
-    h2, h3 {
-      text-align: center;
-      color: #2a3f54;
-    }
-    #userImg {
-      display: block;
-      margin: 10px auto;
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 4px solid #007bff;
-    }
-    #editBtn {
-      display: block;
-      margin: 12px auto;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #editBtn:hover {
-      background-color: #0056b3;
-    }
-    textarea, select, input[type="file"], button {
-      width: 100%;
-      padding: 10px;
+    .work-card {
+      background: white;
+      padding: 15px;
       margin: 10px 0;
-      box-sizing: border-box;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    .preview-img {
+    .preview-img, .preview-pdf {
       max-width: 100%;
-      margin: 10px 0;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      height: auto;
+      margin-top: 10px;
     }
-    .section {
-      margin: 12px 0;
-      padding: 12px;
-      background: #f4faff;
-      border-left: 5px solid #007bff;
-      border-radius: 6px;
-    }
-    .action-btn {
-      margin-top: 8px;
-      background: #dc3545;
+    button {
+      background: #007bff;
       color: white;
       border: none;
-      padding: 6px 14px;
+      padding: 8px 12px;
+      border-radius: 5px;
       cursor: pointer;
-      border-radius: 6px;
     }
-    .action-btn:hover {
-      background: #b52a38;
+    button:hover {
+      background: #0056b3;
     }
-    .filter-sort-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      background: #f9f9f9;
-      padding: 12px;
-      margin: 8px 0;
-      border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-    p {
-      color: #333;
-    }
-    option {
-      font-size: 14px;
-    }
-    @media (max-width: 600px) {
-      .filter-sort-group {
-        flex-direction: column;
-      }
+    h2 {
+      text-align: center;
     }
   </style>
 </head>
-<body onload="loadDashboard()">
-  <div class="dashboard">
-    <h2>Welcome, <span id="userName"></span></h2>
-    <img id="userImg" src=""/>
-    <button id="editBtn">Edit Profile</button>
-    <h3>Instructions</h3>
-    <p id="personalWork"></p>
-    <div id="sendPanel" style="display:none;">
-      <h3>Send Work to Others</h3>
-       <select id="recipientIndex">
-        <option value="">Select Recipient</option>
-        <option value="60056kn">60056kn</option>
-        <option value="90052am">90052am</option>
-        <option value="30043dv">30043dv</option>
-      </select>
-      <textarea id="emailWorkInput" placeholder="Enter work..."></textarea>
-      <input type="file" id="emailFileInput" />
-      <button onclick="sendWork()">Send</button>
+<body>
+  <div class="container">
+    <h2>Welcome to Student Dashboard</h2><h3>Send Work</h3>
+<select id="receiverIndex">
+  <option value="">-- Select Receiver Index --</option>
+  <option value="60056kn">60056kn</option>
+  <option value="90052am">90052am</option>
+  <option value="30043dv">30043dv</option>
+</select><br><br>
+<textarea id="workMessage" placeholder="Write your message..."></textarea><br><br>
+<input type="file" id="workFile" /><br><br>
+<button onclick="sendwork()">Send Work</button>
 
-      <h4>Sent Work (Manage)</h4>
-      <select id="sentSort" onchange="displaySentWorks()">
-        <option value="newest">Newest First</option>
-        <option value="oldest">Oldest First</option>
-      </select>
-      <ul id="sentWorkList"></ul>
-    </div>
-    <h3>Upload Work</h3>
-    <textarea id="workInput" placeholder="Enter summary..."></textarea>
-    <input type="file" id="fileInput" onchange="previewFile(event)" />
-    <div id="previewArea"></div>
-    <button onclick="uploadWork()">Upload</button>
-    <h3>Filter & Sort</h3>
-     <div class="filter-sort-group">
-      <select id="filterSelect" onchange="displayAllWorks()">
-        <option value="all">All</option>
-        <option value="mine">My Uploads</option>
-      </select>
-      <select id="sortSelect" onchange="displayAllWorks()">
-        <option value="newest">Newest First</option>
-        <option value="oldest">Oldest First</option>
-      </select>
-    </div>
-    <h3>Uploaded Work</h3>
-    <ul id="workList"></ul>
-    <h3>Assigned</h3>
-    <div id="assignedWork"></div>
-  </div>
+<h3>All Works</h3>
+<div id="workList"></div>
 
-  <script>
-        // Import the functions you need from the SDKs you want to use
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+<h3>Your Sent Works</h3>
+<div id="sentList"></div>
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
-  authDomain: "studentdashboard-final.firebaseapp.com",
-  projectId: "studentdashboard-final",
-  storageBucket: "studentdashboard-final.firebasestorage.app",
-  messagingSenderId: "576065271267",
-  appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-  measurementId: "G-PQXQE19D1F"
-};
-
-  // Initialize Firebase
-   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-    const db = firebase.firestore();
-    const uploader = uploadthing("fileUploader");
-    emailjs.init("rai8QxGoPo_kArORG");
-   const personalInstructions = {
-      "40062kv": "Available soon !!",
-      "90052am": "Available soon !!",
-      "30043dv": "Available soon !!",
-      "60056kn": "Available soon !!",
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+      authDomain: "studentdashboard-final.firebaseapp.com",
+      projectId: "studentdashboard-final",
+      storageBucket: "studentdashboard-final.firebasestorage.app",
+      messagingSenderId: "576065271267",
+      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+      measurementId: "G-PQXQE19D1F"
     };
 
-    let currentUser = "";
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    function loadDashboard() {
-      const index = sessionStorage.getItem("currentIndex");
-      const data = localStorage.getItem(index);
-      if (!index || !data || !personalInstructions[index]) {
-        window.location.href = "official.html";
+    emailjs.init("rai8QxGoPo_kArORG"); // EmailJS public key
+
+    async function sendwork() {
+      const senderIndex = localStorage.getItem("index");
+      const receiverIndex = document.getElementById("receiverIndex").value;
+      const message = document.getElementById("workMessage").value;
+      const fileInput = document.getElementById("workFile");
+
+      if (!receiverIndex || !message || !fileInput.files[0]) {
+        alert("Please fill all fields and select a file.");
         return;
       }
 
-      currentUser = index;
-      const student = JSON.parse(data);
-      document.getElementById("userName").textContent = student.name;
-      document.getElementById("userImg").src = student.photo;
-      document.getElementById("personalWork").textContent = personalInstructions[index];
-
-      if (currentUser === "40062kv") {
-        document.getElementById("sendPanel").style.display = "block";
-        displaySentWorks();
-      }
-
-      displayAllWorks();
-    }
-
-    function previewFile(event) {
-      const file = event.target.files[0];
-      const previewArea = document.getElementById("previewArea");
-      previewArea.innerHTML = "";
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        if (file.type.startsWith("image/")) {
-          previewArea.innerHTML = `<img src="${e.target.result}" class="preview-img">`;
-        } else if (file.type === "application/pdf") {
-          previewArea.innerHTML = `<iframe src="${e.target.result}" class="preview-img" style="height:300px;"></iframe>`;
-        } else {
-          previewArea.innerHTML = `<p>File selected: ${file.name}</p>`;
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function sendWork() {
-      const recipientIndex = document.getElementById("recipientIndex").value;
-      const workSummary = document.getElementById("emailWorkInput").value.trim();
-      const fileInput = document.getElementById("emailFileInput");
       const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
 
-      if (!recipientIndex || (!workSummary && !file)) {
-        alert("Please select recipient and provide work or file.");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const assignedWork = {
-          id: Date.now(),
-          from: currentUser,
-          to: recipientIndex,
-          text: workSummary,
-          time: new Date().toLocaleString(),
-          fileName: file?.name || null,
-          fileType: file?.type || null,
-          fileData: file ? e.target.result : null
-        };
-
-        const key = `assigned_${recipientIndex}`;
-        const works = JSON.parse(localStorage.getItem(key)) || [];
-        works.push(assignedWork);
-        localStorage.setItem(key, JSON.stringify(works));
-
-        const sentKey = `sent_${currentUser}`;
-        const sent = JSON.parse(localStorage.getItem(sentKey)) || [];
-        sent.push(assignedWork);
-        localStorage.setItem(sentKey, JSON.stringify(sent));
-
-        sendEmailJS(assignedWork.text, assignedWork.time, currentUser);
-        alert("Work sent to " + recipientIndex);
-        document.getElementById("emailWorkInput").value = "";
-        document.getElementById("emailFileInput").value = "";
-        displaySentWorks();
-      };
-
-      if (file) reader.readAsDataURL(file);
-      else reader.onload({ target: { result: null } });
-    }
-
-    function displaySentWorks() {
-      const list = document.getElementById("sentWorkList");
-      const sort = document.getElementById("sentSort").value;
-      let works = JSON.parse(localStorage.getItem(`sent_${currentUser}`)) || [];
-      list.innerHTML = "";
-
-      works.sort((a, b) => sort === "newest" ? b.id - a.id : a.id - b.id);
-      works.forEach(w => {
-        const li = document.createElement("li");
-        li.innerHTML = `<b>To:</b> ${w.to} <br> <b>Time:</b> ${w.time}<br> <p>${w.text}</p>
-          ${w.fileData ? (w.fileType.startsWith("image/") ? `<img src="${w.fileData}" class="preview-img">` : `<iframe src="${w.fileData}" class="preview-img" style="height:150px;"></iframe>`) : ""}
-          <button class='action-btn' onclick='deleteSentWork(${w.id})'>🗑 Delete</button>`;
-        list.appendChild(li);
-      });
-    }
-
-    function deleteSentWork(id) {
-      let sent = JSON.parse(localStorage.getItem(`sent_${currentUser}`)) || [];
-      const removed = sent.find(w => w.id === id);
-      if (!removed) return;
-
-      sent = sent.filter(w => w.id !== id);
-      localStorage.setItem(`sent_${currentUser}`, JSON.stringify(sent));
-
-      const toKey = `assigned_${removed.to}`;
-      let assigned = JSON.parse(localStorage.getItem(toKey)) || [];
-      assigned = assigned.filter(w => w.id !== id);
-      localStorage.setItem(toKey, JSON.stringify(assigned));
-
-      displaySentWorks();
-    }
-
-    function uploadWork() {
-      const text = document.getElementById("workInput").value.trim();
-      const fileInput = document.getElementById("fileInput");
-      const file = fileInput.files[0];
-      const timestamp = new Date().toLocaleString();
-      const student = JSON.parse(localStorage.getItem(currentUser));
-
-      if (!text && !file) {
-        alert("Please enter summary or select file.");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const work = {
-          id: Date.now(),
-          name: student.name,
-          index: currentUser,
-          time: timestamp,
-          text: text,
-          fileName: file?.name || null,
-          fileType: file?.type || null,
-          fileData: file ? e.target.result : null
-        };
-
-        const works = JSON.parse(localStorage.getItem("uploadedWorks")) || [];
-        works.push(work);
-        localStorage.setItem("uploadedWorks", JSON.stringify(works));
-        displayAllWorks();
-        sendEmailJS(text, timestamp, currentUser);
-      };
-
-      if (file) reader.readAsDataURL(file);
-      else reader.onload({ target: { result: null } });
-
-      document.getElementById("workInput").value = "";
-      document.getElementById("fileInput").value = "";
-      document.getElementById("previewArea").innerHTML = "";
-    }
-
-    function displayAllWorks() {
-      const workList = document.getElementById("workList");
-      const filter = document.getElementById("filterSelect").value;
-      const sortOrder = document.getElementById("sortSelect").value;
-      workList.innerHTML = "";
-
-      let works = JSON.parse(localStorage.getItem("uploadedWorks")) || [];
-      if (filter === "mine") {
-        works = works.filter(w => w.index === currentUser);
-      }
-      works.sort((a, b) => sortOrder === "newest" ? b.id - a.id : a.id - b.id);
-
-      works.forEach(w => {
-        const li = document.createElement("li");
-        li.innerHTML = `<b>${w.name}</b> (${w.index}) <i>${w.time}</i><br>
-          <p contenteditable="true" onblur="editText(${w.id}, this.innerText)">${w.text || ""}</p>`;
-
-        if (w.fileData) {
-          if (w.fileType.startsWith("image/")) {
-            li.innerHTML += `<img src="${w.fileData}" class="preview-img">`;
-          } else if (w.fileType === "application/pdf") {
-            li.innerHTML += `<iframe src="${w.fileData}" class="preview-img" style="height:300px;"></iframe>`;
-          } else {
-            li.innerHTML += `<p><a href="${w.fileData}" download="${w.fileName}">📎 ${w.fileName}</a></p>`;
-          }
-        }
-
-        if (w.index === currentUser) {
-          li.innerHTML += `<button class="action-btn" onclick="deleteWork(${w.id})">🗑 Delete</button>`;
-        }
-
-        workList.appendChild(li);
+      const uploadRes = await fetch("https://uploadthing.com/api/upload", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer eyJhcGlLZXkiOiJza19saXZlXzU2YzIxNmNmOTc3OTE4YzRmZGE2NDM4ZTAzNDVlNTI0NWNiMDNiN2UyMzg5OGZmYjY4Yjc0OTkyYzFjZGJhN2UiLCJhcHBJZCI6Im43d3VvMmRjbDgiLCJyZWdpb25zIjpbInNlYTEiXX0="
+        },
+        body: formData
       });
 
-      displayAssignedWork();
-    }
+      const uploadData = await uploadRes.json();
+      const fileUrl = uploadData.url || uploadData.data.url;
 
-    function displayAssignedWork() {
-      const key = `assigned_${currentUser}`;
-      const works = JSON.parse(localStorage.getItem(key)) || [];
-      const target = document.getElementById("assignedWork");
-      target.innerHTML = works.map(w => `
-        <div class="section">
-          <b>From:</b> ${w.from} <br>
-          <b>Time:</b> ${w.time} <br>
-          <p>${w.text}</p>
-          ${w.fileData ? (w.fileType.startsWith("image/") ? `<img src="${w.fileData}" class="preview-img">` : `<iframe src="${w.fileData}" class="preview-img" style="height:300px;"></iframe>`) : ""}
-        </div>
-      `).join("");
-    }
+      await db.collection("works").add({
+        senderIndex,
+        receiverIndex,
+        message,
+        fileUrl,
+        timestamp: Date.now()
+      });
 
-    function deleteWork(id) {
-      let works = JSON.parse(localStorage.getItem("uploadedWorks")) || [];
-      works = works.filter(w => !(w.id === id && w.index === currentUser));
-      localStorage.setItem("uploadedWorks", JSON.stringify(works));
-      displayAllWorks();
-    }
-
-    function editText(id, newText) {
-      let works = JSON.parse(localStorage.getItem("uploadedWorks")) || [];
-      const index = works.findIndex(w => w.id === id);
-      if (index !== -1 && works[index].index === currentUser) {
-        works[index].text = newText.trim();
-        localStorage.setItem("uploadedWorks", JSON.stringify(works));
-      }
-    }
-
-    function sendEmailJS(message, time, index) {
       emailjs.send("service_m6b648v", "template_iahgvur", {
+        to_email: "kunalvats7988@gmail.com",
+        from_index: senderIndex,
+        to_index: receiverIndex,
         message: message,
-        time: time,
-        index: index
-      }, "rai8QxGoPo_kArORG");
+        time: new Date().toLocaleString()
+      });
+
+      alert("Work sent successfully!");
+      document.getElementById("workMessage").value = "";
+      fileInput.value = "";
+      DisplayEntries();
+      loadSent();
     }
-    
-  </script>
-</body>
+
+    async function DisplayEntries() {
+      const container = document.getElementById("workList");
+      container.innerHTML = "";
+      const currentUser = localStorage.getItem("index");
+      const querySnapshot = await db.collection("works").orderBy("timestamp", "desc").get();
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const id = doc.id;
+        const card = document.createElement("div");
+        card.className = "work-card";
+        const isImage = /\.(jpg|jpeg|png|gif)$/i.test(data.fileUrl);
+        const isPDF = /\.pdf$/i.test(data.fileUrl);
+        let preview = isImage ? `<img src="${data.fileUrl}" class="preview-img" />` :
+                       isPDF ? `<embed src="${data.fileUrl}" class="preview-pdf" type="application/pdf" />` :
+                       `<a href="${data.fileUrl}" target="_blank">Download</a>`;
+        card.innerHTML = `
+          <h4><b>From:</b> ${data.senderIndex} ➜ <b>To:</b> ${data.receiverIndex}</h4>
+          <p><b>Message:</b> ${data.message}</p>
+          <p><b>Date:</b> ${new Date(data.timestamp).toLocaleString()}</p>
+          ${preview}
+          ${data.senderIndex === currentUser ? `<button onclick="deleteWork('${id}')">Delete</button>` : ""}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function loadSent() {
+      const container = document.getElementById("sentList");
+      container.innerHTML = "";
+      const currentUser = localStorage.getItem("index");
+      const querySnapshot = await db.collection("works").where("senderIndex", "==", currentUser).orderBy("timestamp", "desc").get();
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const id = doc.id;
+        const card = document.createElement("div");
+        card.className = "work-card";
+        const isImage = /\.(jpg|jpeg|png|gif)$/i.test(data.fileUrl);
+        const isPDF = /\.pdf$/i.test(data.fileUrl);
+        let preview = isImage ? `<img src="${data.fileUrl}" class="preview-img" />` :
+                       isPDF ? `<embed src="${data.fileUrl}" class="preview-pdf" type="application/pdf" />` :
+                       `<a href="${data.fileUrl}" target="_blank">Download</a>`;
+        card.innerHTML = `
+          <h4><b>To:</b> ${data.receiverIndex}</h4>
+          <p><b>Message:</b> ${data.message}</p>
+          <p><b>Time:</b> ${new Date(data.timestamp).toLocaleString()}</p>
+          ${preview}
+          <button onclick="deleteWork('${id}')">Delete</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function deleteWork(id) {
+      if (confirm("Are you sure you want to delete this work?")) {
+        await db.collection("works").doc(id).delete();
+        DisplayEntries();
+        loadSent();
+      }
+    }
+
+    window.onload = () => {
+      DisplayEntries();
+      loadSent();
+    }
+  </script></body>
 </html>
