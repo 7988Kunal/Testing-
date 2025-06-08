@@ -1,130 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Student Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; background: #eef2f7; padding: 20px; }
+    .profile, .work-upload, .work-list { background: white; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; }
+    input, textarea, button { width: 100%; padding: 10px; margin: 10px 0; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-  <script src="https://unpkg.com/uploadthing@latest/dist/uploadthing.min.js"></script>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import {
-      getFirestore, collection, doc, getDoc, getDocs,
-      setDoc, addDoc, deleteDoc, query, orderBy, where
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+  <script src="https://uploadthing.com/widgets/widgets.umd.js"></script>
+</head>
+<body>
+  <div class="profile">
+    <h2>Profile</h2>
+    <img id="photo" src="" />
+    <p><strong>Name:</strong> <span id="name"></span></p>
+    <p><strong>Class:</strong> <span id="class"></span></p>
+    <p><strong>Branch:</strong> <span id="branch"></span></p>
+    <uploadthing-widget
+      id="editPhoto"
+      ut-token="eyJhcGlLZXkiOiJza19saXZlXzU2YzIxNmNmOTc3OTE4YzRmZGE2NDM4ZTAzNDVlNTI0NWNiMDNiN2UyMzg5OGZmYjY4Yjc0OTkyYzFjZGJhN2UiLCJhcHBJZCI6Im43d3VvMmRjbDgiLCJyZWdpb25zIjpbInNlYTEiXX0="
+      type="image"
+    ></uploadthing-widget>
+  </div>  <div class="work-upload">
+    <h2>Upload Work</h2>
+    <textarea id="message" placeholder="Enter your work message"></textarea>
+    <uploadthing-widget
+      id="uploadFile"
+      ut-token="eyJhcGlLZXkiOiJza19saXZlXzU2YzIxNmNmOTc3OTE4YzRmZGE2NDM4ZTAzNDVlNTI0NWNiMDNiN2UyMzg5OGZmYjY4Yjc0OTkyYzFjZGJhN2UiLCJhcHBJZCI6Im43d3VvMmRjbDgiLCJyZWdpb25zIjpbInNlYTEiXX0="
+    ></uploadthing-widget>
+    <button onclick="uploadWork()">Upload Work</button>
+  </div>  <div class="work-list">
+    <h2>All Works</h2>
+    <div id="workContainer"></div>
+  </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
       authDomain: "studentdashboard-final.firebaseapp.com",
       projectId: "studentdashboard-final",
       storageBucket: "studentdashboard-final.firebasestorage.app",
       messagingSenderId: "576065271267",
-      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-      measurementId: "G-PQXQE19D1F"
+      appId: "1:576065271267:web:05636f4ae4236f3298dcd6"
     };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    emailjs.init("rai8QxGoPo_kArORG");
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const index = localStorage.getItem("index");
+    let uploadedFile = "";
 
-    const currentIndex = sessionStorage.getItem("currentIndex");
-    if (!currentIndex) window.location.href = "index.html";
-
-    document.addEventListener("DOMContentLoaded", async () => {
-      document.getElementById("welcome").textContent = "Welcome, " + currentIndex;
-
-      await loadEntries();
-
-      document.getElementById("uploadBtn").addEventListener("click", async () => {
-        const fileInput = document.getElementById("fileInput");
-        const file = fileInput.files[0];
-        if (!file) return alert("Please choose a file.");
-
-        const formData = new FormData();
-        formData.append("file", file);
-
-        try {
-          const response = await fetch("https://uploadthing.com/api/upload", {
-            method: "POST",
-            headers: {
-              "Authorization": "Bearer sk_live_56c216cf977918c4fda6438e0345e5245cb03b7e23898ffb68b74992c1cdba7e",
-            },
-            body: formData,
-          });
-
-          const result = await response.json();
-          if (!response.ok || !result.url) throw new Error(result?.error || "Upload failed");
-
-          const fileUrl = result.url;
-
-          await addDoc(collection(db, "uploads"), {
-            sender: currentIndex,
-            fileUrl,
-            filename: file.name,
-            uploadedAt: new Date().toISOString(),
-          });
-
-          alert("File uploaded successfully.");
-          fileInput.value = "";
-          await loadEntries();
-        } catch (e) {
-          alert("Upload failed: " + e.message);
-        }
-      });
+    window.uploadthing.onUploadComplete((res) => {
+      if (res && res.length > 0) uploadedFile = res[0].url;
     });
 
-    async function loadEntries() {
-      const list = document.getElementById("fileList");
-      list.innerHTML = "<p>Loading...</p>";
+    async function loadProfile() {
+      const doc = await db.collection('students').doc(index).get();
+      if (!doc.exists) return;
+      const data = doc.data();
+      document.getElementById("photo").src = data.photo;
+      document.getElementById("name").innerText = data.name;
+      document.getElementById("class").innerText = data.class;
+      document.getElementById("branch").innerText = data.branch;
+    }
 
-      const q = query(collection(db, "uploads"), orderBy("uploadedAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      list.innerHTML = "";
+    async function uploadWork() {
+      const message = document.getElementById("message").value.trim();
+      if (!message || !uploadedFile) return alert("Message and file required");
+      const time = new Date().toLocaleString();
+      await db.collection("works").add({ index, message, file: uploadedFile, time });
+      emailjs.send("service_m6b648v", "template_iahgvur", {
+        to_email: "kunalvats7988@gmail.com",
+        from_index: index,
+        time,
+        message
+      });
+      alert("Work uploaded");
+      displayWorks();
+    }
 
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
+    async function displayWorks() {
+      const snap = await db.collection("works").orderBy("time", "desc").get();
+      const container = document.getElementById("workContainer");
+      container.innerHTML = "";
+      snap.forEach(doc => {
+        const data = doc.data();
         const div = document.createElement("div");
-        div.style = "margin-bottom:12px; padding:10px; background:#f5f5f5; border-radius:6px";
-        div.innerHTML = `
-          <b>${data.sender}</b> uploaded: 
-          <a href="${data.fileUrl}" target="_blank">${data.filename}</a> 
-          <br><small>${new Date(data.uploadedAt).toLocaleString()}</small>
-          ${data.sender === currentIndex ? `<br><button onclick="deleteEntry('${docSnap.id}')">Delete</button>` : ""}
-        `;
-        list.appendChild(div);
+        div.innerHTML = `<p><b>${data.index}</b>: ${data.message} <br><a href='${data.file}' target='_blank'>View File</a> <br><small>${data.time}</small></p><hr>`;
+        container.appendChild(div);
       });
     }
 
-    window.deleteEntry = async (id) => {
-      if (confirm("Are you sure to delete this file?")) {
-        await deleteDoc(doc(db, "uploads", id));
-        await loadEntries();
-      }
-    };
+    loadProfile();
+    displayWorks();
 
-    window.logout = () => {
-      sessionStorage.clear();
-      window.location.href = "index.html";
-    };
-  </script>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; background: #eef2f7; }
-    .dashboard { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 1px 10px rgba(0,0,0,0.1); }
-    input[type="file"] { width: 100%; margin: 10px 0; }
-    button { padding: 10px 15px; margin-top: 5px; background: #007bff; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    h2 { margin-top: 0; }
-    #fileList div { background: #fafafa; margin: 8px 0; padding: 10px; border-left: 4px solid #007bff; border-radius: 5px; }
-  </style>
-</head>
-<body>
-  <div class="dashboard">
-    <h2 id="welcome">Welcome</h2>
-    <input type="file" id="fileInput" />
-    <button id="uploadBtn">Upload File</button>
-    <hr />
-    <div id="fileList"></div>
-    <hr />
-    <button onclick="logout()" style="background:red;">Logout</button>
-  </div>
-</body>
+    window.uploadthing.onUploadComplete((res) => {
+      if (!res || res.length === 0) alert("Upload failed: No file returned");
+    });
+  </script></body>
 </html>
