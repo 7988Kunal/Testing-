@@ -1,129 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Student Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #eef2f7;
+      background: #f2f2f2;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
     }
-    .login-box {
+    .box {
+      display: flex;
+      flex-direction: column;
       background: white;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-      width: 320px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #2c3e50;
-    }
-    label {
-      display: block;
-      margin: 12px 0 6px;
-      font-weight: bold;
-    }
-    input[type="text"] {
+      border-radius: 8px;
       width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
+      max-width: 400px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input {
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
     }
     button {
       width: 100%;
-      padding: 10px;
-      margin-top: 20px;
-      background-color: #3498db;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 16px;
     }
-    button:hover {
-      background-color: #2980b9;
-    }
-    .msg {
-      margin-top: 15px;
-      text-align: center;
+    .error {
       color: red;
-    }
-    .register-link {
-      margin-top: 15px;
-      text-align: center;
-    }
-    .register-link a {
-      color: #3498db;
-      text-decoration: none;
+      margin-top: 10px;
     }
   </style>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
+  <script>
+    // Import the functions you need from the SDKs you want to use
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+  authDomain: "studentdashboard-final.firebaseapp.com",
+  projectId: "studentdashboard-final",
+  storageBucket: "studentdashboard-final.firebasestorage.app",
+  messagingSenderId: "576065271267",
+  appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+  measurementId: "G-PQXQE19D1F"
+};
+
+  // Initialize Firebase
+   const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
-  <div class="login-box">
-    <h2>Student Login</h2>
-    <form id="loginForm">
-      <label for="indexNumber">Index Number</label>
-      <input type="text" id="indexNumber" placeholder="Enter your index number" required />
-      <button type="submit">Login</button>
-    </form>
-    <div class="msg" id="loginMsg"></div>
-    <div class="register-link">
-      New user? <a href="register.html">Register here</a>
-    </div>
+  <div class="box">
+    <h2>Login by Special Code</h2>
+    <input id="indexInput" placeholder="Enter Special Code" />
+    <button onclick="login()">Login</button>
+    <p id="errorMsg" class="error"></p>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+  <script>
+    const allowed = ["40062kv","90052am","30043dv","60056kn"];
+    const cutoff = new Date("2025-06-30T23:59:59");
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
-      authDomain: "studentdashboard-final.firebaseapp.com",
-      projectId: "studentdashboard-final",
-      storageBucket: "studentdashboard-final.appspot.com",
-      messagingSenderId: "576065271267",
-      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-      measurementId: "G-PQXQE19D1F"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const loginForm = document.getElementById("loginForm");
-    const loginMsg = document.getElementById("loginMsg");
-
-    loginForm.addEventListener("submit", async e => {
-      e.preventDefault();
-      loginMsg.textContent = "";
-      const index = document.getElementById("indexNumber").value.trim();
-      if (!index) {
-        loginMsg.textContent = "Please enter your index number.";
-        return;
+    async function login(){
+      const idx = document.getElementById('indexInput').value.trim().toLowerCase();
+      const err = document.getElementById('errorMsg');
+      err.textContent = '';
+      if(!allowed.includes(idx)) { err.textContent='Not authorized'; return; }
+      const now = new Date();
+      const ref = db.doc(`students/${idx}`);
+      const docSnap = await ref.get();
+      if(docSnap.exists){
+        auth.signInAnonymously().then(() => {
+          sessionStorage.setItem("currentIndex", idx);
+          window.location='dashboard.html';
+        });
+      } else {
+        if(now <= cutoff){
+          auth.signInAnonymously().then(() => {
+            sessionStorage.setItem("currentIndex", idx);
+            window.location='register.html';
+          });
+        } else err.textContent='Registration closed';
       }
-
-      try {
-        const userDoc = await getDoc(doc(db, "users", index));
-        if (userDoc.exists()) {
-          // Save current index in sessionStorage
-          sessionStorage.setItem("currentIndex", index);
-          // Redirect to dashboard
-          window.location.href = "dashboard.html";
-        } else {
-          loginMsg.textContent = "User not found. Please register first.";
-        }
-      } catch (error) {
-        loginMsg.textContent = "Error during login: " + error.message;
-      }
-    });
+    }
   </script>
 </body>
 </html>
