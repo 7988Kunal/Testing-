@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; background: #f7f9fc; padding: 20px; }
+    .form-box { background: white; max-width: 500px; margin: auto; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 10px; }
+    img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 10px auto; }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://uploadthing.com/widgets/widgets.umd.js"></script>
+</head>
+<body>
+  <div class="form-box">
+    <h2>Student Registration</h2>
+    <img id="profilePreview" src="https://via.placeholder.com/100" alt="Profile">
+    <input type="text" id="name" placeholder="Full Name">
+    <select id="class">
+      <option value="">Select Class</option>
+      <option value="B.Tech">B.Tech</option>
+      <option value="B.E.">B.E.</option>
+    </select>
+    <input type="text" id="branch" placeholder="Branch (e.g. AI & ML)">
+    <uploadthing-widget
+      id="uploadProfile"
+      ut-token="eyJhcGlLZXkiOiJza19saXZlXzU2YzIxNmNmOTc3OTE4YzRmZGE2NDM4ZTAzNDVlNTI0NWNiMDNiN2UyMzg5OGZmYjY4Yjc0OTkyYzFjZGJhN2UiLCJhcHBJZCI6Im43d3VvMmRjbDgiLCJyZWdpb25zIjpbInNlYTEiXX0="
+      type="image"
+      class="my-uploadthing"
+    ></uploadthing-widget>
+    <button onclick="submitData()">Continue</button>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+      authDomain: "studentdashboard-final.firebaseapp.com",
+      projectId: "studentdashboard-final",
+      storageBucket: "studentdashboard-final.firebasestorage.app",
+      messagingSenderId: "576065271267",
+      appId: "1:576065271267:web:05636f4ae4236f3298dcd6"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let uploadedUrl = "";
+    window.uploadthing.onUploadComplete((res) => {
+      if (res && res.length > 0) {
+        uploadedUrl = res[0].url;
+        document.getElementById('profilePreview').src = uploadedUrl;
+      }
+    });
+
+    async function submitData() {
+      const name = document.getElementById('name').value.trim();
+      const studentClass = document.getElementById('class').value;
+      const branch = document.getElementById('branch').value.trim();
+      const index = localStorage.getItem("index");
+      if (!name || !studentClass || !branch || !uploadedUrl) return alert("All fields required");
+      await db.collection('students').doc(index).update({ name, class: studentClass, branch, photo: uploadedUrl });
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>
