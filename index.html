@@ -1,110 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Student Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+      authDomain: "studentdashboard-final.firebaseapp.com",
+      projectId: "studentdashboard-final",
+      storageBucket: "studentdashboard-final.firebasestorage.app",
+      messagingSenderId: "576065271267",
+      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+      measurementId: "G-PQXQE19D1F"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.loginUser = async () => {
+      const index = document.getElementById("index").value.trim();
+      if (!index) return alert("Enter your index number.");
+
+      const docRef = doc(db, "students", index);
+      const userSnap = await getDoc(docRef);
+
+      if (!userSnap.exists()) {
+        alert("Not registered! Redirecting to register...");
+        window.location.href = "register.html";
+        return;
+      }
+
+      const student = userSnap.data();
+      sessionStorage.setItem("currentIndex", index);
+      localStorage.setItem(index, JSON.stringify(student));
+      window.location.href = "dashboard.html";
+    };
+  </script>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f2f2f2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+      font-family: sans-serif;
+      background: #eef3f9;
+      padding: 20px;
     }
-    .box {
-      display: flex;
-      flex-direction: column;
+    .container {
+      max-width: 350px;
+      margin: auto;
       background: white;
       padding: 30px;
       border-radius: 8px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    input {
-      padding: 12px;
-      margin: 10px 0;
-      font-size: 16px;
-    }
-    button {
+    input, button {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
-      font-size: 16px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .error {
-      color: red;
-      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
   </style>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js"></script>
-  <script>
-    // Import the functions you need from the SDKs you want to use
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
-  authDomain: "studentdashboard-final.firebaseapp.com",
-  projectId: "studentdashboard-final",
-  storageBucket: "studentdashboard-final.firebasestorage.app",
-  messagingSenderId: "576065271267",
-  appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-  measurementId: "G-PQXQE19D1F"
-};
-
-  // Initialize Firebase
-   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-    const db = firebase.firestore();
-  </script>
 </head>
 <body>
-  <div class="box">
-    <h2>Login by Special Code</h2>
-    <input id="indexInput" placeholder="Enter Special Code" />
-    <button onclick="login()">Login</button>
-    <p id="errorMsg" class="error"></p>
+  <div class="container">
+    <h2>Student Login</h2>
+    <input type="text" id="index" placeholder="Enter Index Number" />
+    <button onclick="loginUser()">Login</button>
+    <p>Not registered? <a href="register.html">Register here</a></p>
   </div>
-
-  <script>
-    const allowed = ["40062kv","90052am","30043dv","60056kn"];
-    const cutoff = new Date("2025-06-30T23:59:59");
-
-    async function login(){
-      const idx = document.getElementById('indexInput').value.trim().toLowerCase();
-      const err = document.getElementById('errorMsg');
-      err.textContent = '';
-      if(!allowed.includes(idx)) { err.textContent='Not authorized'; return; }
-      const now = new Date();
-      const ref = db.doc(`students/${idx}`);
-      const docSnap = await ref.get();
-      if(docSnap.exists){
-        auth.signInAnonymously().then(() => {
-          sessionStorage.setItem("currentIndex", idx);
-          window.location='dashboard.html';
-        });
-      } else {
-        if(now <= cutoff){
-          auth.signInAnonymously().then(() => {
-            sessionStorage.setItem("currentIndex", idx);
-            window.location='register.html';
-          });
-        } else err.textContent='Registration closed';
-      }
-    }
-  </script>
 </body>
 </html>
