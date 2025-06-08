@@ -62,7 +62,6 @@
 <body>
 
 <script>
-  // Redirect if already registered
   if (localStorage.getItem("studentIndex") && localStorage.getItem("registered") === "true") {
     window.location.href = "dashboard.html";
   }
@@ -95,7 +94,6 @@
 </form>
 
 <script>
-  // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
     authDomain: "studentdashboard-final.firebaseapp.com",
@@ -170,7 +168,6 @@
         indexNumber
       });
 
-      // Save session
       localStorage.setItem("studentIndex", indexNumber);
       localStorage.setItem("registered", "true");
 
