@@ -1,98 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Student Login Portal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-    // --- Firebase config ---
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e0f7fa;
+      padding: 20px;
+    }
+    .panel {
+      max-width: 500px;
+      margin: 30px auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    input, select, button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="panel" id="adminPanel">
+    <h2>Admin Panel (40062kv)</h2>
+    <input type="text" id="adminIndex" placeholder="Your Index Number">
+    <div id="adminControls" class="hidden">
+      <input type="text" id="newIndex" placeholder="Enter New Index">
+      <input type="text" id="specialCode" placeholder="Assign Special Code">
+      <button onclick="addIndex()">Add Index</button>
+      <h3>Remove Index</h3>
+      <select id="removeIndexDropdown"></select>
+      <button onclick="removeIndex()">Remove Selected</button>
+    </div>
+  </div>  <div class="panel">
+    <h2>Student Login</h2>
+    <input type="text" id="loginIndex" placeholder="Enter Index Number">
+    <input type="text" id="loginCode" placeholder="Enter Special Code">
+    <button onclick="loginStudent()">Login</button>
+  </div>  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
       authDomain: "studentdashboard-final.firebaseapp.com",
       projectId: "studentdashboard-final",
-      storageBucket: "studentdashboard-final.firebasestorage.app",
-      messagingSenderId: "576065271267",
-      appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
-      measurementId: "G-PQXQE19D1F"
     };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    // --- Admin adds new special code ---
-    window.addIndex = async () => {
-      const code = document.getElementById("newCode").value.trim().toLowerCase();
-      if (!code) return alert("Enter code.");
-      const allowedRef = doc(db, "settings", "allowedCodes");
-      const snap = await getDoc(allowedRef);
-      if (snap.exists()) {
-        await updateDoc(allowedRef, { codes: arrayUnion(code) });
+    document.getElementById('adminIndex').addEventListener('input', async () => {
+      const inputVal = document.getElementById('adminIndex').value.trim();
+      if (inputVal === '40062kv') {
+        document.getElementById('adminControls').classList.remove('hidden');
+        loadIndexDropdown();
       } else {
-        await setDoc(allowedRef, { codes: [code] });
+        document.getElementById('adminControls').classList.add('hidden');
       }
-      alert(`Added: ${code}`);
-      document.getElementById("newCode").value = "";
-    };
+    });
 
-    // --- Login for students ---
-    window.loginUser = async () => {
-      const code = document.getElementById("loginCode").value.trim().toLowerCase();
-      if (!code) return alert("Enter your special code.");
-      
-      const settingsRef = doc(db, "settings", "allowedCodes");
-      const settingsSnap = await getDoc(settingsRef);
-      if (!settingsSnap.exists() || !settingsSnap.data().codes.includes(code)) {
-        return alert("Invalid code or not permitted.");
+    async function addIndex() {
+      const newIndex = document.getElementById('newIndex').value.trim();
+      const code = document.getElementById('specialCode').value.trim();
+      if (!newIndex || !code) return alert('Please fill both fields');
+      await db.collection("indexCodes").doc(newIndex).set({ code });
+      alert("Index added");
+      document.getElementById('newIndex').value = '';
+      document.getElementById('specialCode').value = '';
+      loadIndexDropdown();
+    }
+
+    async function removeIndex() {
+      const selectedIndex = document.getElementById('removeIndexDropdown').value;
+      if (!selectedIndex) return alert('Select an index to remove');
+      await db.collection("indexCodes").doc(selectedIndex).delete();
+      alert("Index removed");
+      loadIndexDropdown();
+    }
+
+    async function loadIndexDropdown() {
+      const dropdown = document.getElementById('removeIndexDropdown');
+      dropdown.innerHTML = '';
+      const snapshot = await db.collection("indexCodes").get();
+      snapshot.forEach(doc => {
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = doc.id;
+        dropdown.appendChild(option);
+      });
+    }
+
+    async function loginStudent() {
+      const index = document.getElementById('loginIndex').value.trim();
+      const code = document.getElementById('loginCode').value.trim();
+      const doc = await db.collection("indexCodes").doc(index).get();
+      if (!doc.exists || doc.data().code !== code) {
+        return alert("Invalid credentials");
       }
-
-      const studentRef = doc(db, "students", code);
-      const studentSnap = await getDoc(studentRef);
-      if (!studentSnap.exists()) {
-        await setDoc(studentRef, { created: Date.now() });
-      }
-
-      sessionStorage.setItem("currentIndex", code);
-      window.location.href = "dashboard.html";
-    };
-  </script>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f0f4f8; padding: 20px; }
-    .panel { max-width: 350px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 6px rgba(0,0,0,0.1); }
-    input, button { width: 100%; padding: 12px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; }
-    button { background: #007bff; color: #fff; border: none; cursor: pointer; }
-    button:hover { background: #0056b3; }
-    h2 { text-align:center; margin-bottom:10px; }
-    .admin-only { color: #555; font-size: 0.9em; margin-bottom: 10px; }
-  </style>
-</head>
-<body>
-
-  <div class="panel">
-    <h2>Admin Panel</h2>
-    <p class="admin-only">Log in as <b>40062kv</b> to add allowed codes</p>
-    <input type="text" id="adminCode" placeholder="Enter Admin Code" />
-    <button onclick="{
-      const admin = document.getElementById('adminCode').value.trim().toLowerCase();
-      if (admin === '40062kv') {
-        document.getElementById('adminControls').style.display = 'block';
-      } else {
-        alert('Invalid admin code.');
-      }
-    }">Access Admin</button>
-
-    <div id="adminControls" style="display:none; margin-top:15px;">
-      <input type="text" id="newCode" placeholder="Add Special Code" />
-      <button onclick="addIndex()">Add Code</button>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h2>Student Login</h2>
-    <input type="text" id="loginCode" placeholder="Enter Special Code" />
-    <button onclick="loginUser()">Login</button>
-  </div>
-
-</body>
+      localStorage.setItem("studentIndex", index);
+      window.location.href = "register.html";
+    }
+  </script></body>
 </html>
