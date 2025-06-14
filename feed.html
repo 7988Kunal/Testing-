@@ -1,0 +1,167 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reels Feed</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      background-color: #000;
+      margin: 0;
+      color: #fff;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+    }
+    .reel {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      border-bottom: 1px solid #222;
+    }
+    video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+    .info {
+      position: relative;
+      z-index: 2;
+      background: rgba(0,0,0,0.6);
+      padding: 15px;
+      width: 100%;
+      text-align: center;
+    }
+    .btn-group {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 3;
+    }
+    .comments, .actions {
+      z-index: 3;
+      width: 100%;
+      background: rgba(0,0,0,0.8);
+      padding: 10px;
+    }
+    .comment-input {
+      display: flex;
+      gap: 10px;
+    }
+    .comment-input input {
+      flex: 1;
+    }
+    .like-btn {
+      cursor: pointer;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="btn-group">
+    <button class="btn btn-outline-light btn-sm" onclick="window.location.href='upload.html'">Upload</button>
+    <button class="btn btn-outline-light btn-sm" onclick="window.location.href='profile.html'">Profile</button>
+    <button class="btn btn-danger btn-sm" onclick="logout()">Logout</button>
+  </div>  <div id="feedContainer"></div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4tFkN21Lsc57nyZ2b62A2wh93j6tIAnc",
+      authDomain: "social-media-3f69b.firebaseapp.com",
+      projectId: "social-media-3f69b",
+      storageBucket: "social-media-3f69b.appspot.com",
+      messagingSenderId: "815848360025",
+      appId: "1:815848360025:web:607a92fbb8561a41904948",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        loadReels();
+      }
+    });
+
+    async function loadReels() {
+      const container = document.getElementById("feedContainer");
+      const snapshot = await db.collection("reels").orderBy("timestamp", "desc").get();
+      snapshot.forEach(doc => {
+        const reel = doc.data();
+        const reelId = doc.id;
+        const reelDiv = document.createElement("div");
+        reelDiv.className = "reel";
+
+        reelDiv.innerHTML = `
+          <video src="${reel.videoUrl}" autoplay loop muted></video>
+          <div class="info">
+            <h5>@${reel.username}</h5>
+            <p>${reel.caption}</p>
+          </div>
+          <div class="actions text-center">
+            <span class="like-btn" onclick="likeReel('${reelId}', this)">❤️ <span id="like-${reelId}">${reel.likes || 0}</span></span>
+          </div>
+          <div class="comments">
+            <div id="comments-${reelId}" style="max-height: 100px; overflow-y: auto; font-size: 14px;"></div>
+            <div class="comment-input mt-2">
+              <input type="text" id="comment-input-${reelId}" placeholder="Add a comment..." class="form-control form-control-sm">
+              <button class="btn btn-sm btn-light" onclick="postComment('${reelId}')">Send</button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(reelDiv);
+        loadComments(reelId);
+      });
+    }
+
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }
+
+    function likeReel(reelId, el) {
+      const likeCountEl = document.getElementById(`like-${reelId}`);
+      const currentLikes = parseInt(likeCountEl.textContent);
+      likeCountEl.textContent = currentLikes + 1;
+      db.collection("reels").doc(reelId).update({ likes: firebase.firestore.FieldValue.increment(1) });
+    }
+
+    async function postComment(reelId) {
+      const user = auth.currentUser;
+      const input = document.getElementById(`comment-input-${reelId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      await db.collection("reels").doc(reelId).collection("comments").add({
+        text,
+        username: user.email.split('@')[0],
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      input.value = "";
+      loadComments(reelId);
+    }
+
+    async function loadComments(reelId) {
+      const commentsBox = document.getElementById(`comments-${reelId}`);
+      commentsBox.innerHTML = "";
+      const snapshot = await db.collection("reels").doc(reelId).collection("comments").orderBy("timestamp").get();
+      snapshot.forEach(doc => {
+        const c = doc.data();
+        const p = document.createElement("p");
+        p.innerHTML = `<strong>@${c.username}</strong>: ${c.text}`;
+        commentsBox.appendChild(p);
+      });
+    }
+  </script></body>
+</html>
