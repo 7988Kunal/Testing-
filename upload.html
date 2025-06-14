@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Upload Reel | Reels App</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+  <style>
+    body {
+      background: #121212;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .upload-box {
+      width: 100%;
+      max-width: 500px;
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .form-control, .btn {
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="upload-box">
+    <h3 class="text-center">Upload a Reel</h3>
+    <input type="text" id="caption" class="form-control mb-3" placeholder="Enter a caption...">
+    <input type="file" id="videoFile" accept="video/*" class="form-control mb-3">
+    <button class="btn btn-primary w-100" onclick="uploadReel()">Upload</button>
+    <div id="status" class="mt-3 text-center"></div>
+  </div>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyC4tFkN21Lsc57nyZ2b62A2wh93j6tIAnc",
+      authDomain: "social-media-3f69b.firebaseapp.com",
+      projectId: "social-media-3f69b",
+      storageBucket: "social-media-3f69b.appspot.com",
+      messagingSenderId: "815848360025",
+      appId: "1:815848360025:web:607a92fbb8561a41904948",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    auth.onAuthStateChanged(user => {
+      if (!user) window.location.href = "index.html";
+    });
+
+    async function uploadReel() {
+      const file = document.getElementById("videoFile").files[0];
+      const caption = document.getElementById("caption").value.trim();
+      const status = document.getElementById("status");
+      if (!file) return alert("Please select a video file.");
+
+      const user = auth.currentUser;
+      const storageRef = storage.ref(`reels/${Date.now()}_${file.name}`);
+      const uploadTask = storageRef.put(file);
+
+      status.innerText = "Uploading...";
+
+      uploadTask.on('state_changed', 
+        null,
+        error => status.innerText = `Upload failed: ${error}`,
+        async () => {
+          const url = await uploadTask.snapshot.ref.getDownloadURL();
+          await db.collection("reels").add({
+            username: user.email.split('@')[0],
+            caption,
+            videoUrl: url,
+            likes: 0,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          status.innerText = "Upload successful!";
+          document.getElementById("caption").value = "";
+          document.getElementById("videoFile").value = "";
+        }
+      );
+    }
+  </script></body>
+</html>
