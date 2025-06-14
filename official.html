@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Login & Admin Panel</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0; padding: 20px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 20px;
+    }
+    /*@media (min-width: 768px) {
+      body { flex-direction: row; justify-content: center; align-items: flex-start; }
+    }*/
+    .panel {
+      background: white; padding: 20px; border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%; max-width: 350px;
+    }
+    h2 { margin: 0 0 15px; font-size: 1.4rem; color: #222; }
+    label { display: block; margin-top: 10px; font-weight: 600; color: #555; }
+    input[type="text"], select {
+      width: 100%; padding: 8px; margin-top: 5px; outline:none;
+      border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;
+    }
+    input:hover{
+      border:2px solid black;
+    }
+    button {
+      margin-top: 15px; width: 100%; padding: 10px;
+      background: #0a74da; color: white;
+      border: none; border-radius: 4px; font-size: 1rem; cursor: pointer;
+    }
+    button:hover { background: #065aab; }
+    .list { margin-top: 15px; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 8px; background: #fafafa; }
+    .list-item {
+      display: flex; justify-content: space-between;
+      padding: 6px; border-bottom: 1px solid #ddd; font-size: 0.9rem; color: #333;
+    }
+    .list-item:last-child { border-bottom: none; }
+    .remove-btn {
+      background: #dc3545; border: none; color: white;
+      border-radius: 3px; padding: 2px 6px;
+      cursor: pointer; font-size: 0.85rem;
+    }
+    .error, .success {
+      margin-top: 10px; padding: 8px; border-radius: 4px;
+      font-weight: 600; font-size: 0.9rem;
+    }
+    .error { background: #f8d7da; color: #842029; }
+    .success { background: #d1e7dd; color: #0f5132; }
+    #registrationPopup {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 1000;
+      justify-content: center; align-items: center;
+    }
+    #registrationPopup .popup-content {
+      background: white; padding: 25px 30px;
+      border-radius: 8px; width: 90%; max-width: 400px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3); position: relative;
+    }
+    #registrationPopup h3 {
+      margin-top: 0; font-size: 1.5rem; color: #222;
+    }
+    #registrationPopup button[type="submit"] {
+      margin-top: 20px; background: #198754;
+      width: 100%; padding: 12px; font-size: 1.1rem; border-radius: 5px;
+    }
+    #registrationPopup button[type="submit"]:hover { background: #145c32; }
+    #closePopup {
+      position: absolute; top: 10px; right: 15px;
+      background: transparent; border: none; font-size: 1.5rem;
+      cursor: pointer; color: #888;
+    }
+      .redAlertOverlay_Kunal123 {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .redAlertBox_Kunal123 {
+      background-color: #ffeaea;
+      border: 2px solid #ff4d4d;
+      color: #cc0000;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      text-align: center;
+      animation: slideFromTop_Kunal123 0.5s ease;
+    }
+
+    .redAlertBox_Kunal123 h2 {
+      margin-top: 0;
+      color: #d10000;
+      font-size: 22px;
+    }
+
+    .redAlertBox_Kunal123 p {
+      font-size: 16px;
+      margin: 10px 0 20px;
+    }
+
+    .redAlertBox_Kunal123 button {
+      padding: 8px 16px;
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .redAlertBox_Kunal123 button:hover {
+      background-color: #cc0000;
+    }
+
+    @keyframes slideFromTop_Kunal123 {
+      from {
+        transform: translateY(-40px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      }
+  </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <!-- Unique Popup -->
+  <div class="redAlertOverlay_Kunal123" id="redAlertPopup_Kunal123">
+    <div class="redAlertBox_Kunal123">
+      <h2>Information</h2>
+      <p>Registered yourself using index number in User login pannel before 30 June 2025 11:59:59 as alloted to you.</p>
+      <button onclick="closeRedAlert_Kunal123()">Close</button>
+    </div>
+  </div>
+  <!--Instructions-->
+  <!--<div style="color:red;font-weight:bold;padding:10px;border:1px solid gray;box-shadow:1px 1px 10px 1px rgba(227,233,232,0.843);border-radius:5px;">Registered yourself using special code as index number in User login pannel before 30 June 2025 11:59:59.Any index who already Registered kindly do their Registration again due to technical gliches all data is lost.kindly ignore for re-registered candidates. </div>
+  <!--info Heading-->
+  <div style="text-align:center;background-color:rgba(7,160,148,0.843);color:#fff;padding:10px;max-width:340px;margin:auto;box-shadow:1px 1px 10px 1px gray;">OFFICIAL AIML GROUP</div>
+  <!-- Admin Panel -->
+  <div class="panel" id="adminPanel">
+    <h2>Admin Panel</h2>
+    <label for="adminIndex">Admin Index Number</label>
+    <input type="text" id="adminIndex" placeholder="Enter admin index" />
+    <button id="adminLoginBtn">Login as Admin</button>
+
+    <div id="adminActions" style="display:none;">
+      <label for="newIndex">Add New Index Number</label>
+      <input type="text" id="newIndex" placeholder="Enter new index number" />
+      <button id="addIndexBtn">Add Index</button>
+      <div class="list" id="indexList"></div>
+    </div>
+
+    <div id="adminMessage"></div>
+  </div>
+
+  <!-- User Panel -->
+  <div class="panel" id="userPanel">
+    <h2>User Login</h2>
+    <label for="userIndex">Index Number</label>
+    <input type="text" id="userIndex" placeholder="Enter your index number" />
+    <button id="userLoginBtn">Login</button>
+    <div id="userMessage"></div>
+  </div>
+
+  <!-- Registration Popup -->
+  <div id="registrationPopup">
+    <div class="popup-content">
+      <button id="closePopup" title="Close">&times;</button>
+      <h3>Complete Your Registration</h3>
+      <form id="registrationForm">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" required />
+        <label for="classSelect">Class</label>
+        <select id="classSelect" required>
+          <option value="">Select Class</option>
+          <option value="B.Tech/B.E.">B.Tech/B.E.</option>
+        </select>
+        <label for="branchSelect">Branch</label>
+        <select id="branchSelect" required>
+          <option value="">Select Branch</option>
+          <option value="CSE Artificial Intelligence and Machine Learning">CSE Artificial Intelligence and Machine Learning</option>
+          <option value="CSE Computer Science and Engineering">CSE Computer Science and Engineering</option>
+          <option value="ECE Electronics and Communication Engineering">ECE Electronics and Communication Engineering</option>
+          <option value="ME Mechanical Engineering">ME Mechanical Engineering</option>
+        </select>
+        <button type="submit">Submit Registration</button>
+        <div id="registrationMessage"></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD4Lk0EjPJAYPPKdzTBb-IOMP7kpzEmrFA",
+  authDomain: "studentdashboard-final.firebaseapp.com",
+  projectId: "studentdashboard-final",
+  storageBucket: "studentdashboard-final.firebasestorage.app",
+  messagingSenderId: "576065271267",
+  appId: "1:576065271267:web:05636f4ae4236f3298dcd6",
+  measurementId: "G-PQXQE19D1F"
+};
+    
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const ADMIN_INDEX = '40062kv';
+    const REG_DEADLINE = new Date('2025-06-30T11:59:59');
+
+    const adminIndexInput = document.getElementById('adminIndex');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminActions = document.getElementById('adminActions');
+    const newIndexInput = document.getElementById('newIndex');
+    const addIndexBtn = document.getElementById('addIndexBtn');
+    const indexList = document.getElementById('indexList');
+    const adminMessage = document.getElementById('adminMessage');
+
+    const userIndexInput = document.getElementById('userIndex');
+    const userLoginBtn = document.getElementById('userLoginBtn');
+    const userMessage = document.getElementById('userMessage');
+
+    const registrationPopup = document.getElementById('registrationPopup');
+    const closePopupBtn = document.getElementById('closePopup');
+    const registrationForm = document.getElementById('registrationForm');
+    const fullNameInput = document.getElementById('fullName');
+    const classSelect = document.getElementById('classSelect');
+    const branchSelect = document.getElementById('branchSelect');
+    const registrationMessage = document.getElementById('registrationMessage');
+
+    let currentUserIndex = '';
+
+    adminLoginBtn.onclick = async () => {
+      const index = adminIndexInput.value.trim().toLowerCase();
+      if (index !== ADMIN_INDEX) {
+        adminMessage.textContent = 'Invalid admin index number';
+        adminMessage.className = 'error';
+        return;
+      }
+      adminActions.style.display = 'block';
+      adminIndexInput.style.display = 'none';
+      adminLoginBtn.style.display = 'none';
+      adminMessage.textContent = 'Logged in as Admin';
+      adminMessage.className = 'success';
+      await loadIndexNumbers();
+    };
+
+    async function loadIndexNumbers() {
+      indexList.innerHTML = 'Loading...';
+      const snapshot = await db.collection('allowedIndexes').orderBy('index').get();
+      indexList.innerHTML = '';
+      snapshot.forEach(doc => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `<span>${doc.data().index}</span><button class="remove-btn" onclick="removeIndex('${doc.id}')">Remove</button>`;
+        indexList.appendChild(div);
+      });
+    }
+
+    window.removeIndex = async (id) => {
+      await db.collection('allowedIndexes').doc(id).delete();
+      adminMessage.textContent = 'Index removed.';
+      adminMessage.className = 'success';
+      loadIndexNumbers();
+    };
+
+    addIndexBtn.onclick = async () => {
+      const index = newIndexInput.value.trim().toLowerCase();
+      if (!index) return showError(adminMessage, 'Please enter an index number.');
+      const existing = await db.collection('allowedIndexes').where('index', '==', index).get();
+      if (!existing.empty) return showError(adminMessage, 'Index already exists.');
+      await db.collection('allowedIndexes').add({ index });
+      showSuccess(adminMessage, 'Index added.');
+      newIndexInput.value = '';
+      loadIndexNumbers();
+    };
+
+    userLoginBtn.onclick = async () => {
+      const index = userIndexInput.value.trim().toLowerCase();
+      if (!index) return showError(userMessage, 'Please enter your index number.');
+      if (index === ADMIN_INDEX) return showError(userMessage, 'Use Admin Panel to login.');
+
+      const allowedSnap = await db.collection('allowedIndexes').where('index', '==', index).get();
+      if (allowedSnap.empty) return showError(userMessage, 'Index not allowed. Contact Admin.');
+
+      const regSnap = await db.collection('registeredUsers').where('index', '==', index).get();
+      if (!regSnap.empty) {
+        showSuccess(userMessage, 'Login successful! Redirecting...');
+        setTimeout(() => window.location.href = `dashboard.html?index=${encodeURIComponent(index)}`, 1500);
+        return;
+      }
+
+      const now = new Date();
+      if (now > REG_DEADLINE) {
+        return showError(userMessage, 'Your registration time is expired.');
+      }
+
+      currentUserIndex = index;
+      showRegistrationPopup();
+    };
+
+    function showRegistrationPopup() {
+      registrationPopup.style.display = 'flex';
+      registrationForm.reset();
+      registrationMessage.textContent = '';
+    }
+
+    closePopupBtn.onclick = () => {
+      registrationPopup.style.display = 'none';
+      showError(userMessage, 'Registration cancelled.');
+    };
+
+    registrationForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fullName = fullNameInput.value.trim();
+      const classVal = classSelect.value;
+      const branchVal = branchSelect.value;
+
+      if (!fullName || !/^[A-Za-z\s]{3,50}$/.test(fullName)) {
+        return showError(registrationMessage, 'Enter a valid full name.');
+      }
+
+      if (!classVal || !branchVal) {
+        return showError(registrationMessage, 'Please select Class and Branch.');
+      }
+
+      try {
+        await db.collection('registeredUsers').add({
+          index: currentUserIndex,
+          fullName, class: classVal, branch: branchVal,
+          registeredAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        showSuccess(registrationMessage, 'Registration successful! Redirecting...');
+        setTimeout(() => {
+          registrationPopup.style.display = 'none';
+          window.location.href = `dashboard.html?index=${encodeURIComponent(currentUserIndex)}`;
+        }, 1500);
+      } catch (err) {
+        console.error(err);
+        showError(registrationMessage, 'Registration failed. Try again.');
+      }
+    });
+
+    function showError(el, msg) {
+      el.textContent = msg;
+      el.className = 'error';
+    }
+    function showSuccess(el, msg) {
+      el.textContent = msg;
+      el.className = 'success';
+    }
+  </script>
+  <script>
+    // Show the popup on page load
+    window.onload = function () {
+      document.getElementById("redAlertPopup_Kunal123").style.display = "flex";
+    };
+
+    // Close function
+    function closeRedAlert_Kunal123() {
+      document.getElementById("redAlertPopup_Kunal123").style.display = "none";
+    }
+  </script>
+</body>
+</html>
