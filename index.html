@@ -61,12 +61,86 @@
       justify-content:center;
     }
     a{
+      text-align:center;
+      width:100px;
       text-decoration:none;
       background-color:rgb(179,196,253);
       padding:10px;
       border:1px solid gray;
       border-radius:10px;
     }
+    .container0{
+      display:flex;
+      justify-content:center;
+      align-content: center;
+      align-items: center;
+      margin: auto;
+      /*margin-top:165px;*/
+      margin-top:70px;
+      width:16rem;
+      height:16rem;
+      background-color:rgba(0,255,255,1);
+      box-shadow:1px 1px 5px 1px rgba(0,0,0,0.5);
+    }
+    .box{
+      transform: rotate(45deg);
+      display:flex;
+      justify-content:center;
+      align-content: center;
+      align-items: center;
+      width:15rem;
+      height:15rem;
+      background-color:rgba(0,255,2,0.5);
+      box-shadow:1px 1px 5px 1px rgba(0,0,0,0.5);
+    }
+    .box-child{
+      transform: rotate(45deg);
+      display:flex;
+      justify-content:center;
+      align-content: center;
+      align-items: center;
+      width:11rem;
+      height:11rem;
+      background-color:rgb(41,60,236);
+      box-shadow:1px 1px 5px 1px rgba(0,0,0,0.5);
+    }
+    .box-son{
+      transform: rotate(45deg);
+      display:flex;
+      justify-content:center;
+      align-content: center;
+      align-items: center;
+      width:6rem;
+      height:6rem;
+      background-color:rgba(255,255,0,1);
+      box-shadow:1px 1px 5px 1px rgba(0,0,0,0.5);
+    }
+   .box-daughter{
+     transform: rotate(45deg);
+     display:flex;
+      justify-content:center;
+      align-content: center;
+      align-items: center;
+     width:4rem;
+      height:4rem;
+      background-color:rgba(230,55,55,0.959);
+      box-shadow:1px 1px 5px 1px rgba(0,0,0,0.5);
+   } 
+   .circle{
+     transform: rotate(45deg);
+     /* border-radius: 50%; */
+     width:2rem;
+      height:2rem;
+      background-color:rgba(230,255,255,1);
+      box-shadow:1px 1px 5px 1px rgba(0,0,0,0.5);
+   }
+   footer{
+     margin-top:100px;
+     text-align:center;
+     padding:20px;
+     background-color:#000;
+     color:#fff;
+   }
   </style>
 </head>
 <body>
@@ -86,9 +160,23 @@
      <a onclick="Alert()"href="#">Proceed</a>
   </div>
   </div>
+  <div class="container0">
+    <div class="box">
+      <div class="box-child">
+        <div class="box-son">
+          <div class="box-daughter">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    Learning++ &copy 2025 All Right Reserved.
+  </footer>
   <script>
     function Alert(){
-      alert("hello");
+      alert("You are redirected to main site of Learning++.Best of Luck to explore lots of things to bulid your education & mental stength");
     }
   </script>
 </body>
