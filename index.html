@@ -1,169 +1,95 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login | Reels App</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Welcome User</title>
   <style>
-    body {
-      background: linear-gradient(to right, #6a11cb, #2575fc);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #fff;
+  *{
+    padding: 0px;
+    margin: 0px;
+  }
+    header{
+      font-family:cursive;
+      background-color:rgb(0,148,154);
+      height:50px;
+      display:flex;
+      align-content:center;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:bold;
+      font-size:29px;
+      border:2px solid rgb(52,245,253);
+      margin-bottom:10px;
     }
-    .card {
-      border-radius: 20px;
-      background-color: #ffffff10;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(10px);
+    .d1{
+      /*box-shadow:1px 1px 10px 1px rgb(253,199,179);*/
+      display:flex;
+      align-content:center;
+      align-items:center;
+      justify-content:center;
+      width:60%;
+      padding:40px;
+      border:2px solid rgb(52,245,253);
+      background-color:rgb(0,124,154);
     }
-    .form-control {
-      background-color: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: #fff;
+    .d2{
+      display:flex;
+      align-content:center;
+      align-items:center;
+      justify-content:center;
+      width:50%;
+      padding:40px;
+      border:2px solid rgb(52,245,253);
+      background-color:rgb(0,78,154);
     }
-    .form-control::placeholder {
-      color: #ddd;
+    .container{
+      padding:20px;
+      padding-top:80px;
+      margin:15px;
+      background-color:rgb(164,251,241);
+      box-shadow:1px 1px 10px 1px gray;
     }
-    .form-control:focus {
-      background-color: rgba(255, 255, 255, 0.2);
-      box-shadow: none;
-      border-color: #ccc;
+    #mains{
+      margin-top:20px;
+      display:flex;
+      flex-direction:column;
+      align-content:center;
+      align-items:center;
+      justify-content:center;
     }
-    .btn-light {
-      background-color: #f1c40f;
-      color: #000;
-      font-weight: 600;
-    }
-    .btn-danger {
-      background-color: #e74c3c;
-      font-weight: 600;
-    }
-    a {
-      color: #f9e79f;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    #errorMsg {
-      color: #ffcccc;
-      font-weight: bold;
+    a{
+      text-decoration:none;
+      background-color:rgb(179,196,253);
+      padding:10px;
+      border:1px solid gray;
+      border-radius:10px;
     }
   </style>
 </head>
-<body class="d-flex justify-content-center align-items-center" style="height: 100vh;">
-  <div class="card p-4 text-white" style="width: 100%; max-width: 400px;">
-    <h3 class="text-center mb-3" id="formTitle">Sign In</h3>
-    <input type="email" id="email" class="form-control mb-3" placeholder="Email">
-    <input type="password" id="password" class="form-control mb-3" placeholder="Password">
-    <button class="btn btn-light w-100 mb-2" onclick="handleAuth()">Sign In</button>
-    <button class="btn btn-danger w-100 mb-2" onclick="googleSignIn()">Sign in with Google</button>
-    <p class="text-center">
-      <span id="toggleText">Don't have an account?</span>
-      <a href="#" onclick="toggleForm()">Sign Up</a>
-    </p>
-    <p class="text-center mt-2">
-      <a href="#" onclick="resetPassword()" class="text-warning">Forgot Password?</a>
-    </p>
-    <div id="errorMsg" class="text-center mt-2"></div>
-  </div>  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC4tFkN21Lsc57nyZ2b62A2wh93j6tIAnc",
-      authDomain: "social-media-3f69b.firebaseapp.com",
-      projectId: "social-media-3f69b",
-      storageBucket: "social-media-3f69b.appspot.com",
-      messagingSenderId: "815848360025",
-      appId: "1:815848360025:web:607a92fbb8561a41904948",
-      measurementId: "G-ZMYF3SXQWE"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    let isSignIn = true;
-
-    function toggleForm() {
-      isSignIn = !isSignIn;
-      document.getElementById("formTitle").innerText = isSignIn ? "Sign In" : "Sign Up";
-      document.querySelector("button").innerText = isSignIn ? "Sign In" : "Sign Up";
-      document.getElementById("toggleText").innerText = isSignIn ? "Don't have an account?" : "Already have an account?";
+<body>
+  <header>
+    <div class="d1">
+      <div class="d2">
+        Learning++ 
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <marquee behavior="scroll" direction="left"style="color:red;font-weight:bold;">Welcome to Education Platform of Learning++
+    </marquee>
+    <div id="mains">
+     <label>Enter to Main Site by clicking below button</label>
+     <br>
+     <a onclick="Alert()"href="#">Proceed</a>
+  </div>
+  </div>
+  <script>
+    function Alert(){
+      alert("hello");
     }
-
-    function isValidEmail(email) {
-      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return regex.test(email);
-    }
-
-    function isStrongPassword(password) {
-      const minLength = 6;
-      const hasLetter = /[A-Za-z]/.test(password);
-      const hasNumber = /[0-9]/.test(password);
-      return password.length >= minLength && hasLetter && hasNumber;
-    }
-
-    function handleAuth() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-
-      if (!email || !password) {
-        showError("All fields are required.");
-        return;
-      }
-
-      if (!isValidEmail(email)) {
-        showError("Invalid email format.");
-        return;
-      }
-
-      if (!isStrongPassword(password)) {
-        showError("Password must be at least 6 characters long, and contain letters and numbers.");
-        return;
-      }
-
-      if (isSignIn) {
-        auth.signInWithEmailAndPassword(email, password)
-          .then(() => {
-            window.location.href = "dashboard.html";
-          })
-          .catch(err => showError(err.message));
-      } else {
-        auth.createUserWithEmailAndPassword(email, password)
-          .then(() => {
-            window.location.href = "dashboard.html";
-          })
-          .catch(err => showError(err.message));
-      }
-    }
-
-    function resetPassword() {
-      const email = document.getElementById("email").value.trim();
-      if (!email) {
-        showError("Please enter your email to reset password.");
-        return;
-      }
-      if (!isValidEmail(email)) {
-        showError("Enter a valid email to reset password.");
-        return;
-      }
-      auth.sendPasswordResetEmail(email)
-        .then(() => {
-          showError("Password reset email sent. Check your inbox.");
-        })
-        .catch(error => showError(error.message));
-    }
-
-    function googleSignIn() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(() => {
-          window.location.href = "dashboard.html";
-        })
-        .catch(error => showError(error.message));
-    }
-
-    function showError(message) {
-      document.getElementById("errorMsg").innerText = message;
-    }
-  </script></body>
+  </script>
+</body>
 </html>
