@@ -2,62 +2,78 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Login</title>
+  <title>Admin - Student Result</title>
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      flex-direction: column;
+      padding: 20px;
     }
-    .container {
-      width: 100%;
-      max-width: 400px;
+    .box {
       background: white;
-      padding: 2rem;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 1rem;
-      color: #007bff;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
     input, button {
       width: 100%;
       padding: 10px;
-      margin: 0.5rem 0;
-      border: 1px solid #ccc;
+      margin: 8px 0;
       border-radius: 6px;
-      font-size: 1rem;
+      border: 1px solid #ccc;
+      font-size: 16px;
     }
     button {
-      background-color: #007bff;
+      background: #007bff;
       color: white;
       border: none;
-      transition: 0.3s;
     }
     button:hover {
-      background-color: #0056b3;
+      background: #0056b3;
     }
-    .error {
-      color: red;
-      margin-top: 10px;
-      text-align: center;
-    }
+    .danger { background: #dc3545; }
+    .danger:hover { background: #b02a37; }
+    .hidden { display: none; }
+    .message { text-align: center; font-weight: bold; margin-top: 10px; }
+    .success { color: green; }
+    .error { color: red; }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="box" id="loginBox">
     <h2>Admin Login</h2>
-    <input type="email" id="adminEmail" placeholder="Admin Email" required />
-    <input type="password" id="adminPass" placeholder="Password" required />
-    <button onclick="login()">🔐 Login</button>
-    <p id="loginError" class="error"></p>
-  </div>  <!-- Firebase SDKs -->  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>  <script>
+    <input type="email" id="adminEmail" placeholder="Admin Email" required>
+    <input type="password" id="adminPass" placeholder="Password" required>
+    <button onclick="simpleLogin()">Login</button>
+    <p class="message error" id="loginError"></p>
+  </div>  <div class="box hidden" id="mainApp">
+    <h2>Manage Student Result</h2>
+    <form id="resultForm">
+      <input type="text" id="name" placeholder="Student Name" required />
+      <input type="text" id="roll" placeholder="Roll Number" required />
+      <input type="text" id="reg" placeholder="Registration Number" required />
+      <input type="number" id="maths" placeholder="Maths Marks" />
+      <input type="number" id="physics" placeholder="Physics Marks" />
+      <input type="number" id="ai" placeholder="AI Marks" />
+      <input type="text" id="status" placeholder="Status (Pass/Fail)" required />
+      <input type="date" id="date" required />
+      <button type="submit">Save Result</button>
+      <button type="button" onclick="loadResult()">Load Result</button>
+      <button type="button" class="danger" onclick="deleteResult()">Delete Result</button>
+      <button type="button" class="danger" onclick="logout()">Logout</button>
+      <p id="success" class="message success"></p>
+      <p id="error" class="message error"></p>
+    </form>
+  </div>  <!-- Firebase SDKs -->  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>  <script>
+    // Your Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCzBDIhQ6N3t1ez-hya9wbeuYke5ci2Msg",
       authDomain: "uiet-results.firebaseapp.com",
@@ -67,26 +83,109 @@
       appId: "1:589523952286:web:3704f7ba2e227c4560918f",
       measurementId: "G-NF26HW9W2T"
     };
-
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    function login() {
-      const email = document.getElementById("adminEmail").value;
-      const password = document.getElementById("adminPass").value;
-      const errorMsg = document.getElementById("loginError");
+    // Hardcoded admin credentials
+    const ADMIN_EMAIL = "admin@uiet.com";
+    const ADMIN_PASS = "uiet1234";
 
-      errorMsg.textContent = "";
+    function simpleLogin() {
+      const email = document.getElementById("adminEmail").value.trim();
+      const pass = document.getElementById("adminPass").value.trim();
+      const error = document.getElementById("loginError");
+      if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+        document.getElementById("loginBox").classList.add("hidden");
+        document.getElementById("mainApp").classList.remove("hidden");
+        error.innerText = "";
+      } else {
+        error.innerText = "Invalid admin credentials!";
+      }
+    }
 
-      auth.signInWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          alert("✅ Login successful!");
-          // You can redirect here, or show another section
-        })
-        .catch(error => {
-          console.error("Login error:", error);
-          errorMsg.textContent = error.message;
+    function logout() {
+      document.getElementById("mainApp").classList.add("hidden");
+      document.getElementById("loginBox").classList.remove("hidden");
+    }
+
+    document.getElementById("resultForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      clearMessages();
+      const docId = getDocId();
+      if (!docId) return showError("Roll + Reg required!");
+      try {
+        await db.collection("students").doc(docId).set({
+          name: val("name"), roll: val("roll"), reg: val("reg"),
+          marks: {
+            Maths: val("maths"),
+            Physics: val("physics"),
+            AI: val("ai")
+          },
+          status: val("status"),
+          date: val("date")
         });
+        showSuccess("✅ Result saved!");
+        document.getElementById("resultForm").reset();
+      } catch (err) {
+        showError("❌ Error saving result.");
+        console.error(err);
+      }
+    });
+
+    async function loadResult() {
+      clearMessages();
+      const docId = getDocId();
+      if (!docId) return showError("Roll + Reg required!");
+      try {
+        const doc = await db.collection("students").doc(docId).get();
+        if (!doc.exists) return showError("❌ No result found.");
+        const d = doc.data();
+        setVal("name", d.name);
+        setVal("maths", d.marks.Maths);
+        setVal("physics", d.marks.Physics);
+        setVal("ai", d.marks.AI);
+        setVal("status", d.status);
+        setVal("date", d.date);
+        showSuccess("✅ Result loaded!");
+      } catch (err) {
+        showError("❌ Load failed.");
+        console.error(err);
+      }
+    }
+
+    async function deleteResult() {
+      clearMessages();
+      const docId = getDocId();
+      if (!docId) return showError("Roll + Reg required!");
+      if (!confirm("Are you sure you want to delete this result?")) return;
+      try {
+        await db.collection("students").doc(docId).delete();
+        showSuccess("🗑 Result deleted.");
+        document.getElementById("resultForm").reset();
+      } catch (err) {
+        showError("❌ Delete failed.");
+        console.error(err);
+      }
+    }
+
+    function val(id) { return document.getElementById(id).value.trim(); }
+    function setVal(id, v) { document.getElementById(id).value = v || ''; }
+    function getDocId() {
+      const roll = val("roll");
+      const reg = val("reg");
+      return roll && reg ? `${roll}_${reg}` : null;
+    }
+    function showSuccess(msg) {
+      document.getElementById("success").innerText = msg;
+      document.getElementById("error").innerText = "";
+    }
+    function showError(msg) {
+      document.getElementById("error").innerText = msg;
+      document.getElementById("success").innerText = "";
+    }
+    function clearMessages() {
+      showError("");
+      showSuccess("");
     }
   </script></body>
 </html>
