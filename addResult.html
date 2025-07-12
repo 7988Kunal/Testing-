@@ -41,20 +41,13 @@
     }
     .danger { background: #dc3545; }
     .danger:hover { background: #b02a37; }
-    .hidden { display: none; }
     .message { text-align: center; font-weight: bold; margin-top: 10px; }
     .success { color: green; }
     .error { color: red; }
   </style>
 </head>
 <body>
-  <div class="box" id="loginBox">
-    <h2>Admin Login</h2>
-    <input type="email" id="adminEmail" placeholder="Admin Email" required>
-    <input type="password" id="adminPass" placeholder="Password" required>
-    <button onclick="simpleLogin()">Login</button>
-    <p class="message error" id="loginError"></p>
-  </div>  <div class="box hidden" id="mainApp">
+  <div class="box">
     <h2>Manage Student Result</h2>
     <form id="resultForm">
       <input type="text" id="name" placeholder="Student Name" required />
@@ -68,7 +61,6 @@
       <button type="submit">Save Result</button>
       <button type="button" onclick="loadResult()">Load Result</button>
       <button type="button" class="danger" onclick="deleteResult()">Delete Result</button>
-      <button type="button" class="danger" onclick="logout()">Logout</button>
       <p id="success" class="message success"></p>
       <p id="error" class="message error"></p>
     </form>
@@ -84,27 +76,6 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
-    const ADMIN_EMAIL = "admin@uiet.com";
-    const ADMIN_PASS = "uiet1234";
-
-    function simpleLogin() {
-      const email = document.getElementById("adminEmail").value.trim();
-      const pass = document.getElementById("adminPass").value.trim();
-      const error = document.getElementById("loginError");
-      if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-        document.getElementById("loginBox").classList.add("hidden");
-        document.getElementById("mainApp").classList.remove("hidden");
-        error.innerText = "";
-      } else {
-        error.innerText = "Invalid admin credentials!";
-      }
-    }
-
-    function logout() {
-      document.getElementById("mainApp").classList.add("hidden");
-      document.getElementById("loginBox").classList.remove("hidden");
-    }
 
     document.getElementById("resultForm").addEventListener("submit", async function (e) {
       e.preventDefault();
