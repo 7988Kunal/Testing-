@@ -1,0 +1,209 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Student Result</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #007bff;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .danger {
+      background-color: #dc3545;
+    }
+    .danger:hover {
+      background-color: #b02a37;
+    }
+    .success {
+      color: green;
+      margin-top: 10px;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginBox">
+    <h2>Admin Login</h2>
+    <input type="email" id="adminEmail" placeholder="Admin Email" required />
+    <input type="password" id="adminPass" placeholder="Password" required />
+    <button onclick="login()">🔐 Login</button>
+    <p id="loginError" class="error"></p>
+  </div>  <div class="container" id="mainApp" style="display: none;">
+    <h2>Manage Student Result</h2>
+    <form id="resultForm">
+      <input type="text" id="name" placeholder="Student Name" required />
+      <input type="text" id="roll" placeholder="Roll Number" required />
+      <input type="text" id="reg" placeholder="Registration Number" required />
+      <input type="number" id="maths" placeholder="Maths Marks" />
+      <input type="number" id="physics" placeholder="Physics Marks" />
+      <input type="number" id="ai" placeholder="AI Marks" />
+      <input type="text" id="status" placeholder="Status (Pass/Fail)" required />
+      <input type="date" id="date" required />
+      <button type="submit">➕ Add / Update Result</button>
+      <button type="button" onclick="loadResult()">🔍 Load Result</button>
+      <button type="button" class="danger" onclick="deleteResult()">🗑 Delete Result</button>
+      <button type="button" class="danger" onclick="logout()">🚪 Logout</button>
+      <p id="success" class="success"></p>
+      <p id="error" class="error"></p>
+    </form>
+  </div>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCzBDIhQ6N3t1ez-hya9wbeuYke5ci2Msg",
+      authDomain: "uiet-results.firebaseapp.com",
+      projectId: "uiet-results",
+      storageBucket: "uiet-results.firebasestorage.app",
+      messagingSenderId: "589523952286",
+      appId: "1:589523952286:web:3704f7ba2e227c4560918f",
+      measurementId: "G-NF26HW9W2T"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    function login() {
+      const email = document.getElementById("adminEmail").value;
+      const pass = document.getElementById("adminPass").value;
+      auth.signInWithEmailAndPassword(email, pass)
+        .then(() => {
+          document.getElementById("loginBox").style.display = "none";
+          document.getElementById("mainApp").style.display = "block";
+        })
+        .catch(err => {
+          document.getElementById("loginError").innerText = "❌ Login failed!";
+          console.error(err);
+        });
+    }
+
+    function logout() {
+      auth.signOut().then(() => location.reload());
+    }
+
+    document.getElementById("resultForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      clearMessages();
+      const docId = getDocId();
+      if (!docId) return showError("Roll + Reg required!");
+      try {
+        await db.collection("students").doc(docId).set({
+          name: val("name"), roll: val("roll"), reg: val("reg"),
+          marks: {
+            Maths: val("maths"),
+            Physics: val("physics"),
+            AI: val("ai")
+          },
+          status: val("status"),
+          date: val("date")
+        });
+        showSuccess("✅ Result saved!");
+        document.getElementById("resultForm").reset();
+      } catch (err) {
+        showError("❌ Error saving result.");
+        console.error(err);
+      }
+    });
+
+    async function loadResult() {
+      clearMessages();
+      const docId = getDocId();
+      if (!docId) return showError("Roll + Reg required!");
+      try {
+        const doc = await db.collection("students").doc(docId).get();
+        if (!doc.exists) return showError("❌ No result found.");
+        const d = doc.data();
+        setVal("name", d.name);
+        setVal("maths", d.marks.Maths);
+        setVal("physics", d.marks.Physics);
+        setVal("ai", d.marks.AI);
+        setVal("status", d.status);
+        setVal("date", d.date);
+        showSuccess("✅ Result loaded!");
+      } catch (err) {
+        showError("❌ Load failed.");
+        console.error(err);
+      }
+    }
+
+    async function deleteResult() {
+      clearMessages();
+      const docId = getDocId();
+      if (!docId) return showError("Roll + Reg required!");
+      if (!confirm("Are you sure you want to delete this result?")) return;
+      try {
+        await db.collection("students").doc(docId).delete();
+        showSuccess("🗑 Result deleted.");
+        document.getElementById("resultForm").reset();
+      } catch (err) {
+        showError("❌ Delete failed.");
+        console.error(err);
+      }
+    }
+
+    function val(id) { return document.getElementById(id).value.trim(); }
+    function setVal(id, v) { document.getElementById(id).value = v || ''; }
+    function getDocId() {
+      const roll = val("roll");
+      const reg = val("reg");
+      return roll && reg ? `${roll}_${reg}` : null;
+    }
+    function showSuccess(msg) {
+      document.getElementById("success").innerText = msg;
+      document.getElementById("error").innerText = "";
+    }
+    function showError(msg) {
+      document.getElementById("error").innerText = msg;
+      document.getElementById("success").innerText = "";
+    }
+    function clearMessages() {
+      showError("");
+      showSuccess("");
+    }
+  </script></body>
+</html>
