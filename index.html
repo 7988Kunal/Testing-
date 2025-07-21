@@ -192,7 +192,13 @@
         });
 
         // Go to next page (e.g., instructions.html)
-        setTimeout(() => window.location.href = "instructions.html", 1500);
+        // Save to sessionStorage
+sessionStorage.setItem("username", name);
+sessionStorage.setItem("rollNo", rollInput);
+sessionStorage.setItem("regNo", regNo);
+
+// Redirect
+setTimeout(() => window.location.href = "instructions.html", 1500);
       } catch (e) {
         errorBox.textContent = "Failed to login. Try again.";
       }
