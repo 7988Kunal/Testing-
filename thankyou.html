@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thank You - Python Programming Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f8ff;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #003366;
+    }
+    #resultSection {
+      display: none;
+      margin-top: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #003366;
+      color: white;
+    }
+    .btn {
+      padding: 12px 25px;
+      font-size: 16px;
+      color: white;
+      background-color: #003366;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .btn:hover {
+      background-color: #005599;
+    }
+    .error {
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Thank You for Attending the Exam!</h1>
+    <p>Your responses have been submitted successfully.</p>
+    
+    <!--<button class="btn" onclick="viewResult()">View Result</button>
+     <p id="errorMsg" class="error"></p>
+
+    <div id="resultSection">
+      <h2>Result</h2>
+      <table id="resultTable">
+        <tbody></tbody>
+      </table>
+    </div>-->
+  </div>
+
+  <!-- Firebase SDK -->
+  <!--<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
+      authDomain: "studentdashboard-681a8.firebaseapp.com",
+      projectId: "studentdashboard-681a8",
+      storageBucket: "studentdashboard-681a8.firebasestorage.app",
+      messagingSenderId: "171483691299",
+      appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
+      measurementId: "G-RVFB0Z9TFS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function viewResult() {
+      const regNo = sessionStorage.getItem("registrationNumber");
+
+      const errorMsg = document.getElementById("errorMsg");
+      const resultSection = document.getElementById("resultSection");
+      const resultTableBody = document.getElementById("resultTable").querySelector("tbody");
+
+      errorMsg.textContent = "";
+      resultSection.style.display = "none";
+      resultTableBody.innerHTML = "";
+
+      if (!regNo) {
+        errorMsg.textContent = "Registration number not found in session. Please log in again.";
+        return;
+      }
+
+      try {
+        const q = query(collection(db, "examResults"), where("registrationNumber", "==", regNo));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          errorMsg.textContent = "No result found for this registration number. Please check your input.";
+          return;
+        }
+
+        const data = querySnapshot.docs[0].data();
+
+        resultTableBody.innerHTML = `
+          <tr><th>Name</th><td>${data.name || "N/A"}</td></tr>
+          <tr><th>Registration Number</th><td>${data.registrationNumber}</td></tr>
+          <tr><th>Roll Number</th><td>${data.rollNumber || "N/A"}</td></tr>
+          <tr><th>Total Questions</th><td>${data.totalQuestions || "N/A"}</td></tr>
+          <tr><th>Correct Answers</th><td>${data.correctAnswers || "N/A"}</td></tr>
+          <tr><th>Score (%)</th><td>${data.percentage || "N/A"}</td></tr>
+          <tr><th>Status</th><td>${data.status || "N/A"}</td></tr>
+          <tr><th>Submitted At</th><td>${data.submittedAt?.toDate().toLocaleString() || "N/A"}</td></tr>
+        `;
+
+        resultSection.style.display = "block";
+      } catch (error) {
+        console.error("Error fetching result:", error);
+        errorMsg.textContent = "Error fetching result. Please try again later.";
+      }
+    }
+  </script>
+  <script>-->
+<!--  <script>
+  const firebaseConfig = {
+      apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
+      authDomain: "studentdashboard-681a8.firebaseapp.com",
+      projectId: "studentdashboard-681a8",
+      storageBucket: "studentdashboard-681a8.firebasestorage.app",
+      messagingSenderId: "171483691299",
+      appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
+      measurementId: "G-RVFB0Z9TFS"
+    };
+  const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Attach event listener when DOM is ready
+document.getElementById("viewResultBtn").addEventListener("click", viewResult);
+
+async function viewResult() {
+  const regNo = sessionStorage.getItem("registrationNumber");
+
+  const errorMsg = document.getElementById("errorMsg");
+  const resultSection = document.getElementById("resultSection");
+  const resultTableBody = document.getElementById("resultTable").querySelector("tbody");
+
+  errorMsg.textContent = "";
+  resultSection.style.display = "none";
+  resultTableBody.innerHTML = "";
+
+  if (!regNo) {
+    errorMsg.textContent = "Registration number not found in session. Please log in again.";
+    return;
+  }
+
+  try {
+    const q = query(collection(db, "examResults"), where("registrationNumber", "==", regNo));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      errorMsg.textContent = "No result found for this registration number. Please check your input.";
+      return;
+    }
+
+    const data = querySnapshot.docs[0].data();
+
+    resultTableBody.innerHTML = `
+      <tr><th>Name</th><td>${data.name || "N/A"}</td></tr>
+      <tr><th>Registration Number</th><td>${data.registrationNumber}</td></tr>
+      <tr><th>Roll Number</th><td>${data.rollNumber || "N/A"}</td></tr>
+      <tr><th>Total Questions</th><td>${data.totalQuestions || "N/A"}</td></tr>
+      <tr><th>Correct Answers</th><td>${data.correctAnswers || "N/A"}</td></tr>
+      <tr><th>Score (%)</th><td>${data.percentage || "N/A"}</td></tr>
+      <tr><th>Status</th><td>${data.status || "N/A"}</td></tr>
+      <tr><th>Submitted At</th><td>${data.submittedAt?.toDate().toLocaleString() || "N/A"}</td></tr>
+    `;
+
+    resultSection.style.display = "block";
+  } catch (error) {
+    console.error("Error fetching result:", error);
+    errorMsg.textContent = "Error fetching result. Please try again later.";
+  }
+}
+</script>-->
+</body>
+</html>
