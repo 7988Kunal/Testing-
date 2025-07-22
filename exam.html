@@ -100,7 +100,7 @@
       <strong>Roll No:</strong> <span id="rollNumber">Loading...</span><br>
       <strong>Reg No:</strong> <span id="regNumber">Loading...</span>
     </div>
-    <div class="timer" id="timer">20:00</div>
+    <div class="timer" id="timer">15:00</div>
   </div>
   <div class="container">
     <div class="left-panel">
@@ -691,8 +691,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Time in seconds (e.g., 20 minutes)
-const TOTAL_TIME_SECONDS = 1 * 20;
+// Time in seconds ( 15 minutes)
+const TOTAL_TIME_SECONDS = 15 * 60;
 
 // Example questions (replace or load externally as needed)
 const questions = [
