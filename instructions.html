@@ -70,7 +70,7 @@
   <div class="container">
     <h1>AIML Online Examination Instructions</h1>
     <ul>
-      <li>Total Duration of the Examination is <strong>90 Minutes</strong>.</li>
+      <li>Total Duration of the Examination is <strong>15 Minutes</strong>.</li>
       <li>The question paper consists of <strong>Multiple Choice Questions (MCQs)</strong>.</li>
       <li><strong>Each correct answer: +4 Marks</strong></li>
       <li><strong>Each incorrect answer: -1 Mark (Negative Marking)</strong></li>
@@ -89,7 +89,7 @@
     </ul>
 
     <div class="timer">
-      Time Remaining: <span id="countdown">05:00</span>
+      Time Remaining: <span id="countdown">01:00</span>
     </div>
 
     <div class="checkbox-section">
@@ -149,7 +149,7 @@
   const agreeCheck = document.getElementById('agreeCheck');
   const countdown = document.getElementById('countdown');
 
-  let time =0; // 5 minutes
+  let time =60; // 5 minutes
 
   function updateButtonState() {
     if (agreeCheck.checked && time <= 0) {
