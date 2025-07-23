@@ -4,45 +4,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AIML Exam Instructions</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f2f8ff;
+      background: #f2f8ff;
       padding: 20px;
       color: #333;
+      min-height: 100vh;
     }
-
     .container {
-      max-width: 800px;
+      max-width: 850px;
       margin: auto;
       background: white;
       padding: 30px;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
-
     h1 {
       text-align: center;
       color: #004080;
+      margin-bottom: 20px;
     }
-
+    .user-info {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 17px;
+      color: #004080;
+    }
     ul {
       line-height: 1.8;
+      font-size: 16px;
     }
-
     .timer {
       text-align: center;
       font-size: 18px;
-      margin: 20px 0;
+      margin: 25px 0;
       color: #d9534f;
       font-weight: bold;
+      transition: opacity 0.3s ease;
     }
-
+    .timer.hidden {
+      opacity: 0;
+      visibility: hidden;
+      height: 0;
+    }
     .checkbox-section {
       margin-top: 30px;
       text-align: center;
     }
-
     #startBtn {
       background-color: #004080;
       color: white;
@@ -53,13 +63,14 @@
       margin-top: 15px;
       cursor: not-allowed;
       opacity: 0.5;
+      transition: all 0.3s ease;
     }
-
     #startBtn.active {
       cursor: pointer;
       opacity: 1;
+      transform: scale(1.05);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
     }
-
     input[type="checkbox"] {
       transform: scale(1.3);
       margin-right: 10px;
@@ -69,6 +80,9 @@
 <body>
   <div class="container">
     <h1>AIML Online Examination Instructions</h1>
+
+    <div class="user-info" id="userInfo"></div>
+
     <ul>
       <li>Total Duration of the Examination is <strong>15 Minutes</strong>.</li>
       <li>The question paper consists of <strong>Multiple Choice Questions (MCQs)</strong>.</li>
@@ -88,26 +102,48 @@
       <li>Once the time ends, your exam will be auto-submitted.</li>
     </ul>
 
-    <div class="timer">
+    <div class="timer" id="timerSection">
       Time Remaining: <span id="countdown">01:00</span>
     </div>
 
     <div class="checkbox-section">
       <label>
         <input type="checkbox" id="agreeCheck" />
-        I have carefully read all instructions regarding the exam and I am ready to begin.
+        I have carefully read all instructions and I am ready to begin.
       </label>
       <br/>
       <button id="startBtn">I am Ready to Begin</button>
     </div>
   </div>
 
-<!--  <script>
+  <script>
+    const username = sessionStorage.getItem("username");
+    const rollNo = sessionStorage.getItem("rollNo");
+
+    // Redirect if not logged in
+    if (!username || !rollNo) {
+      alert("Unauthorized access. Please login first.");
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("userInfo").innerHTML = `👤 <strong>${username}</strong> | 🎓 Roll No: <strong>${rollNo}</strong>`;
+    }
+
     const startBtn = document.getElementById('startBtn');
     const agreeCheck = document.getElementById('agreeCheck');
     const countdown = document.getElementById('countdown');
+    const timerSection = document.getElementById('timerSection');
 
-    let time = 300; // 5 minutes
+    let time = 60; // 1 minute
+
+    function updateButtonState() {
+      if (agreeCheck.checked && time <= 0) {
+        startBtn.disabled = false;
+        startBtn.classList.add('active');
+      } else {
+        startBtn.disabled = true;
+        startBtn.classList.remove('active');
+      }
+    }
 
     const interval = setInterval(() => {
       const minutes = String(Math.floor(time / 60)).padStart(2, '0');
@@ -117,22 +153,12 @@
 
       if (time < 0) {
         clearInterval(interval);
-        startBtn.disabled = false;
-        startBtn.classList.add('active');
-        startBtn.style.cursor = 'pointer';
-        startBtn.style.opacity = '1';
+        timerSection.classList.add("hidden");
+        updateButtonState();
       }
     }, 1000);
 
-    agreeCheck.addEventListener('change', () => {
-      if (agreeCheck.checked && time <= 0) {
-        startBtn.disabled = false;
-        startBtn.classList.add('active');
-      } else {
-        startBtn.disabled = true;
-        startBtn.classList.remove('active');
-      }
-    });
+    agreeCheck.addEventListener('change', updateButtonState);
 
     startBtn.addEventListener('click', () => {
       if (!agreeCheck.checked) {
@@ -140,54 +166,16 @@
         return;
       }
       if (!startBtn.classList.contains('active')) return;
-      // Redirect to exam page
-      window.location.href = "exam.html";
+
+      const confirmed = confirm("Are you sure you want to begin the exam? You won't return to this page.");
+      if (confirmed) {
+        window.location.href = "exam.html";
+      }
     });
-  </script>-->
-  <script>
-  const startBtn = document.getElementById('startBtn');
-  const agreeCheck = document.getElementById('agreeCheck');
-  const countdown = document.getElementById('countdown');
 
-  let time =60; // 5 minutes
-
-  function updateButtonState() {
-    if (agreeCheck.checked && time <= 0) {
-      startBtn.disabled = false;
-      startBtn.classList.add('active');
-    } else {
-      startBtn.disabled = true;
-      startBtn.classList.remove('active');
-    }
-  }
-
-  const interval = setInterval(() => {
-    const minutes = String(Math.floor(time / 60)).padStart(2, '0');
-    const seconds = String(time % 60).padStart(2, '0');
-    countdown.textContent = `${minutes}:${seconds}`;
-    time--;
-
-    if (time < 0) {
-      clearInterval(interval);
-      updateButtonState();
-    }
-  }, 1000);
-
-  agreeCheck.addEventListener('change', updateButtonState);
-
-  startBtn.addEventListener('click', () => {
-    if (!agreeCheck.checked) {
-      alert("Please confirm you have read the instructions.");
-      return;
-    }
-
-    if (!startBtn.classList.contains('active')) return;
-
-    const confirmed = confirm("Are you sure you want to begin the exam? Once started, you cannot return to instructions.");
-    if (confirmed) {
-      window.location.href = "exam.html"; // Redirect to exam page
-    }
-  });
-</script>
+    // Prevent refresh or accidental reload
+    window.addEventListener("beforeunload", null);
+    ;
+  </script>
 </body>
-</html> 
+</html>
