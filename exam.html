@@ -113,7 +113,8 @@
         <button onclick="saveAndNext()">Save & Next</button>
         <button onclick="markForReview()">Mark for Review</button>
         <button onclick="clearResponse()">Clear Response</button>
-        <button class="submit-btn" disabled>Final Submit (Auto)</button>
+        <!--<button class="submit-btn" disabled>Final Submit (Auto)</button>-->
+        <button class="submit-btn" onclick="finalSubmit()">Final Submit</button>
       </div>
     </div>
     <div class="right-panel">
@@ -892,10 +893,15 @@ function startTimer() {
     const elapsed = Math.floor((now - startTime) / 1000);
     const remaining = TOTAL_TIME_SECONDS - elapsed;
 
-    if (remaining <= 0) {
+    /*if (remaining <= 0) {
       clearInterval(interval);
       alert("⏰ Time's up! Submitting your exam...");
       finalSubmit();
+    }*/
+    if (remaining <= 0) {
+  clearInterval(interval);
+  alert("⏰ Time's up! You can now submit your exam manually.");
+  document.querySelector(".submit-btn").disabled = false;
     }
 
     const min = Math.floor(remaining / 60);
