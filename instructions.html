@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AIML Exam Instructions</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+      <script>
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
+</script>
+<script>
+  document.onkeydown = function(e) {
+    if (
+      e.keyCode === 123 || // F12
+      (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+      (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+    ) {
+      return false;
+    }
+  };
+  </script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
     body {
@@ -12,6 +28,16 @@
       padding: 20px;
       color: #333;
       min-height: 100vh;
+    -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+    }
     }
     .container {
       max-width: 850px;
