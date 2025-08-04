@@ -1012,7 +1012,7 @@ const TOTAL_TIME_SECONDS = 15 * 60;
 // ✅ Set allowed attempt count
 const ALLOWED_ATTEMPTS = 1;
 
-const questions = [
+/*const questions = [
       {
         question: "Which of the following is used to define a block of code in Python?",
         options: ["Curly braces", "Parentheses", "Indentation", "Quotation marks"],
@@ -1113,7 +1113,164 @@ const questions = [
         options: ["get()", "input()", "read()", "scan()"],
         answer: 1
       }
-    ];
+    ];*/
+    const questions = [
+  {
+    question: "What will be the output of the following code?\n\nx = [1, 2, 3]\ny = x\nx += [4, 5]\nprint(x, y)",
+    options: [
+      "[1, 2, 3, 4, 5] [1, 2, 3]",
+      "[1, 2, 3, 4, 5] [1, 2, 3, 4, 5]",
+      "[1, 2, 3] [1, 2, 3, 4, 5]",
+      "[1, 2, 3, 4, 5] [4, 5]"
+    ],
+    answer: 1
+  },
+  {
+    question: "Which of the following statements about Python's GIL (Global Interpreter Lock) is true?",
+    options: [
+      "It prevents all concurrency in Python",
+      "It allows parallelism in all cases",
+      "It allows only one thread to execute Python bytecode at a time",
+      "It is only present in Python 3",
+    ],
+    answer: 2
+  },
+  {
+    question: "What will the following code print?\n\nprint(''.join(sorted('4321', reverse=True)))",
+    options: ["1234", "4321", "1243", "3412"],
+    answer: 1
+  },
+  {
+    question: "Which Python standard library module can serialize and deserialize Python objects?",
+    options: ["marshal", "pickle", "json", "Both pickle and json"],
+    answer: 3
+  },
+  {
+    question: "What is the time complexity of accessing an element in a Python dictionary?",
+    options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"],
+    answer: 0
+  },
+  {
+    question: "What is the output of the following code?\n\ndef f(x=[]):\n  x.append(1)\n  return x\nprint(f())\nprint(f())",
+    options: ["[1] [1]", "[1, 1] [1, 1]", "[1] [1, 1]", "[1, 1] [1]"],
+    answer: 2
+  },
+  {
+    question: "What is the difference between is and == in Python?",
+    options: [
+      "`is` compares values, `==` compares references",
+      "`is` compares identity, `==` compares values",
+      "They are the same",
+      "`is` compares memory size"
+    ],
+    answer: 1
+  },
+  {
+    question: "Which of the following methods will create a shallow copy of a list?",
+    options: ["list.copy()", "list()", "copy.copy()", "All of the above"],
+    answer: 3
+  },
+  {
+    question: "Which metaclass is used in Python 3 to customize class creation?",
+    options: ["type", "object", "class", "new"],
+    answer: 0
+  },
+  {
+    question: "Which of these is the correct way to handle multiple exceptions?",
+    options: [
+      "except (ValueError, TypeError):",
+      "except ValueError, TypeError:",
+      "except ValueError or TypeError:",
+      "except ValueError | TypeError:"
+    ],
+    answer: 0
+  },
+  {
+    question: "What is the output of this code?\n\na = (i*i for i in range(3))\nprint(list(a))",
+    options: ["[1, 4, 9]", "[0, 1, 4]", "[0, 2, 4]", "[0, 1, 2]"],
+    answer: 1
+  },
+  {
+    question: "What does the '@staticmethod' decorator do?",
+    options: [
+      "Creates a function that cannot access class or instance variables",
+      "Creates a function bound to the class",
+      "Creates a class method",
+      "Creates an instance method"
+    ],
+    answer: 0
+  },
+  {
+    question: "Which function is used to evaluate a string as Python code?",
+    options: ["exec()", "compile()", "eval()", "Both eval() and exec()"],
+    answer: 3
+  },
+  {
+    question: "What is the result of `bool('False')` in Python?",
+    options: ["True", "False", "None", "Error"],
+    answer: 0
+  },
+  {
+    question: "Which of the following is true about Python's memory management?",
+    options: [
+      "It uses manual memory allocation",
+      "It uses garbage collection and reference counting",
+      "It never frees memory",
+      "You must explicitly delete variables"
+    ],
+    answer: 1
+  },
+  {
+    question: "What is a closure in Python?",
+    options: [
+      "A function that is defined inside another function and returns itself",
+      "A function object that has access to variables in its lexical scope",
+      "A loop inside a function",
+      "An object of a class inside a function"
+    ],
+    answer: 1
+  },
+  {
+    question: "Which of the following best describes a Python iterator?",
+    options: [
+      "An object that implements __next__() and __iter__()",
+      "An object that can be indexed",
+      "An object with a for loop",
+      "An object with __getitem__()"
+    ],
+    answer: 0
+  },
+  {
+    question: "What will be the output of:\n\nprint([i for i in range(3)])\nprint((i for i in range(3)))",
+    options: [
+      "[0, 1, 2] <generator object>",
+      "[0, 1, 2] (0, 1, 2)",
+      "[0, 1, 2] [0, 1, 2]",
+      "(0, 1, 2) [0, 1, 2]"
+    ],
+    answer: 0
+  },
+  {
+    question: "Which of the following will NOT raise a SyntaxError?",
+    options: [
+      "`a === b`",
+      "`def f(:)`",
+      "`if True print('Hello')`",
+      "`print('Hello'))`"
+    ],
+    answer: 0
+  },
+  {
+    question: "Which of the following will correctly create a set with three elements?",
+    options: [
+      "set = {1, 2, 3}",
+      "s = set(1, 2, 3)",
+      "s = set([1, 2, 3])",
+      "Both A and C"
+    ],
+    answer: 3
+  }
+];
 
 let current = parseInt(sessionStorage.getItem("currentQuestion") || "0");
 let responses = JSON.parse(sessionStorage.getItem("responses") || JSON.stringify(Array(questions.length).fill(null)));
