@@ -5,21 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Student Result Viewer</title>
   <script>
-  document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-  });
-</script>
-<script>
-  document.onkeydown = function(e) {
-    if (
-      e.keyCode === 123 || // F12
-      (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-      (e.ctrlKey && e.keyCode === 85) // Ctrl+U
-    ) {
-      return false;
-    }
-  };
-</script>
+    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    document.onkeydown = function(e) {
+      if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73) || (e.ctrlKey && e.keyCode === 85)) {
+        return false;
+      }
+    };
+  </script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -38,7 +31,7 @@
     const db = getFirestore(app);
 
     window.getStudentResult = async () => {
-      const roll = document.getElementById("rollInput").value.trim();
+      const reg = document.getElementById("rollInput").value.trim();
       const errorDiv = document.getElementById("error");
       const studentDiv = document.getElementById("studentDetails");
       const resultDiv = document.getElementById("resultDetails");
@@ -51,48 +44,33 @@
       resultDiv.classList.add("hidden");
       loadingDiv.classList.remove("hidden");
 
-      if (!roll) {
-        errorDiv.innerText = "Please enter a roll number.";
+      if (!reg) {
+        errorDiv.innerText = "Please enter a registration number.";
         loadingDiv.classList.add("hidden");
         return;
       }
 
       try {
-        const studentRef = doc(db, "aiml_exam_logins", roll);
-        const studentSnap = await getDoc(studentRef);
+        const docRef = doc(db, "examResponses", reg);
+        const docSnap = await getDoc(docRef);
 
-        if (!studentSnap.exists()) {
-          errorDiv.innerText = "No student found with this roll number.";
+        if (!docSnap.exists()) {
+          errorDiv.innerText = "No record found for this registration number.";
           loadingDiv.classList.add("hidden");
           return;
         }
 
-        const studentData = studentSnap.data();
-        const reg = studentData.registration;
+        const data = docSnap.data();
+        const { name, roll, responses, status } = data;
 
         studentDiv.innerHTML = `
           <h2>Student Details</h2>
-          <p><strong>Name:</strong> ${studentData.name}</p>
+          <p><strong>Name:</strong> ${name}</p>
           <p><strong>Roll No:</strong> ${roll}</p>
           <p><strong>Registration No:</strong> ${reg}</p>
         `;
         studentDiv.classList.remove("hidden");
 
-        const examRef = doc(db, "examResponses", reg);
-        const examSnap = await getDoc(examRef);
-
-        if (!examSnap.exists()) {
-          resultDiv.innerHTML = "<p>No exam response found for this student.</p>";
-          resultDiv.classList.remove("hidden");
-          loadingDiv.classList.add("hidden");
-          return;
-        }
-
-        const examData = examSnap.data();
-        const responses = examData.responses;
-        const status = examData.status;
-
-        /*const correctAnswers = [3, 2, 2, 3, 2, 3, 1, 2, 2, 1, 1, 3, 2, 3, 3, 3, 2, 3, 4, 2];*/
         const correctAnswers = [2, 3, 2, 4, 1, 3, 2, 4, 1, 1, 2, 1, 4, 1, 2, 2, 1, 1, 1, 4];
 
         let correct = 0, incorrect = 0, unattempted = 0, totalAttemptedWithResponse = 0;
@@ -103,11 +81,8 @@
 
           if ((stat === "answered" || stat === "ans-review") && res !== null) {
             totalAttemptedWithResponse++;
-            if (res + 1 === correctAnswers[i]) {
-              correct++;
-            } else {
-              incorrect++;
-            }
+            if (res + 1 === correctAnswers[i]) correct++;
+            else incorrect++;
           } else if (stat === "not-answered" && res !== null) {
             totalAttemptedWithResponse++;
             incorrect++;
@@ -145,9 +120,9 @@
           </div>
         `;
         resultDiv.classList.remove("hidden");
-      } catch (err) {
-        console.error(err);
-        errorDiv.innerText = "Something went wrong. Please try again.";
+      } catch (error) {
+        console.error(error);
+        errorDiv.innerText = "Something went wrong while fetching data.";
       } finally {
         loadingDiv.classList.add("hidden");
       }
@@ -157,26 +132,12 @@
   <style>
     html, body {
       height: 100%;
-    }
-
-    body {
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: cover;
       margin: 0;
       padding: 20px;
       text-align: center;
-      -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none;
-  user-drag: none;
+      user-select: none;
     }
 
     h1 {
@@ -203,7 +164,7 @@
     }
 
     input:hover {
-      border: 1px solid #2adaf4dd;
+      border-color: #2adaf4dd;
     }
 
     button {
@@ -309,16 +270,15 @@
 </head>
 <body>
 
-  <h1>🎓 AIML Result Python Programming test ( July 2025 )</h1>
+  <h1>🎓 AIML Result - Python Programming Test (August 2025) -02</h1>
 
   <div class="input-group">
-    <input type="text" id="rollInput" placeholder="Enter Class Roll Number">
+    <input type="text" id="rollInput" placeholder="Enter Registration Number">
     <button onclick="getStudentResult()">Get Result</button>
   </div>
 
   <div id="error"></div>
   <div id="loading" class="spinner hidden"></div>
-
   <div id="studentDetails" class="hidden"></div>
   <div id="resultDetails" class="hidden"></div>
 
