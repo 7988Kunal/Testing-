@@ -1006,8 +1006,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ⏱ Time in seconds (25 minutes)
-const TOTAL_TIME_SECONDS = 25 * 60;
+// ⏱ Time in seconds (20 minutes)
+const TOTAL_TIME_SECONDS = 20 * 60;
 
 // ✅ Set allowed attempt count
 const ALLOWED_ATTEMPTS = 1;
@@ -1114,7 +1114,7 @@ const ALLOWED_ATTEMPTS = 1;
         answer: 1
       }
     ];*/
-    const questions = [
+    /*const questions = [
   {
     question: "What will be the output of the following code?\n\nx = [1, 2, 3]\ny = x\nx += [4, 5]\nprint(x, y)",
     options: [
@@ -1269,6 +1269,133 @@ const ALLOWED_ATTEMPTS = 1;
       "Both A and C"
     ],
     answer: 3
+  }
+];*/
+const questions = [
+  {
+    question: "What will be the output of the following code?\n\nprint('Hello', 'World', sep='-')",
+    options: [
+      "Hello World",
+      "Hello-World",
+      "Hello- World",
+      "Error"
+    ],
+    answer: 1
+  },
+  {
+    question: "Which of the following is a valid variable name in Python?",
+    options: ["2name", "name_2", "for", "class"],
+    answer: 1
+  },
+  {
+    question: "What is the default return type of input() function in Python?",
+    options: ["int", "float", "str", "bool"],
+    answer: 2
+  },
+  {
+    question: "Which of the following is a mutable data type?",
+    options: ["tuple", "list", "str", "frozenset"],
+    answer: 1
+  },
+  {
+    question: "Which keyword is reserved in Python?",
+    options: ["print", "while", "add", "sum"],
+    answer: 1
+  },
+  {
+    question: "What is the output of int(9.9)?",
+    options: ["9.9", "9", "10", "Error"],
+    answer: 1
+  },
+  {
+    question: "What will be the output of the following code?\n\na = 5\nb = 2\nprint(a // b)",
+    options: ["2.5", "2", "3", "Error"],
+    answer: 1
+  },
+  {
+    question: "Which operator is used for exponentiation in Python?",
+    options: ["^", "**", "exp()", "pow"],
+    answer: 1
+  },
+  {
+    question: "Which of the following is correct ternary syntax?",
+    options: [
+      "x = if a > b ? a : b",
+      "x = a if a > b else b",
+      "x = (a > b) ? a : b",
+      "x = a > b ? a : b"
+    ],
+    answer: 1
+  },
+  {
+    question: "Which of the following is a function without return?",
+    options: [
+      "def f(): return 5",
+      "def f(): pass",
+      "def f(): print('Hello')",
+      "Both B and C"
+    ],
+    answer: 3
+  },
+  {
+    question: "Which statement about lambda function is true?",
+    options: [
+      "It can have multiple expressions",
+      "It always returns a value",
+      "It can contain loops",
+      "It is defined using def keyword"
+    ],
+    answer: 1
+  },
+  {
+    question: "Which module must be imported to use reduce()?",
+    options: ["functools", "itertools", "math", "operator"],
+    answer: 0
+  },
+  {
+    question: "What does filter() return in Python 3?",
+    options: ["List", "Tuple", "Iterator", "Set"],
+    answer: 2
+  },
+  {
+    question: "What is the output of math.floor(5.9)?",
+    options: ["5.9", "5", "6", "Error"],
+    answer: 1
+  },
+  {
+    question: "What will map(lambda x: x*2, [1,2,3]) return?",
+    options: [
+      "[2, 4, 6]",
+      "(2, 4, 6)",
+      "map object",
+      "Error"
+    ],
+    answer: 2
+  },
+  {
+    question: "What is the output of list(range(2, 10, 2))?",
+    options: ["[2, 4, 6, 8]", "[2, 3, 4, 5, 6, 7, 8, 9]", "[2, 10]", "[2, 4, 8, 10]"],
+    answer: 0
+  },
+  {
+    question: "Which type of argument is mandatory in function call?",
+    options: ["Default argument", "Required argument", "Keyword argument", "Arbitrary argument"],
+    answer: 1
+  },
+  {
+    question: "What will *args collect in a function definition?",
+    options: ["Dictionary", "Tuple of arguments", "List", "Single argument only"],
+    answer: 1
+  },
+  {
+    question: "What will **kwargs collect in a function definition?",
+    options: ["List of values", "Tuple of values", "Dictionary of key-value pairs", "String"],
+    answer: 2
+  },
+  {
+    question: "Which keyword is used as a placeholder in Python functions?",
+    options: ["continue", "break", "pass", "skip"],
+    answer: 2
   }
 ];
 
