@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Python Programming CBT Exam</title>
@@ -125,7 +126,7 @@
       <strong>Roll No:</strong> <span id="rollNumber">Loading...</span><br>
       <strong>Reg No:</strong> <span id="regNumber">Loading...</span>
     </div>
-    <div class="timer" id="timer">20:00</div>
+    <div class="timer" id="timer">60:00</div>
   </div>
   <div class="container">
     <div class="left-panel">
@@ -1006,272 +1007,255 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ⏱ Time in seconds (20 minutes)
-const TOTAL_TIME_SECONDS = 20 * 60;
+// ⏱ Time in seconds (60 minutes)
+const TOTAL_TIME_SECONDS = 60 * 60;
 
 // ✅ Set allowed attempt count
 const ALLOWED_ATTEMPTS = 1;
 
-/*const questions = [
-      {
-        question: "Which of the following is used to define a block of code in Python?",
-        options: ["Curly braces", "Parentheses", "Indentation", "Quotation marks"],
-        answer: 2
-      },
-      {
-        question: "What is the output of: print(2 ** 3 ** 2)?",
-        options: ["64", "512", "256", "None"],
-        answer: 1
-      },
-      {
-        question: "Which of these is a mutable built-in type in Python?",
-        options: ["str", "list", "tuple", "int"],
-        answer: 1
-      },
-      {
-        question: "Which of these methods can be used with dictionaries?",
-        options: ["append()", "add()", "update()", "extend()"],
-        answer: 2
-      },
-      {
-        question: "What is the result of list(range(0, 10, 2))?",
-        options: ["[2, 4, 6, 8, 10]", "[0, 2, 4, 6, 8]", "[1, 3, 5, 7, 9]", "[0, 2, 4, 6, 8, 10]"],
-        answer: 1
-      },
-      {
-        question: "Which module in Python supports regular expressions?",
-        options: ["pyregex", "regexlib", "re", "regexp"],
-        answer: 2
-      },
-      {
-        question: "What is the correct syntax to open a file named 'data.txt' for reading?",
-        options: ["open('data.txt', 'r')", "open('data.txt', 'read')", "file('data.txt')", "open.read('data.txt')"],
-        answer: 0
-      },
-      {
-        question: "Which keyword is used to create a generator in Python?",
-        options: ["iter", "yield", "return", "gen"],
-        answer: 1
-      },
-      {
-        question: "Which of these is not a valid set operation?",
-        options: ["union()", "intersect()", "difference()", "symmetric_difference()"],
-        answer: 1
-      },
-      {
-        question: "What is the output of print(type(lambda x: x))?",
-        options: ["class 'function' ", "class 'lambda' ", " class 'object' ", " lambda 'function' "],
-        answer: 0
-      },
-      {
-        question: "Which of these is a correct decorator syntax?",
-        options: ["@decorator", "#decorator", "$decorator", "decorator@"],
-        answer: 0
-      },
-      {
-        question: "What does the 'pass' keyword do in Python?",
-        options: ["Stops execution", "Skips to next line", "Does nothing", "Throws exception"],
-        answer: 2
-      },
-      {
-        question: "Which of these exceptions is raised when dividing by zero?",
-        options: ["ZeroError", "ZeroDivisionError", "ArithmeticError", "MathError"],
-        answer: 1
-      },
-      {
-        question: "Which of these can be used as keys in a dictionary?",
-        options: ["lists", "sets", "tuples", "dictionaries"],
-        answer: 2
-      },
-      {
-        question: "Which operator is used for floor division in Python?",
-        options: ["/", "%", "//", "div"],
-        answer: 2
-      },
-      {
-        question: "Which built-in function returns the length of a list?",
-        options: ["length()", "size()", "len()", "count()"],
-        answer: 2
-      },
-      {
-        question: "Which function converts a string to an integer in Python?",
-        options: ["parseInt()", "int()", "float()", "str()"],
-        answer: 1
-      },
-      {
-        question: "Which method is used to add an item at the end of a list?",
-        options: ["insert()", "add()", "append()", "extend()"],
-        answer: 2
-      },
-      {
-        question: "Which of the following data types is immutable?",
-        options: ["list", "set", "dict", "str"],
-        answer: 3
-      },
-      {
-        question: "Which function is used to get user input in Python 3?",
-        options: ["get()", "input()", "read()", "scan()"],
-        answer: 1
-      }
-    ];*/
-    /*const questions = [
+const Questions = [
   {
-    question: "What will be the output of the following code?\n\nx = [1, 2, 3]\ny = x\nx += [4, 5]\nprint(x, y)",
-    options: [
-      "[1, 2, 3, 4, 5] [1, 2, 3]",
-      "[1, 2, 3, 4, 5] [1, 2, 3, 4, 5]",
-      "[1, 2, 3] [1, 2, 3, 4, 5]",
-      "[1, 2, 3, 4, 5] [4, 5]"
-    ],
+    question: "Which of the following is a mutable data type in Python?",
+    options: ["List", "Tuple", "String", "Integer"],
+    answer: 0
+  },
+  {
+    question: "What is the output of: x = 5; y = 2; print(x ** y)?",
+    options: ["25", "10", "3", "8"],
+    answer: 3
+  },
+  {
+    question: "Which operator is used for floor division in Python?",
+    options: ["/", "//", "%", "**"],
     answer: 1
   },
   {
-    question: "Which of the following statements about Python's GIL (Global Interpreter Lock) is true?",
-    options: [
-      "It prevents all concurrency in Python",
-      "It allows parallelism in all cases",
-      "It allows only one thread to execute Python bytecode at a time",
-      "It is only present in Python 3",
-    ],
+    question: "What will be the output of: print(10 > 5 and 3 < 2)?",
+    options: ["True", "False", "Error", "None"],
+    answer: 1
+  },
+  {
+    question: "Which of these is used to take input from the user?",
+    options: ["input()", "scan()", "read()", "get()"],
+    answer: 0
+  },
+  {
+    question: "What will be the output of: print('Python'[-1])?",
+    options: ["P", "n", "o", "Error"],
+    answer: 1
+  },
+  {
+    question: "What is the correct way to define a function in Python?",
+    options: ["def func():", "function func():", "fun func():", "define func():"],
+    answer: 0
+  },
+  {
+    question: "What will len([1, 2, 3, 4]) return?",
+    options: ["3", "4", "Error", "None"],
+    answer: 1
+  },
+  {
+    question: "Which of the following is a valid lambda function syntax?",
+    options: ["lambda x: x+1", "def lambda(x): x+1", "lambda(x) => x+1", "lambda x { return x+1 }"],
+    answer: 0
+  },
+  {
+    question: "What is recursion in Python?",
+    options: ["Function calling itself", "Looping over list", "Returning multiple values", "Lambda function"],
+    answer: 0
+  },
+  {
+    question: "Which of these is an immutable data type?",
+    options: ["List", "Set", "Tuple", "Dictionary"],
     answer: 2
   },
   {
-    question: "What will the following code print?\n\nprint(''.join(sorted('4321', reverse=True)))",
-    options: ["1234", "4321", "1243", "3412"],
-    answer: 1
-  },
-  {
-    question: "Which Python standard library module can serialize and deserialize Python objects?",
-    options: ["marshal", "pickle", "json", "Both pickle and json"],
+    question: "How do you create a set in Python?",
+    options: ["{}", "[]", "()", "set()"],
     answer: 3
   },
   {
-    question: "What is the time complexity of accessing an element in a Python dictionary?",
-    options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"],
-    answer: 0
-  },
-  {
-    question: "What is the output of the following code?\n\ndef f(x=[]):\n  x.append(1)\n  return x\nprint(f())\nprint(f())",
-    options: ["[1] [1]", "[1, 1] [1, 1]", "[1] [1, 1]", "[1, 1] [1]"],
+    question: "What is the output of: print(type({'a':1, 'b':2}))?",
+    options: ["list", "tuple", "dict", "set"],
     answer: 2
   },
   {
-    question: "What is the difference between is and == in Python?",
-    options: [
-      "`is` compares values, `==` compares references",
-      "`is` compares identity, `==` compares values",
-      "They are the same",
-      "`is` compares memory size"
-    ],
-    answer: 1
-  },
-  {
-    question: "Which of the following methods will create a shallow copy of a list?",
-    options: ["list.copy()", "list()", "copy.copy()", "All of the above"],
+    question: "Which of the following is used to format strings in Python?",
+    options: ["% operator", "f-strings", "format() method", "All of the above"],
     answer: 3
   },
   {
-    question: "Which metaclass is used in Python 3 to customize class creation?",
-    options: ["type", "object", "class", "new"],
-    answer: 0
-  },
-  {
-    question: "Which of these is the correct way to handle multiple exceptions?",
-    options: [
-      "except (ValueError, TypeError):",
-      "except ValueError, TypeError:",
-      "except ValueError or TypeError:",
-      "except ValueError | TypeError:"
-    ],
-    answer: 0
-  },
-  {
-    question: "What is the output of this code?\n\na = (i*i for i in range(3))\nprint(list(a))",
-    options: ["[1, 4, 9]", "[0, 1, 4]", "[0, 2, 4]", "[0, 1, 2]"],
+    question: "What will open('file.txt', 'w') do in Python?",
+    options: ["Read the file", "Write to the file", "Append to file", "Delete the file"],
     answer: 1
   },
   {
-    question: "What does the '@staticmethod' decorator do?",
-    options: [
-      "Creates a function that cannot access class or instance variables",
-      "Creates a function bound to the class",
-      "Creates a class method",
-      "Creates an instance method"
-    ],
+    question: "Which exception is raised when division by zero occurs?",
+    options: ["ZeroDivisionError", "ValueError", "TypeError", "IndexError"],
     answer: 0
   },
   {
-    question: "Which function is used to evaluate a string as Python code?",
-    options: ["exec()", "compile()", "eval()", "Both eval() and exec()"],
-    answer: 3
-  },
-  {
-    question: "What is the result of `bool('False')` in Python?",
-    options: ["True", "False", "None", "Error"],
+    question: "How do you import the math module?",
+    options: ["import math", "include math", "from math import all", "import Math"],
     answer: 0
   },
   {
-    question: "Which of the following is true about Python's memory management?",
-    options: [
-      "It uses manual memory allocation",
-      "It uses garbage collection and reference counting",
-      "It never frees memory",
-      "You must explicitly delete variables"
-    ],
+    question: "Which of these is a valid way to calculate the factorial of 5 using math module?",
+    options: ["math.factorial(5)", "factorial(5)", "math.factor(5)", "factorial5()"],
+    answer: 0
+  },
+  {
+    question: "What will map(lambda x: x*2, [1,2,3]) return in Python 3?",
+    options: ["[2,4,6]", "(2,4,6)", "map object", "Error"],
+    answer: 2
+  },
+  {
+    question: "What does filter() return in Python 3?",
+    options: ["List", "Tuple", "Iterator", "Set"],
+    answer: 2
+  },
+  {
+    question: "What will be the output of: list(range(2, 10, 2))?",
+    options: ["[2, 4, 6, 8]", "[2, 3, 4, 5, 6, 7, 8, 9]", "[2, 10]", "[2, 4, 8, 10]"],
+    answer: 0
+  },
+  {
+    question: "Which type of argument is mandatory in function call?",
+    options: ["Default argument", "Required argument", "Keyword argument", "Arbitrary argument"],
     answer: 1
   },
   {
-    question: "What is a closure in Python?",
-    options: [
-      "A function that is defined inside another function and returns itself",
-      "A function object that has access to variables in its lexical scope",
-      "A loop inside a function",
-      "An object of a class inside a function"
-    ],
+    question: "What will *args collect in a function definition?",
+    options: ["Dictionary", "Tuple of arguments", "List", "Single argument only"],
     answer: 1
   },
   {
-    question: "Which of the following best describes a Python iterator?",
-    options: [
-      "An object that implements __next__() and __iter__()",
-      "An object that can be indexed",
-      "An object with a for loop",
-      "An object with __getitem__()"
-    ],
+    question: "What will **kwargs collect in a function definition?",
+    options: ["List of values", "Tuple of values", "Dictionary of key-value pairs", "String"],
+    answer: 2
+  },
+  {
+    question: "Which keyword is used as a placeholder in Python functions?",
+    options: ["continue", "break", "pass", "skip"],
+    answer: 2
+  },
+  {
+    question: "What is the output of: [x**2 for x in range(3)]?",
+    options: ["[0,1,2]", "[1,4,9]", "[0,1,4]", "[2,4,6]"],
+    answer: 2
+  },
+  {
+    question: "What is the difference between list and tuple?",
+    options: ["List is mutable, tuple is immutable", "Tuple is mutable, list is immutable", "Both are mutable", "Both are immutable"],
     answer: 0
   },
   {
-    question: "What will be the output of:\n\nprint([i for i in range(3)])\nprint((i for i in range(3)))",
-    options: [
-      "[0, 1, 2] <generator object>",
-      "[0, 1, 2] (0, 1, 2)",
-      "[0, 1, 2] [0, 1, 2]",
-      "(0, 1, 2) [0, 1, 2]"
-    ],
+    question: "Which method adds an element at the end of a list?",
+    options: ["add()", "append()", "insert()", "extend()"],
+    answer: 1
+  },
+  {
+    question: "Which method removes the last element of a list?",
+    options: ["remove()", "pop()", "del()", "clear()"],
+    answer: 1
+  },
+  {
+    question: "What will 'Hello'.lower() return?",
+    options: ["HELLO", "hello", "Hello", "error"],
+    answer: 1
+  },
+  {
+    question: "What will 'Python'.replace('P','J') return?",
+    options: ["Python", "Jython", "Jython", "Jython"],
+    answer: 1
+  },
+  {
+    question: "How can you check if a key exists in a dictionary?",
+    options: ["if key in dict", "if key exists dict", "dict.has(key)", "dict.contains(key)"],
     answer: 0
   },
   {
-    question: "Which of the following will NOT raise a SyntaxError?",
-    options: [
-      "`a === b`",
-      "`def f(:)`",
-      "`if True print('Hello')`",
-      "`print('Hello'))`"
-    ],
+    question: "Which of the following is a correct way to create an empty dictionary?",
+    options: ["{}", "[]", "()", "dict[]"],
     answer: 0
   },
   {
-    question: "Which of the following will correctly create a set with three elements?",
-    options: [
-      "set = {1, 2, 3}",
-      "s = set(1, 2, 3)",
-      "s = set([1, 2, 3])",
-      "Both A and C"
-    ],
-    answer: 3
+    question: "Which of the following statements is correct for a Python set?",
+    options: ["Sets are ordered", "Sets allow duplicate elements", "Sets are mutable and unordered", "Sets are immutable"],
+    answer: 2
+  },
+  {
+    question: "Which of the following can be used to iterate over a list?",
+    options: ["for loop", "while loop", "both", "None"],
+    answer: 2
+  },
+  {
+    question: "Which of the following statements about slicing is correct?",
+    options: ["list[1:5] includes index 5", "list[1:5] excludes index 5", "list[1:5] includes index 0", "list[1:5] includes all elements"],
+    answer: 1
+  },
+  {
+    question: "What will [i for i in range(5) if i%2==0] return?",
+    options: ["[1,3]", "[0,2,4]", "[0,1,2,3,4]", "[2,4]"],
+    answer: 1
+  },
+  {
+    question: "Which of the following is a valid dictionary comprehension?",
+    options: ["{x:x**2 for x in range(3)}", "{x**2:x for x in range(3)}", "[x:x**2 for x in range(3)]", "(x:x**2 for x in range(3))"],
+    answer: 0
+  },
+  {
+    question: "What will be the output of: bool([])?",
+    options: ["True", "False", "Error", "None"],
+    answer: 1
+  },
+  {
+    question: "What is the output of: 'abc' * 3?",
+    options: ["'abcabcabc'", "'abc3'", "['abc', 'abc', 'abc']", "Error"],
+    answer: 0
+  },
+  {
+    question: "Which of the following is not a valid Python identifier?",
+    options: ["my_var", "_var1", "2var", "var_2"],
+    answer: 2
+  },
+  {
+    question: "What is the output of: list(map(str, [1,2,3]))?",
+    options: ["['1','2','3']", "[1,2,3]", "(1,2,3)", "Error"],
+    answer: 0
+  },
+  {
+    question: "Which of the following expressions gives the ASCII value of a character?",
+    options: ["ord('A')", "chr('A')", "ascii('A')", "code('A')"],
+    answer: 0
+  },
+  {
+    question: "What is the output of: 10 % 3?",
+    options: ["3", "1", "0", "Error"],
+    answer: 1
+  },
+  {
+    question: "What will zip([1,2], ['a','b']) return?",
+    options: ["[(1,'a'), (2,'b')]", "zip object", "[1,'a',2,'b']", "Error"],
+    answer: 1
+  },
+  {
+    question: "Which of the following is true about Python lists?",
+    options: ["Lists can store mixed data types", "Lists are immutable", "Lists cannot contain duplicates", "Lists are ordered but immutable"],
+    answer: 0
+  },
+  {
+    question: "Which of the following creates an iterator?",
+    options: ["iter([1,2,3])", "[1,2,3]", "range(3)", "None"],
+    answer: 0
+  },
+  {
+    question: "Which of the following is used to combine multiple iterables in Python?",
+    options: ["functools", "itertools", "operator", "math"],
+    answer: 1
   }
-];*/
-const questions = [
+];
+/*const questions = [
   {
     question: "What will be the output of the following code?\n\nprint('Hello', 'World', sep='-')",
     options: [
@@ -1397,7 +1381,7 @@ const questions = [
     options: ["continue", "break", "pass", "skip"],
     answer: 2
   }
-];
+];*/
 
 let current = parseInt(sessionStorage.getItem("currentQuestion") || "0");
 let responses = JSON.parse(sessionStorage.getItem("responses") || JSON.stringify(Array(questions.length).fill(null)));
