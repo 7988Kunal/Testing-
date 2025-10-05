@@ -988,12 +988,12 @@ document.addEventListener("contextmenu", e => e.preventDefault());
 history.pushState(null, null, location.href);
 window.onpopstate = () => history.go(1);
 </script>-->
-  <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, setDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script type="module">
+ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+ import { getFirestore, setDoc, getDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // Firebase Config
-const firebaseConfig = {
+ const firebaseConfig = {
   apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
   authDomain: "studentdashboard-681a8.firebaseapp.com",
   projectId: "studentdashboard-681a8",
@@ -1008,12 +1008,12 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ⏱ Time in seconds (60 minutes)
-const TOTAL_TIME_SECONDS = 60 * 60;
+ const TOTAL_TIME_SECONDS = 60 * 60;
 
 // ✅ Set allowed attempt count
-const ALLOWED_ATTEMPTS = 1;
+ const ALLOWED_ATTEMPTS = 1;
 
-const Questions = [
+ const questions = [
   {
     question: "Which of the following is a mutable data type in Python?",
     options: ["List", "Tuple", "String", "Integer"],
