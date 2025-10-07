@@ -126,7 +126,7 @@
       <strong>Roll No:</strong> <span id="rollNumber">Loading...</span><br>
       <strong>Reg No:</strong> <span id="regNumber">Loading...</span>
     </div>
-    <div class="timer" id="timer">60:00</div>
+    <div class="timer" id="timer">30:00</div>
   </div>
   <div class="container">
     <div class="left-panel">
@@ -1007,8 +1007,8 @@ window.onpopstate = () => history.go(1);
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ⏱ Time in seconds (60 minutes)
- const TOTAL_TIME_SECONDS = 60 * 60;
+// ⏱ Time in seconds (30 minutes)
+ const TOTAL_TIME_SECONDS = 30 * 60;
 
 // ✅ Set allowed attempt count
  const ALLOWED_ATTEMPTS = 1;
@@ -1022,7 +1022,7 @@ const db = getFirestore(app);
   {
     question: "What is the output of: x = 5; y = 2; print(x ** y)?",
     options: ["25", "10", "3", "8"],
-    answer: 3
+    answer: 0
   },
   {
     question: "Which operator is used for floor division in Python?",
@@ -1166,7 +1166,7 @@ const db = getFirestore(app);
   },
   {
     question: "What will 'Python'.replace('P','J') return?",
-    options: ["Python", "Jython", "Jython", "Jython"],
+    options: ["Python", "Jython", "JYthon", "JyThon"],
     answer: 1
   },
   {
