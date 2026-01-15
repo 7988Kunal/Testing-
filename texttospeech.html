@@ -2,80 +2,55 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Text to Speech</title>
+<title>Text Reader with Translation & Highlight</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
+body{
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    min-height: 100vh;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background:#f5f7ff;
+    padding:20px;
 }
 
-.container {
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+.container{
+    max-width:800px;
+    margin:auto;
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(0,0,0,.1);
 }
 
-h2 {
-    text-align: center;
-    margin-bottom: 15px;
-    color: #1e3c72;
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:15px;
 }
 
-textarea {
-    width: 100%;
-    height: 120px;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    resize: none;
-    font-size: 15px;
+select,button{
+    padding:10px 14px;
+    font-size:15px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    cursor:pointer;
 }
 
-.text-box {
-    background: #f1f5ff;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    font-size: 15px;
-    color: #333;
+button{
+    background:#4f46e5;
+    color:#fff;
+    border:none;
 }
 
-.buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
+button:hover{background:#4338ca}
+
+#textBox{
+    font-size:18px;
+    line-height:1.6;
 }
 
-button {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: bold;
-    color: white;
-}
-
-.speak-btn {
-    background: #1e88e5;
-}
-
-.stop-btn {
-    background: #e53935;
-}
-
-button:hover {
-    opacity: 0.9;
+.highlight{
+    background:yellow;
 }
 </style>
 </head>
@@ -83,46 +58,118 @@ button:hover {
 <body>
 
 <div class="container">
-    <h2>Text to Speech</h2>
 
-    <!-- Textarea -->
-    <textarea id="textInput" placeholder="Write text here..."></textarea>
+<h2>🔊 Smart Text Reader (English ↔ Hindi)</h2>
 
-    <!-- Existing text -->
-    <div class="text-box" id="textDiv">
-        Hello! This is already written text inside a div. Click Speak to hear me.
-    </div>
+<div class="controls">
+    <select id="langSelect">
+        <option value="en">English</option>
+        <option value="hi">Hindi</option>
+    </select>
 
-    <div class="buttons">
-        <button class="speak-btn" onclick="speakText()">🔊 Speak</button>
-        <button class="stop-btn" onclick="stopSpeech()">⛔ Stop</button>
-    </div>
+    <select id="voiceSelect"></select>
+
+    <button onclick="translateText()">🌐 Translate</button>
+    <button onclick="speak()">▶ Listen</button>
+    <button onclick="stopSpeak()">⏹ Stop</button>
+</div>
+
+<div id="textBox">
+    EduPilot is India’s smart guidance platform helping students choose
+    the right exams, careers, and learning paths with confidence.
+</div>
+
 </div>
 
 <script>
-function speakText() {
-    const textareaText = document.getElementById("textInput").value.trim();
-    const divText = document.getElementById("textDiv").innerText.trim();
+let voices = [];
+let utterance;
+let originalText = document.getElementById("textBox").innerText;
 
-    const textToSpeak = textareaText !== "" ? textareaText : divText;
+// Load voices
+function loadVoices(){
+    voices = speechSynthesis.getVoices();
+    const voiceSelect = document.getElementById("voiceSelect");
+    voiceSelect.innerHTML = "";
 
-    if (textToSpeak === "") {
-        alert("Please write or provide some text.");
+    voices.forEach((v,i)=>{
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = `${v.name} (${v.lang})`;
+        voiceSelect.appendChild(opt);
+    });
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+
+// Speak with highlight
+function speak(){
+    stopSpeak();
+
+    const textBox = document.getElementById("textBox");
+    const text = textBox.innerText;
+    const lang = document.getElementById("langSelect").value;
+
+    utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang === "hi" ? "hi-IN" : "en-IN";
+
+    const selectedVoice = voices[
+        document.getElementById("voiceSelect").value
+    ];
+    if(selectedVoice) utterance.voice = selectedVoice;
+
+    utterance.onboundary = function(event){
+        if(event.name === "word"){
+            highlightWord(event.charIndex, event.charLength);
+        }
+    };
+
+    speechSynthesis.speak(utterance);
+}
+
+// Stop speaking
+function stopSpeak(){
+    speechSynthesis.cancel();
+    removeHighlight();
+}
+
+// Highlight logic
+function highlightWord(start, length){
+    const box = document.getElementById("textBox");
+    const text = box.innerText;
+
+    box.innerHTML =
+        text.substring(0,start) +
+        `<span class="highlight">` +
+        text.substring(start,start+length) +
+        `</span>` +
+        text.substring(start+length);
+}
+
+function removeHighlight(){
+    document.getElementById("textBox").innerText =
+        document.getElementById("textBox").innerText;
+}
+
+// Translation (using MyMemory free API)
+function translateText(){
+    const lang = document.getElementById("langSelect").value;
+    const textBox = document.getElementById("textBox");
+
+    if(lang === "en"){
+        textBox.innerText = originalText;
         return;
     }
 
-    const speech = new SpeechSynthesisUtterance(textToSpeak);
-    speech.lang = "en-IN"; // Indian English
-    speech.rate = 1;
-    speech.pitch = 1;
-    speech.volume = 1;
-
-    window.speechSynthesis.cancel(); // stop previous
-    window.speechSynthesis.speak(speech);
-}
-
-function stopSpeech() {
-    window.speechSynthesis.cancel();
+    fetch(
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(originalText)}&langpair=en|hi`
+    )
+    .then(res=>res.json())
+    .then(data=>{
+        textBox.innerText = data.responseData.translatedText;
+    })
+    .catch(()=>{
+        alert("Translation failed");
+    });
 }
 </script>
 
