@@ -2,89 +2,135 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Text Reader with Translation & Highlight</title>
+<title>Smart Text Reader</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-    font-family: Arial, sans-serif;
-    background:#f5f7ff;
-    padding:20px;
-}
-
-.container{
-    max-width:800px;
+/* Container */
+.tts-wrapper{
+    max-width:900px;
     margin:auto;
-    background:#fff;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 10px 30px rgba(0,0,0,.1);
+    padding:16px;
 }
 
-.controls{
-    display:flex;
-    flex-wrap:wrap;
+/* Card */
+.tts-card{
+    background:#ffffff;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+    padding:18px;
+}
+
+/* Heading */
+.tts-card h2{
+    font-size:1.4rem;
+    margin-bottom:14px;
+    color:#1f2937;
+}
+
+/* Controls */
+.tts-controls{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
     gap:10px;
-    margin-bottom:15px;
+    margin-bottom:16px;
 }
 
-select,button{
-    padding:10px 14px;
+/* Inputs */
+.tts-controls select,
+.tts-controls button{
+    padding:10px 12px;
     font-size:15px;
     border-radius:8px;
-    border:1px solid #ccc;
-    cursor:pointer;
+    border:1px solid #d1d5db;
+    background:#f9fafb;
 }
 
-button{
+/* Buttons */
+.tts-controls button{
     background:#4f46e5;
     color:#fff;
     border:none;
+    cursor:pointer;
+}
+.tts-controls button:hover{
+    background:#4338ca;
 }
 
-button:hover{background:#4338ca}
-
+/* Text Box */
 #textBox{
     font-size:18px;
-    line-height:1.6;
+    line-height:1.7;
+    color:#111827;
+    background:#f3f4f6;
+    padding:16px;
+    border-radius:10px;
+    min-height:120px;
+    word-wrap:break-word;
 }
 
+/* Highlight */
 .highlight{
-    background:yellow;
+    background:#fde047;
+    padding:2px 4px;
+    border-radius:4px;
+}
+
+/* Mobile Optimization */
+@media (max-width:600px){
+    .tts-card h2{
+        font-size:1.2rem;
+        text-align:center;
+    }
+
+    #textBox{
+        font-size:16px;
+    }
+
+    .tts-controls{
+        position:sticky;
+        top:0;
+        background:#ffffff;
+        padding:10px 0;
+        z-index:10;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="tts-wrapper">
+    <div class="tts-card">
 
-<h2>🔊 Smart Text Reader (English ↔ Hindi)</h2>
+        <h2>🔊 Smart Text Reader (English ↔ Hindi)</h2>
 
-<div class="controls">
-    <select id="langSelect">
-        <option value="en">English</option>
-        <option value="hi">Hindi</option>
-    </select>
+        <div class="tts-controls">
+            <select id="langSelect">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+            </select>
 
-    <select id="voiceSelect"></select>
+            <select id="voiceSelect"></select>
 
-    <button onclick="translateText()">🌐 Translate</button>
-    <button onclick="speak()">▶ Listen</button>
-    <button onclick="stopSpeak()">⏹ Stop</button>
-</div>
+            <button onclick="translateText()">Translate</button>
+            <button onclick="speak()">Listen</button>
+            <button onclick="stopSpeak()">Stop</button>
+        </div>
 
-<div id="textBox">
-    EduPilot is India’s smart guidance platform helping students choose
-    the right exams, careers, and learning paths with confidence.
-</div>
+        <div id="textBox">
+            EduPilot is India’s smart guidance platform helping students choose
+            the right exams, careers, and learning paths with confidence.
+        </div>
 
+    </div>
 </div>
 
 <script>
 let voices = [];
 let utterance;
-let originalText = document.getElementById("textBox").innerText;
+const textBox = document.getElementById("textBox");
+const originalText = textBox.innerText;
 
 // Load voices
 function loadVoices(){
@@ -95,81 +141,71 @@ function loadVoices(){
     voices.forEach((v,i)=>{
         const opt = document.createElement("option");
         opt.value = i;
-        opt.textContent = `${v.name} (${v.lang})`;
+        opt.textContent = v.name + " (" + v.lang + ")";
         voiceSelect.appendChild(opt);
     });
 }
 speechSynthesis.onvoiceschanged = loadVoices;
 
-// Speak with highlight
+// Speak text
 function speak(){
     stopSpeak();
 
-    const textBox = document.getElementById("textBox");
-    const text = textBox.innerText;
     const lang = document.getElementById("langSelect").value;
+    const text = textBox.innerText;
 
     utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang === "hi" ? "hi-IN" : "en-IN";
 
-    const selectedVoice = voices[
-        document.getElementById("voiceSelect").value
-    ];
+    const selectedVoice =
+        voices[document.getElementById("voiceSelect").value];
     if(selectedVoice) utterance.voice = selectedVoice;
 
-    utterance.onboundary = function(event){
-        if(event.name === "word"){
-            highlightWord(event.charIndex, event.charLength);
+    utterance.onboundary = e=>{
+        if(e.name === "word"){
+            highlight(e.charIndex, e.charLength);
         }
     };
 
     speechSynthesis.speak(utterance);
 }
 
-// Stop speaking
+// Stop
 function stopSpeak(){
     speechSynthesis.cancel();
     removeHighlight();
 }
 
 // Highlight logic
-function highlightWord(start, length){
-    const box = document.getElementById("textBox");
-    const text = box.innerText;
-
-    box.innerHTML =
-        text.substring(0,start) +
+function highlight(start,length){
+    const txt = textBox.innerText;
+    textBox.innerHTML =
+        txt.substring(0,start) +
         `<span class="highlight">` +
-        text.substring(start,start+length) +
+        txt.substring(start,start+length) +
         `</span>` +
-        text.substring(start+length);
+        txt.substring(start+length);
 }
 
 function removeHighlight(){
-    document.getElementById("textBox").innerText =
-        document.getElementById("textBox").innerText;
+    textBox.innerText = textBox.innerText;
 }
 
-// Translation (using MyMemory free API)
+// Translation
 function translateText(){
     const lang = document.getElementById("langSelect").value;
-    const textBox = document.getElementById("textBox");
 
     if(lang === "en"){
         textBox.innerText = originalText;
         return;
     }
 
-    fetch(
-        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(originalText)}&langpair=en|hi`
-    )
+    fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(originalText)}&langpair=en|hi`)
     .then(res=>res.json())
     .then(data=>{
         textBox.innerText = data.responseData.translatedText;
     })
-    .catch(()=>{
-        alert("Translation failed");
-    });
+    .catch(()=>alert("Translation error"));
 }
 </script>
 
