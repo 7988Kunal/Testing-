@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gate Exam 2027 CBT Mock Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <script>
+    // Disable Right Click
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    
+    // Disable DevTools shortcuts
+    document.onkeydown = function(e) {
+      if (
+        e.key === "F12" || 
+        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i")) || 
+        (e.ctrlKey && (e.key === "U" || e.key === "u")) ||
+        (e.key === "F5") || 
+        (e.ctrlKey && (e.key === "R" || e.key === "r"))
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    };
+
+    // Prevent Back Button
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () { 
+      history.go(1); 
+    };
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f5f5f5;
+      /* Disable Selection & Dragging */
+      -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+      -webkit-user-drag: none; user-drag: none;
+    }
+    .header {
+      background: #003366; color: white; padding: 10px; display: flex;
+      justify-content: space-between; align-items: center; flex-wrap: wrap;
+    }
+    .container { display: flex; padding: 10px; }
+    .left-panel { width: 70%; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .right-panel { width: 30%; padding: 10px; margin-left: 10px; background: white; border-radius: 10px; }
+    .question-box { margin-bottom: 20px; min-height: 200px; }
+    .question-number { font-weight: bold; font-size: 1.2em; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+    .question-text { margin-bottom: 15px; font-size: 16px; }
+    
+    /* Image Handling */
+    .question-img { max-width: 100%; max-height: 250px; margin-top: 10px; display: block; border-radius: 5px; }
+    .option-img { max-height: 80px; vertical-align: middle; margin-left: 10px; border-radius: 5px; }
+    
+    .options label { display: flex; align-items: center; margin-bottom: 10px; background: #f9f9f9; padding: 10px; border-radius: 5px; cursor: pointer; border: 1px solid #ddd; }
+    .options label:hover { background: #eef; }
+    .buttons { border-top: 1px solid #ccc; padding-top: 15px; }
+    .buttons button { margin: 5px; padding: 8px 12px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; }
+    
+    .btn-save { background: #5cb85c; color: white; }
+    .btn-review { background: #f0ad4e; color: white; }
+    .btn-clear { background: #d9534f; color: white; }
+    .btn-submit { background: #003366; color: white; float: right; }
+    
+    .status-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .status-btn { width: 35px; height: 35px; border: none; color: white; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    
+    .not-visited { background: #d3d3d3; color: black; }
+    .not-answered { background: #d9534f; }
+    .answered { background: #5cb85c; }
+    .review { background: #800080; }
+    .ans-review { background: #1e90ff; }
+    .legend p { margin: 5px 0; font-size: 14px; }
+    .legend span { display: inline-block; width: 15px; height: 15px; margin-right: 5px; vertical-align: middle; }
+    .timer { font-size: 20px; font-weight: bold; background: #ff4d4d; padding: 5px 15px; border-radius: 5px; }
+    
+    #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; display: flex; justify-content: center; align-items: center; z-index: 9999; font-size: 24px; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div id="loading-screen">Loading Exam Data... Do not refresh.</div>
+
+  <div class="header">
+    <div class="student-info">
+      <strong>Candidate:</strong> <span id="studentName">Loading...</span> | 
+      <strong>Reg No:</strong> <span id="regNumber">Loading...</span>
+    </div>
+    <div class="timer" id="timer">--:--</div>
+  </div>
+
+  <div class="container">
+    <div class="left-panel">
+      <div class="question-box" id="question-box">
+        <div class="question-number" id="q-number"></div>
+        <div class="question-text" id="q-text"></div>
+        <div id="q-image-container"></div>
+        <div class="options" id="q-options"></div>
+      </div>
+      <div class="buttons">
+        <button class="btn-save" onclick="saveAndNext()">Save & Next</button>
+        <button class="btn-review" onclick="markForReview()">Mark for Review</button>
+        <button class="btn-clear" onclick="clearResponse()">Clear Response</button>
+        <button class="btn-submit" onclick="finalSubmit()">Final Submit</button>
+      </div>
+    </div>
+    <div class="right-panel">
+      <h4>Question Status</h4>
+      <div class="status-grid" id="status-grid"></div>
+      <hr>
+      <div class="legend">
+        <p><span class="not-visited"></span> Not Visited</p>
+        <p><span class="not-answered"></span> Not Answered</p>
+        <p><span class="answered"></span> Answered</p>
+        <p><span class="review"></span> Marked for Review</p>
+        <p><span class="ans-review"></span> Answered & Review</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, setDoc, doc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
+      authDomain: "studentdashboard-681a8.firebaseapp.com",
+      projectId: "studentdashboard-681a8",
+      storageBucket: "studentdashboard-681a8.firebasestorage.app",
+      messagingSenderId: "171483691299",
+      appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
+      measurementId: "G-RVFB0Z9TFS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let questions = [];
+    let current = 0;
+    let responses = [];
+    let status = [];
+    const TOTAL_TIME_SECONDS = 180 * 60; // 180 minutes
+
+    // --- SECURITY: Tab Switching Detection ---
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        let warnings = parseInt(sessionStorage.getItem("tabWarnings") || "0") + 1;
+        sessionStorage.setItem("tabWarnings", warnings);
+        alert(`WARNING! You switched tabs. This has been recorded. Attempt ${warnings}/3.`);
+        if (warnings >= 3) {
+           alert("Maximum warnings reached. Auto-submitting exam.");
+           finalSubmit();
+        }
+      }
+    });
+
+    async function initializeExam() {
+      const name = sessionStorage.getItem("username");
+      const reg = sessionStorage.getItem("regNo");
+      
+      // Unauthorized Access Check
+      if (!name || !reg) {
+        alert("Unauthorized access. Redirecting to login.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      document.getElementById("studentName").textContent = name;
+      document.getElementById("regNumber").textContent = reg;
+
+      // Fetch questions: Check Session Storage first to survive refreshes
+      let cachedQuestions = sessionStorage.getItem("examQuestions");
+      
+      if (cachedQuestions) {
+        questions = JSON.parse(cachedQuestions);
+      } else {
+        try {
+          const querySnapshot = await getDocs(collection(db, "examQuestions"));
+          querySnapshot.forEach((doc) => {
+            questions.push(doc.data());
+          });
+          sessionStorage.setItem("examQuestions", JSON.stringify(questions));
+        } catch (error) {
+          alert("Error loading questions. Please check your internet connection.");
+          console.error(error);
+          return;
+        }
+      }
+
+      if (questions.length === 0) {
+        document.getElementById("loading-screen").innerText = "No questions found in database.";
+        return;
+      }
+
+      // Initialize State
+      current = parseInt(sessionStorage.getItem("currentQuestion") || "0");
+      responses = JSON.parse(sessionStorage.getItem("responses") || JSON.stringify(Array(questions.length).fill(null)));
+      status = JSON.parse(sessionStorage.getItem("status") || JSON.stringify(Array(questions.length).fill("not-visited")));
+
+      document.getElementById("loading-screen").style.display = "none";
+      
+      loadQuestion(current);
+      startTimer();
+      enforceFullScreen();
+    }
+
+    function enforceFullScreen() {
+      document.body.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Error attempting to enable fullscreen: ${err.message}`);
+          });
+        }
+      }, { once: true });
+    }
+
+    function loadQuestion(index) {
+      const q = questions[index];
+      document.getElementById("q-number").textContent = `Question ${index + 1} of ${questions.length}`;
+      document.getElementById("q-text").textContent = q.questionText || q.question;
+      
+      // Handle Question Image
+      const imgContainer = document.getElementById("q-image-container");
+      if (q.questionImage && q.questionImage.trim() !== "") {
+        imgContainer.innerHTML = `<img src="${q.questionImage}" class="question-img" alt="Question Figure" draggable="false">`;
+      } else {
+        imgContainer.innerHTML = "";
+      }
+
+      // Handle Options (Text + Optional Image)
+      document.getElementById("q-options").innerHTML = q.options.map((opt, i) => {
+        let optText = typeof opt === 'string' ? opt : opt.text;
+        let optImg = opt.image ? `<img src="${opt.image}" class="option-img" draggable="false">` : '';
+        return `<label>
+                  <input type="radio" name="option" value="${i}" ${responses[index] === i ? 'checked' : ''}> 
+                  ${optText} ${optImg}
+                </label>`;
+      }).join("");
+
+      if (status[index] === "not-visited") status[index] = "not-answered";
+      renderStatus();
+      persistData();
+    }
+
+    function renderStatus() {
+      document.getElementById("status-grid").innerHTML = status.map((s, i) =>
+        `<button class="status-btn ${s}" onclick="goto(${i})">${i + 1}</button>`
+      ).join("");
+    }
+
+    function persistData() {
+      sessionStorage.setItem("responses", JSON.stringify(responses));
+      sessionStorage.setItem("status", JSON.stringify(status));
+      sessionStorage.setItem("currentQuestion", current.toString());
+    }
+
+    window.saveAndNext = function () {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (selected) {
+        responses[current] = parseInt(selected.value);
+        status[current] = status[current] === "review" ? "ans-review" : "answered";
+      } else {
+        status[current] = "not-answered";
+      }
+      if (current < questions.length - 1) current++;
+      loadQuestion(current);
+    }
+
+    window.markForReview = function () {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (selected) {
+        responses[current] = parseInt(selected.value);
+        status[current] = "ans-review";
+      } else {
+        status[current] = "review";
+      }
+      if (current < questions.length - 1) current++;
+      loadQuestion(current);
+    }
+
+    window.clearResponse = function () {
+      responses[current] = null;
+      status[current] = "not-answered";
+      const radio = document.querySelector('input[name="option"]:checked');
+      if (radio) radio.checked = false;
+      loadQuestion(current);
+    }
+
+    window.goto = function (index) {
+      current = index;
+      loadQuestion(index);
+    }
+
+    function startTimer() {
+      const timerElement = document.getElementById("timer");
+      let startTime = sessionStorage.getItem("examStartTime");
+      if (!startTime) {
+        startTime = Date.now();
+        sessionStorage.setItem("examStartTime", startTime);
+      } else {
+        startTime = parseInt(startTime);
+      }
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const elapsed = Math.floor((now - startTime) / 1000);
+        const remaining = TOTAL_TIME_SECONDS - elapsed;
+        if (remaining <= 0) {
+          clearInterval(interval);
+          alert("⏰ Time's up! Submitting your exam...");
+          finalSubmit();
+        }
+        const min = Math.floor(remaining / 60);
+        const sec = remaining % 60;
+        timerElement.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    window.finalSubmit = async function () {
+      // Prevent multiple clicks
+      document.querySelector('.btn-submit').disabled = true;
+      document.querySelector('.btn-submit').innerText = "Submitting...";
+
+      const name = sessionStorage.getItem("username");
+      const roll = sessionStorage.getItem("rollNo") || "N/A";
+      const reg = sessionStorage.getItem("regNo");
+      const warnings = sessionStorage.getItem("tabWarnings") || "0";
+
+      const total = questions.length;
+      const answered = responses.filter(r => r !== null).length;
+      const notAnswered = status.filter(s => s === "not-answered").length;
+      const review = status.filter(s => s === "review").length;
+      const ansReview = status.filter(s => s === "ans-review").length;
+
+      const responseData = {
+        name, roll, reg,
+        responses, status,
+        metrics: { total, answered, notAnswered, review, ansReview },
+        cheatingWarnings: warnings,
+        submittedAt: serverTimestamp()
+      };
+
+      try {
+        await setDoc(doc(db, "examResponses", reg), responseData);
+        alert(`Exam Submitted Successfully!\nAnswered: ${answered}/${total}`);
+        sessionStorage.clear();
+        window.location.href = "thankyou.html";
+      } catch (err) {
+        alert("❌ Submission failed. Please check your internet connection.");
+        console.error("Firestore Error:", err);
+        document.querySelector('.btn-submit').disabled = false;
+        document.querySelector('.btn-submit').innerText = "Final Submit";
+      }
+    }
+
+    window.onload = initializeExam;
+
+  </script>
+</body>
+</html>
