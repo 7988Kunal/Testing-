@@ -20,6 +20,8 @@
         return false;
       }
     };
+    
+    // Prevent Back Button completely
     history.pushState(null, null, location.href);
     window.onpopstate = function () { history.go(1); };
   </script>
@@ -57,16 +59,16 @@
     .student-info div { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; }
     
     .tools-timer-group { display: flex; align-items: center; gap: 15px; }
-    .toolbar button { background: #fff; color: var(--primary); border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .toolbar button { background: #fff; color: var(--primary); border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
     .toolbar button:hover { background: #e2e8f0; }
-    .timer { font-size: 20px; font-weight: bold; background: #dc3545; padding: 5px 15px; border-radius: 5px; letter-spacing: 1px; }
+    .timer { font-size: 20px; font-weight: bold; background: #dc3545; padding: 5px 15px; border-radius: 5px; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
     /* Stats Bar */
     .stats-bar {
       background: white; padding: 8px 20px; border-bottom: 1px solid var(--border-color);
-      display: flex; gap: 20px; font-size: 14px; font-weight: 600; justify-content: center;
+      display: flex; gap: 20px; font-size: 14px; font-weight: 600; justify-content: center; flex-wrap: wrap;
     }
-    .stats-bar span { padding: 4px 10px; border-radius: 12px; color: white; }
+    .stats-bar span { padding: 4px 10px; border-radius: 12px; color: white; display: inline-block; }
     .st-attempted { background: #5cb85c; }
     .st-review { background: #800080; }
     .st-pending { background: #d9534f; }
@@ -87,21 +89,22 @@
     .options label:hover { background: #e2e8f0; }
     .option-img { max-height: 80px; margin-left: 10px; border-radius: 4px; }
     
+    /* Action Buttons */
     .action-buttons { border-top: 1px solid var(--border-color); padding: 15px 25px; background: #fafafa; display: flex; gap: 10px; flex-wrap: wrap; }
-    .action-buttons button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.2s; }
+    .action-buttons button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.2s; font-size: 14px; }
     .btn-save { background: #5cb85c; } .btn-save:hover { background: #4cae4c; }
     .btn-review { background: #f0ad4e; } .btn-review:hover { background: #ec971f; }
     .btn-clear { background: #d9534f; } .btn-clear:hover { background: #c9302c; }
-    .btn-submit { background: var(--primary); margin-left: auto; } .btn-submit:hover { background: #002244; }
+    .btn-submit { background: var(--primary); margin-left: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.2); } .btn-submit:hover { background: #002244; }
 
     /* Right Panel (Navigation Grid) */
     .right-panel {
       flex: 1; background: white; border-radius: 8px; border: 1px solid var(--border-color);
-      padding: 15px; display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 300px;
+      padding: 15px; display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 320px;
     }
     .right-panel h4 { text-align: center; margin-top: 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; }
     .status-grid { display: flex; flex-wrap: wrap; gap: 8px; overflow-y: auto; flex: 1; align-content: flex-start; }
-    .status-btn { width: 40px; height: 40px; border: 1px solid #ccc; background: #f4f4f4; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+    .status-btn { width: 42px; height: 42px; border: 1px solid #ccc; background: #f4f4f4; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
     .status-btn:hover { filter: brightness(0.9); }
     
     /* Status Colors */
@@ -124,16 +127,20 @@
       background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%;
       max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
-    .modal-content h2 { color: var(--primary); margin-top: 0; }
+    .modal-content h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+    .modal-content li { margin-bottom: 10px; line-height: 1.5; }
     .close-btn { background: #d9534f; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; float: right; font-weight: bold; }
 
-    footer { background: #cbd5e1; color: var(--primary); text-align: center; padding: 8px; font-size: 13px; font-weight: 600; border-top: 1px solid #94a3b8; }
+    /* Footer */
+    footer { background: #cbd5e1; color: var(--primary); text-align: center; padding: 10px; font-size: 13px; font-weight: bold; border-top: 1px solid #94a3b8; }
 
     @media (max-width: 800px) {
       .main-container { flex-direction: column; overflow-y: auto; }
       .right-panel { max-width: 100%; flex: none; height: 300px; }
       .student-info { justify-content: center; width: 100%; margin-bottom: 10px; }
       .tools-timer-group { width: 100%; justify-content: space-between; }
+      .action-buttons { justify-content: center; }
+      .btn-submit { margin-left: 0; width: 100%; }
     }
   </style>
 </head>
@@ -190,7 +197,7 @@
         <p><span class="not-answered"></span> Not Answered</p>
         <p><span class="answered"></span> Answered</p>
         <p><span class="review"></span> Marked for Review</p>
-        <p><span class="ans-review"></span> Answered & Marked for Review</p>
+        <p><span class="ans-review"></span> Answered & Review</p>
       </div>
     </div>
   </div>
@@ -202,11 +209,11 @@
       <button class="close-btn" onclick="toggleInstructions(false)">Close</button>
       <h2>Exam Instructions</h2>
       <ul>
-        <li><strong>Duration:</strong> 180 Minutes.</li>
-        <li><strong>Marking:</strong> Correct Answer awards +4 marks. Incorrect answer deducts -1 mark.</li>
-        <li><strong>Navigation:</strong> Use the right-hand panel to jump to any question.</li>
-        <li><strong>Security Warning:</strong> Navigating away from this tab or pressing 'Back' will result in auto-submission or disqualification.</li>
-        <li>Click <strong>Final Submit</strong> only when you are completely finished.</li>
+        <li><strong>Duration:</strong> You have 180 Minutes to complete the test.</li>
+        <li><strong>Marking Scheme:</strong> Correct answers award +4 marks. Incorrect answers deduct -1 mark.</li>
+        <li><strong>Navigation:</strong> Use the "Save & Next" button to lock in an answer. Use the right-hand panel grid to jump to any specific question immediately.</li>
+        <li><strong>Security Warning:</strong> Navigating away from this tab, opening new windows, or pressing 'Back' is strictly monitored and will result in auto-submission or disqualification.</li>
+        <li>Click <strong>Final Submit</strong> only when you are completely finished. The exam will automatically submit when the timer reaches zero.</li>
       </ul>
     </div>
   </div>
@@ -215,6 +222,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, setDoc, doc, collection, getDocs, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
       authDomain: "studentdashboard-681a8.firebaseapp.com",
@@ -231,17 +239,16 @@
     let current = 0;
     let responses = [];
     let status = [];
-    let currentZoom = 16; // Base font size
+    let currentZoom = 16; 
     const TOTAL_TIME_SECONDS = 180 * 60; 
 
-    // --- ZOOM LOGIC ---
+    // --- UI TOOLS (ZOOM & MODAL) ---
     window.changeZoom = function(step) {
       if(step > 0 && currentZoom < 24) currentZoom += 2;
       if(step < 0 && currentZoom > 12) currentZoom -= 2;
       document.getElementById('question-content').style.fontSize = currentZoom + 'px';
     };
 
-    // --- INSTRUCTIONS LOGIC ---
     window.toggleInstructions = function(show) {
       document.getElementById('instructions-modal').style.display = show ? 'flex' : 'none';
     };
@@ -253,18 +260,19 @@
         sessionStorage.setItem("tabWarnings", warnings);
         alert(`SECURITY WARNING! Tab switching detected. Attempt ${warnings}/3.`);
         if (warnings >= 3) {
-           alert("Maximum warnings reached. Auto-submitting exam.");
+           alert("Maximum warnings reached. Your exam is being automatically submitted.");
            finalSubmit(true); // Force submit
         }
       }
     });
 
+    // --- INITIALIZATION & DATABASE SECURITY CHECK ---
     async function enforceSecurityAndInit() {
       const name = sessionStorage.getItem("username");
       const reg = sessionStorage.getItem("regNo");
-      const roll = sessionStorage.getItem("rollNo") || "N/A"; // Using rollNo as Class Roll No
+      const roll = sessionStorage.getItem("rollNo") || "N/A"; 
       
-      // 1. Check basic session storage presence
+      // 1. Check if they skipped the login page
       if (!name || !reg) {
         window.location.replace("index.html");
         return;
@@ -272,17 +280,17 @@
 
       // 2. Local check: Did they already submit this session?
       if (sessionStorage.getItem("examCompleted") === "true") {
-        window.location.replace("quick-result.html"); // or thankyou.html
+        window.location.replace("quick-result.html"); 
         return;
       }
 
-      // 3. Database Check: STRICT lock to prevent retakes across devices
+      // 3. Database Check: Prevent Retakes (Cross-device/Incognito protection)
       try {
         const docRef = doc(db, "examResponses", reg);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          sessionStorage.setItem("examCompleted", "true"); // Lock local session
-          alert("SECURITY: Our records indicate you have already submitted this exam. You cannot attempt it again.");
+          sessionStorage.setItem("examCompleted", "true"); 
+          alert("SECURITY ALERT: Our database indicates you have already submitted this exam. Retakes are not allowed.");
           window.location.replace("quick-result.html"); 
           return;
         }
@@ -290,14 +298,14 @@
         console.error("Database validation error:", err);
       }
 
-      // PASSED ALL CHECKS: Populate data and unveil UI
+      // Populate Header Data
       document.getElementById("studentName").textContent = name;
       document.getElementById("regNumber").textContent = reg;
       document.getElementById("rollNumber").textContent = roll;
 
       await loadQuestionsFromDB();
       
-      // Remove security screen
+      // Remove Security Cover
       document.getElementById("security-screen").style.display = "none";
       
       loadQuestion(current);
@@ -305,6 +313,7 @@
       enforceFullScreen();
     }
 
+    // --- FETCH QUESTIONS ---
     async function loadQuestionsFromDB() {
       let cachedQuestions = sessionStorage.getItem("examQuestions");
       if (cachedQuestions) {
@@ -313,28 +322,32 @@
         try {
           const querySnapshot = await getDocs(collection(db, "examQuestions"));
           querySnapshot.forEach((doc) => { questions.push(doc.data()); });
+          
+          // Sort questions chronologically based on Admin upload time
           questions.sort((a, b) => {
             if(a.createdAt && b.createdAt) return new Date(a.createdAt) - new Date(b.createdAt);
             return 0;
           });
           sessionStorage.setItem("examQuestions", JSON.stringify(questions));
         } catch (error) {
-          alert("Error loading exam database. Check connection.");
+          alert("Error loading exam database. Please check your internet connection.");
           return;
         }
       }
 
       if (questions.length === 0) {
-        document.getElementById("security-screen").innerText = "No questions found.";
+        document.getElementById("security-screen").innerText = "No questions found in the database. Please contact the administrator.";
         return;
       }
 
+      // Initialize Tracking Arrays
       current = parseInt(sessionStorage.getItem("currentQuestion") || "0");
       responses = JSON.parse(sessionStorage.getItem("responses") || JSON.stringify(Array(questions.length).fill(null)));
       status = JSON.parse(sessionStorage.getItem("status") || JSON.stringify(Array(questions.length).fill("not-visited")));
       updateLiveStats();
     }
 
+    // Request Fullscreen to prevent distractions
     function enforceFullScreen() {
       document.body.addEventListener('click', () => {
         if (!document.fullscreenElement) {
@@ -343,6 +356,7 @@
       }, { once: true });
     }
 
+    // --- RENDER LOGIC ---
     function updateLiveStats() {
       const total = questions.length;
       let attempted = 0;
@@ -364,6 +378,7 @@
       document.getElementById("q-number").textContent = `Question ${index + 1} of ${questions.length}`;
       document.getElementById("q-text").innerHTML = q.questionText || q.question;
       
+      // Load Image if it exists
       const imgContainer = document.getElementById("q-image-container");
       if (q.questionImage && q.questionImage.trim() !== "") {
         imgContainer.innerHTML = `<img src="${q.questionImage}" class="question-img" draggable="false">`;
@@ -371,6 +386,7 @@
         imgContainer.innerHTML = "";
       }
 
+      // Load Options
       document.getElementById("q-options").innerHTML = q.options.map((opt, i) => {
         let optText = typeof opt === 'string' ? opt : (opt.text || '');
         let optImg = (typeof opt === 'object' && opt.image) ? `<img src="${opt.image}" class="option-img" draggable="false">` : '';
@@ -399,6 +415,7 @@
       sessionStorage.setItem("currentQuestion", current.toString());
     }
 
+    // --- EXAM ACTION BUTTONS ---
     window.saveAndNext = function () {
       const selected = document.querySelector('input[name="option"]:checked');
       if (selected) {
@@ -431,11 +448,12 @@
       loadQuestion(current);
     }
 
-    window.goto = function (index) {
+   window.goto = function (index) {
       current = index;
       loadQuestion(index);
     }
 
+    // --- TIMER LOGIC ---
     function startTimer() {
       const timerElement = document.getElementById("timer");
       let startTime = sessionStorage.getItem("examStartTime");
@@ -454,7 +472,7 @@
         if (remaining <= 0) {
           clearInterval(interval);
           alert("⏰ Time is up! Your exam is being automatically submitted.");
-          finalSubmit(true); // Force submit
+          finalSubmit(true); 
         }
         
         const min = Math.floor(remaining / 60);
@@ -463,10 +481,11 @@
       }, 1000);
     }
 
+    // --- FINAL SUBMISSION ---
     window.finalSubmit = async function (force = false) {
-      // 1. POPUP CONFIRMATION (Bypass if forced by timer/cheating)
+      // Show confirmation popup if the student clicked the button manually
       if (!force) {
-        const confirmSubmit = confirm("Are you sure you want to final submit the exam? You will NOT be able to change your answers or take the exam again.");
+        const confirmSubmit = confirm("⚠️ Are you sure you want to Final Submit the exam?\n\nYou will NOT be able to change your answers or take the exam again.");
         if (!confirmSubmit) return;
       }
 
@@ -500,7 +519,7 @@
         sessionStorage.setItem("examCompleted", "true"); 
         
         alert(`Exam Submitted Successfully!\nYou answered ${answered} out of ${total} questions.`);
-        window.location.replace("quick-result.html"); 
+        window.location.replace("quick-result.html"); // Redirects to results or thankyou page
       } catch (err) {
         alert("❌ Critical Error: Submission failed. Please check your internet connection.");
         console.error("Firestore Error:", err);
@@ -510,7 +529,7 @@
       }
     }
 
-    // Trigger initialization
+    // Trigger initialization on load
     window.onload = enforceSecurityAndInit;
 
   </script>
