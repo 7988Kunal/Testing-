@@ -21,126 +21,134 @@
       }
     };
     
-    // Prevent Back Button completely
     history.pushState(null, null, location.href);
     window.onpopstate = function () { history.go(1); };
   </script>
 
   <style>
-    /* --- PROFESSIONAL CBT THEME --- */
+    /* --- PROFESSIONAL EXAM THEME --- */
     :root {
       --primary: #003366;
       --secondary: #4b6cb7;
-      --bg-color: #f4f6f9;
-      --text-dark: #333;
-      --border-color: #d1d5db;
+      --bg-color: #f0f2f5;
+      --border-color: #cbd5e1;
     }
 
+    /* Lock body height to prevent entire page from scrolling */
     body {
-      font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg-color); color: var(--text-dark);
+      font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg-color); color: #333;
       -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
       display: flex; flex-direction: column; height: 100vh; overflow: hidden;
     }
 
-    /* Full-Screen Security Overlay */
     #security-screen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: white; z-index: 99999; display: flex; flex-direction: column;
       justify-content: center; align-items: center; font-size: 22px; font-weight: bold; color: var(--primary);
     }
 
-    /* Top Header Bar */
+    /* Header (Fixed) */
     .top-header {
-      background: var(--primary); color: white; padding: 10px 20px;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;
+      background: var(--primary); color: white; padding: 12px 20px;
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    .student-info { display: flex; gap: 20px; font-size: 15px; font-weight: 500; }
+    .tools-timer-group { display: flex; align-items: center; gap: 20px; }
+    .toolbar button { background: #fff; color: var(--primary); border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .timer { font-size: 22px; font-weight: bold; background: #dc3545; padding: 5px 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+    /* Main Content (Flexible Height) */
+    .main-container {
+      display: flex; flex: 1; padding: 10px; gap: 10px; overflow: hidden;
     }
     
-    .student-info { display: flex; gap: 20px; font-size: 14px; align-items: center; flex-wrap: wrap; }
-    .student-info div { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; }
-    
-    .tools-timer-group { display: flex; align-items: center; gap: 15px; }
-    .toolbar button { background: #fff; color: var(--primary); border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-    .toolbar button:hover { background: #e2e8f0; }
-    .timer { font-size: 20px; font-weight: bold; background: #dc3545; padding: 5px 15px; border-radius: 5px; letter-spacing: 1px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-
-    /* Stats Bar */
-    .stats-bar {
-      background: white; padding: 8px 20px; border-bottom: 1px solid var(--border-color);
-      display: flex; gap: 20px; font-size: 14px; font-weight: 600; justify-content: center; flex-wrap: wrap;
-    }
-    .stats-bar span { padding: 4px 10px; border-radius: 12px; color: white; display: inline-block; }
-    .st-attempted { background: #5cb85c; }
-    .st-review { background: #800080; }
-    .st-pending { background: #d9534f; }
-
-    /* Main Container layout */
-    .main-container { display: flex; flex: 1; padding: 15px; gap: 15px; overflow: hidden; }
-    
-    /* Left Panel (Question Area) */
+    /* --- LEFT PANEL (Question Area + Fixed Footer) --- */
     .left-panel {
       flex: 3; background: white; border-radius: 8px; border: 1px solid var(--border-color);
-      display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden;
+      display: flex; flex-direction: column; overflow: hidden;
     }
-    .question-content { flex: 1; padding: 25px; overflow-y: auto; font-size: 16px; transition: font-size 0.2s; }
-    .question-number { font-size: 1.2em; font-weight: bold; margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 5px; }
     
-    .question-img { max-width: 100%; max-height: 300px; margin: 15px 0; border-radius: 5px; border: 1px solid #ddd; }
-    .options label { display: flex; align-items: center; margin-bottom: 12px; background: #f8f9fa; padding: 12px; border-radius: 6px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; }
-    .options label:hover { background: #e2e8f0; }
-    .option-img { max-height: 80px; margin-left: 10px; border-radius: 4px; }
-    
-    /* Action Buttons */
-    .action-buttons { border-top: 1px solid var(--border-color); padding: 15px 25px; background: #fafafa; display: flex; gap: 10px; flex-wrap: wrap; }
-    .action-buttons button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.2s; font-size: 14px; }
-    .btn-save { background: #5cb85c; } .btn-save:hover { background: #4cae4c; }
-    .btn-review { background: #f0ad4e; } .btn-review:hover { background: #ec971f; }
-    .btn-clear { background: #d9534f; } .btn-clear:hover { background: #c9302c; }
-    .btn-submit { background: var(--primary); margin-left: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.2); } .btn-submit:hover { background: #002244; }
+    /* Header inside question area */
+    .question-header {
+      padding: 15px 25px; background: #f8fafc; border-bottom: 2px solid var(--border-color);
+      font-size: 1.2em; font-weight: bold; color: var(--primary); flex-shrink: 0;
+    }
 
-    /* Right Panel (Navigation Grid) */
+    /* The only part that scrolls! */
+    .question-scroll-area {
+      flex: 1; padding: 25px; overflow-y: auto; font-size: 16px; transition: font-size 0.2s;
+    }
+    
+    .question-img { max-width: 100%; max-height: 350px; margin: 15px 0; border-radius: 5px; border: 1px solid #ddd; }
+    
+    /* Beautiful Option Cards */
+    .options label {
+      display: flex; align-items: center; padding: 15px; border: 2px solid #e2e8f0;
+      border-radius: 8px; margin-bottom: 15px; cursor: pointer; background: #fff;
+      transition: all 0.2s ease;
+    }
+    .options label:hover { border-color: var(--secondary); background: #f1f5f9; }
+    .options input[type="radio"] { transform: scale(1.4); margin-right: 15px; cursor: pointer; }
+    .option-img { max-height: 80px; margin-left: 10px; border-radius: 4px; }
+
+    /* FIXED ACTION FOOTER */
+    .action-footer {
+      background: #f8fafc; padding: 15px 25px; border-top: 2px solid var(--border-color);
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; flex-wrap: wrap; gap: 10px;
+    }
+    .action-group { display: flex; gap: 10px; }
+    .action-footer button {
+      padding: 10px 18px; border: none; border-radius: 4px; font-weight: bold; color: white; cursor: pointer; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: 0.2s;
+    }
+    .btn-clear { background: #fff; color: #333; border: 1px solid #ccc; box-shadow: none; } .btn-clear:hover { background: #e2e8f0; }
+    .btn-review { background: #800080; } .btn-review:hover { background: #660066; }
+    .btn-save-review { background: #1e90ff; } .btn-save-review:hover { background: #0073e6; }
+    .btn-save { background: #5cb85c; font-size: 15px; padding: 10px 25px; } .btn-save:hover { background: #4cae4c; }
+
+    /* --- RIGHT PANEL (Navigation + Submit) --- */
     .right-panel {
       flex: 1; background: white; border-radius: 8px; border: 1px solid var(--border-color);
-      padding: 15px; display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 320px;
+      display: flex; flex-direction: column; max-width: 340px; overflow: hidden;
     }
-    .right-panel h4 { text-align: center; margin-top: 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    .status-grid { display: flex; flex-wrap: wrap; gap: 8px; overflow-y: auto; flex: 1; align-content: flex-start; }
-    .status-btn { width: 42px; height: 42px; border: 1px solid #ccc; background: #f4f4f4; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+    
+    .status-summary { padding: 15px; background: #f8fafc; border-bottom: 1px solid var(--border-color); flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; font-weight: bold; }
+    .sum-item { display: flex; align-items: center; gap: 5px; }
+    .sum-badge { width: 20px; height: 20px; color: white; display: flex; justify-content: center; align-items: center; border-radius: 4px; }
+
+    /* Palette Grid Scrolls Independently */
+    .palette-container { flex: 1; padding: 15px; overflow-y: auto; }
+    .status-grid { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
+    .status-btn { width: 45px; height: 45px; border: 1px solid #ccc; background: #f4f4f4; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px; color: #333; display: flex; justify-content: center; align-items: center; }
     .status-btn:hover { filter: brightness(0.9); }
     
-    /* Status Colors */
-    .not-visited { background: #e2e8f0; color: #333; }
+    /* Colors */
+    .not-visited { background: #f4f4f4; color: #333; }
     .not-answered { background: #d9534f; color: white; border-color: #d43f3a; }
     .answered { background: #5cb85c; color: white; border-color: #4cae4c; }
     .review { background: #800080; color: white; border-color: #660066; }
     .ans-review { background: #1e90ff; color: white; border-color: #0073e6; }
-    
-    .legend { margin-top: 15px; font-size: 13px; border-top: 1px solid #eee; padding-top: 10px; }
-    .legend p { margin: 5px 0; display: flex; align-items: center; }
-    .legend span { display: inline-block; width: 16px; height: 16px; margin-right: 8px; border-radius: 3px; }
+
+    /* Fixed Submit Area */
+    .submit-area { padding: 15px; border-top: 2px solid var(--border-color); background: #f8fafc; flex-shrink: 0; }
+    .btn-submit { width: 100%; padding: 15px; background: #28a745; color: white; font-size: 18px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .btn-submit:hover { background: #218838; }
 
     /* Instructions Modal */
     #instructions-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;
     }
-    .modal-content {
-      background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%;
-      max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-    .modal-content h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-    .modal-content li { margin-bottom: 10px; line-height: 1.5; }
+    .modal-content { background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%; }
     .close-btn { background: #d9534f; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; float: right; font-weight: bold; }
 
-    /* Footer */
-    footer { background: #cbd5e1; color: var(--primary); text-align: center; padding: 10px; font-size: 13px; font-weight: bold; border-top: 1px solid #94a3b8; }
+    footer { background: var(--primary); color: white; text-align: center; padding: 8px; font-size: 13px; flex-shrink: 0; }
 
-    @media (max-width: 800px) {
+    @media (max-width: 900px) {
       .main-container { flex-direction: column; overflow-y: auto; }
-      .right-panel { max-width: 100%; flex: none; height: 300px; }
-      .student-info { justify-content: center; width: 100%; margin-bottom: 10px; }
-      .tools-timer-group { width: 100%; justify-content: space-between; }
-      .action-buttons { justify-content: center; }
-      .btn-submit { margin-left: 0; width: 100%; }
+      body { height: auto; overflow: auto; }
+      .left-panel, .right-panel { flex: none; overflow: visible; }
+      .question-scroll-area { overflow: visible; }
+      .action-footer { justify-content: center; }
     }
   </style>
 </head>
@@ -153,9 +161,9 @@
 
   <div class="top-header">
     <div class="student-info">
-      <div>👤 <strong id="studentName">Loading...</strong></div>
-      <div>Reg No: <strong id="regNumber">Loading...</strong></div>
-      <div>Roll No: <strong id="rollNumber">Loading...</strong></div>
+      <div>👤 <span id="studentName">Loading...</span></div>
+      <div>Reg: <span id="regNumber">Loading...</span></div>
+      <div>Roll: <span id="rollNumber">Loading...</span></div>
     </div>
     <div class="tools-timer-group">
       <div class="toolbar">
@@ -167,39 +175,49 @@
     </div>
   </div>
 
-  <div class="stats-bar">
-    <span class="st-attempted">Answered: <span id="stat-attempted">0</span></span>
-    <span class="st-review">Marked for Review: <span id="stat-review">0</span></span>
-    <span class="st-pending">Pending: <span id="stat-pending">0</span></span>
-  </div>
-
   <div class="main-container">
+    
     <div class="left-panel">
-      <div class="question-content" id="question-content">
-        <div class="question-number" id="q-number"></div>
-        <div class="question-text" id="q-text"></div>
+      <div class="question-header" id="q-number">Loading Question...</div>
+      
+      <div class="question-scroll-area" id="question-content">
+        <div id="q-text" style="margin-bottom: 15px; line-height: 1.6;"></div>
         <div id="q-image-container"></div>
-        <div class="options" id="q-options"></div>
+        <div class="options" id="q-options" style="margin-top: 20px;"></div>
       </div>
-      <div class="action-buttons">
-        <button class="btn-save" onclick="saveAndNext()">Save & Next</button>
-        <button class="btn-review" onclick="markForReview()">Mark for Review & Next</button>
-        <button class="btn-clear" onclick="clearResponse()">Clear Response</button>
-        <button class="btn-submit" onclick="finalSubmit()">Final Submit</button>
+      
+      <div class="action-footer">
+        <div class="action-group">
+          <button class="btn-clear" onclick="clearResponse()">Clear Response</button>
+          <button class="btn-review" onclick="markForReview()">Mark for Review & Next</button>
+        </div>
+        <div class="action-group">
+          <button class="btn-save-review" onclick="saveAndMarkForReview()">Save & Mark for Review</button>
+          <button class="btn-save" onclick="saveAndNext()">Save & Next</button>
+        </div>
       </div>
     </div>
     
     <div class="right-panel">
-      <h4>Question Navigator</h4>
-      <div class="status-grid" id="status-grid"></div>
-      <div class="legend">
-        <p><span class="not-visited"></span> Not Visited</p>
-        <p><span class="not-answered"></span> Not Answered</p>
-        <p><span class="answered"></span> Answered</p>
-        <p><span class="review"></span> Marked for Review</p>
-        <p><span class="ans-review"></span> Answered & Review</p>
+      <div class="status-summary">
+        <div class="sum-item"><span class="sum-badge answered" id="stat-ans">0</span> Answered</div>
+        <div class="sum-item"><span class="sum-badge not-answered" id="stat-not">0</span> Not Answered</div>
+        <div class="sum-item"><span class="sum-badge not-visited" id="stat-pen">0</span> Not Visited</div>
+        <div class="sum-item" style="grid-column: span 2;">
+          <span class="sum-badge ans-review" id="stat-rev" style="width:100%; display:inline-block; text-align:center;">0</span> 
+          <span style="display:block; margin-top:3px; text-align:center;">Marked for Review (Total)</span>
+        </div>
+      </div>
+
+      <div class="palette-container">
+        <div class="status-grid" id="status-grid"></div>
+      </div>
+
+      <div class="submit-area">
+        <button class="btn-submit" onclick="finalSubmit()">FINAL SUBMIT</button>
       </div>
     </div>
+
   </div>
 
   <footer>&copy; 2026 GATE CBT Mock Platform. Secure Testing Environment.</footer>
@@ -207,13 +225,13 @@
   <div id="instructions-modal">
     <div class="modal-content">
       <button class="close-btn" onclick="toggleInstructions(false)">Close</button>
-      <h2>Exam Instructions</h2>
-      <ul>
-        <li><strong>Duration:</strong> You have 180 Minutes to complete the test.</li>
-        <li><strong>Marking Scheme:</strong> Correct answers award +4 marks. Incorrect answers deduct -1 mark.</li>
-        <li><strong>Navigation:</strong> Use the "Save & Next" button to lock in an answer. Use the right-hand panel grid to jump to any specific question immediately.</li>
-        <li><strong>Security Warning:</strong> Navigating away from this tab, opening new windows, or pressing 'Back' is strictly monitored and will result in auto-submission or disqualification.</li>
-        <li>Click <strong>Final Submit</strong> only when you are completely finished. The exam will automatically submit when the timer reaches zero.</li>
+      <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top:0;">Exam Instructions</h2>
+      <ul style="line-height: 1.6;">
+        <li><strong>Duration:</strong> 180 Minutes. Timer is in the top right.</li>
+        <li><strong>Save & Next (Green):</strong> Saves your answer and moves to the next question.</li>
+        <li><strong>Save & Mark for Review (Blue):</strong> Saves your answer but flags it for you to double-check later.</li>
+        <li><strong>Mark for Review & Next (Purple):</strong> Flags the question for review WITHOUT saving an answer.</li>
+        <li><strong>Security Warning:</strong> Switching tabs or pressing 'Back' will automatically submit your exam.</li>
       </ul>
     </div>
   </div>
@@ -222,7 +240,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, setDoc, doc, collection, getDocs, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
       apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
       authDomain: "studentdashboard-681a8.firebaseapp.com",
@@ -242,18 +259,17 @@
     let currentZoom = 16; 
     const TOTAL_TIME_SECONDS = 180 * 60; 
 
-    // --- UI TOOLS (ZOOM & MODAL) ---
+    // UI Tools
     window.changeZoom = function(step) {
       if(step > 0 && currentZoom < 24) currentZoom += 2;
-      if(step < 0 && currentZoom > 12) currentZoom -= 2;
+      if(step < 0 && currentZoom > 14) currentZoom -= 2;
       document.getElementById('question-content').style.fontSize = currentZoom + 'px';
     };
-
     window.toggleInstructions = function(show) {
       document.getElementById('instructions-modal').style.display = show ? 'flex' : 'none';
     };
 
-    // --- TAB SWITCHING SECURITY ---
+    // Tab Security
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         let warnings = parseInt(sessionStorage.getItem("tabWarnings") || "0") + 1;
@@ -261,59 +277,42 @@
         alert(`SECURITY WARNING! Tab switching detected. Attempt ${warnings}/3.`);
         if (warnings >= 3) {
            alert("Maximum warnings reached. Your exam is being automatically submitted.");
-           finalSubmit(true); // Force submit
+           finalSubmit(true);
         }
       }
     });
 
-    // --- INITIALIZATION & DATABASE SECURITY CHECK ---
+    // Initialization
     async function enforceSecurityAndInit() {
       const name = sessionStorage.getItem("username");
       const reg = sessionStorage.getItem("regNo");
       const roll = sessionStorage.getItem("rollNo") || "N/A"; 
       
-      // 1. Check if they skipped the login page
-      if (!name || !reg) {
-        window.location.replace("index.html");
-        return;
-      }
+      if (!name || !reg) { window.location.replace("index.html"); return; }
+      if (sessionStorage.getItem("examCompleted") === "true") { window.location.replace("quick-result.html"); return; }
 
-      // 2. Local check: Did they already submit this session?
-      if (sessionStorage.getItem("examCompleted") === "true") {
-        window.location.replace("quick-result.html"); 
-        return;
-      }
-
-      // 3. Database Check: Prevent Retakes (Cross-device/Incognito protection)
       try {
         const docRef = doc(db, "examResponses", reg);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           sessionStorage.setItem("examCompleted", "true"); 
-          alert("SECURITY ALERT: Our database indicates you have already submitted this exam. Retakes are not allowed.");
+          alert("SECURITY ALERT: Our database indicates you have already submitted this exam.");
           window.location.replace("quick-result.html"); 
           return;
         }
-      } catch (err) {
-        console.error("Database validation error:", err);
-      }
+      } catch (err) {}
 
-      // Populate Header Data
       document.getElementById("studentName").textContent = name;
       document.getElementById("regNumber").textContent = reg;
       document.getElementById("rollNumber").textContent = roll;
 
       await loadQuestionsFromDB();
-      
-      // Remove Security Cover
       document.getElementById("security-screen").style.display = "none";
-      
       loadQuestion(current);
       startTimer();
       enforceFullScreen();
     }
 
-    // --- FETCH QUESTIONS ---
     async function loadQuestionsFromDB() {
       let cachedQuestions = sessionStorage.getItem("examQuestions");
       if (cachedQuestions) {
@@ -322,32 +321,22 @@
         try {
           const querySnapshot = await getDocs(collection(db, "examQuestions"));
           querySnapshot.forEach((doc) => { questions.push(doc.data()); });
-          
-          // Sort questions chronologically based on Admin upload time
           questions.sort((a, b) => {
             if(a.createdAt && b.createdAt) return new Date(a.createdAt) - new Date(b.createdAt);
             return 0;
           });
           sessionStorage.setItem("examQuestions", JSON.stringify(questions));
         } catch (error) {
-          alert("Error loading exam database. Please check your internet connection.");
+          alert("Error loading exam database.");
           return;
         }
       }
-
-      if (questions.length === 0) {
-        document.getElementById("security-screen").innerText = "No questions found in the database. Please contact the administrator.";
-        return;
-      }
-
-      // Initialize Tracking Arrays
       current = parseInt(sessionStorage.getItem("currentQuestion") || "0");
       responses = JSON.parse(sessionStorage.getItem("responses") || JSON.stringify(Array(questions.length).fill(null)));
       status = JSON.parse(sessionStorage.getItem("status") || JSON.stringify(Array(questions.length).fill("not-visited")));
       updateLiveStats();
     }
 
-    // Request Fullscreen to prevent distractions
     function enforceFullScreen() {
       document.body.addEventListener('click', () => {
         if (!document.fullscreenElement) {
@@ -356,21 +345,18 @@
       }, { once: true });
     }
 
-    // --- RENDER LOGIC ---
     function updateLiveStats() {
-      const total = questions.length;
-      let attempted = 0;
-      let review = 0;
-      
+      let ans = 0, notAns = 0, rev = 0, notVis = 0;
       status.forEach(s => {
-        if (s === 'answered') attempted++;
-        else if (s === 'ans-review') { attempted++; review++; }
-        else if (s === 'review') review++;
+        if (s === 'answered') ans++;
+        else if (s === 'not-answered') notAns++;
+        else if (s === 'ans-review' || s === 'review') rev++;
+        else if (s === 'not-visited') notVis++;
       });
-
-      document.getElementById('stat-attempted').innerText = attempted;
-      document.getElementById('stat-review').innerText = review;
-      document.getElementById('stat-pending').innerText = total - attempted;
+      document.getElementById('stat-ans').innerText = ans;
+      document.getElementById('stat-not').innerText = notAns;
+      document.getElementById('stat-rev').innerText = rev;
+      document.getElementById('stat-pen').innerText = notVis;
     }
 
     function loadQuestion(index) {
@@ -378,7 +364,6 @@
       document.getElementById("q-number").textContent = `Question ${index + 1} of ${questions.length}`;
       document.getElementById("q-text").innerHTML = q.questionText || q.question;
       
-      // Load Image if it exists
       const imgContainer = document.getElementById("q-image-container");
       if (q.questionImage && q.questionImage.trim() !== "") {
         imgContainer.innerHTML = `<img src="${q.questionImage}" class="question-img" draggable="false">`;
@@ -386,7 +371,6 @@
         imgContainer.innerHTML = "";
       }
 
-      // Load Options
       document.getElementById("q-options").innerHTML = q.options.map((opt, i) => {
         let optText = typeof opt === 'string' ? opt : (opt.text || '');
         let optImg = (typeof opt === 'object' && opt.image) ? `<img src="${opt.image}" class="option-img" draggable="false">` : '';
@@ -401,6 +385,9 @@
       renderStatus();
       updateLiveStats();
       persistData();
+      
+      // Auto-scroll question area to top
+      document.getElementById("question-content").scrollTop = 0;
     }
 
     function renderStatus() {
@@ -415,29 +402,40 @@
       sessionStorage.setItem("currentQuestion", current.toString());
     }
 
-    // --- EXAM ACTION BUTTONS ---
-    window.saveAndNext = function () {
-      const selected = document.querySelector('input[name="option"]:checked');
-      if (selected) {
-        responses[current] = parseInt(selected.value);
-        status[current] = status[current] === "review" ? "ans-review" : "answered";
-      } else {
-        status[current] = "not-answered";
-      }
+    // --- NEW BUTTON LOGIC ---
+    function nextQ() {
       if (current < questions.length - 1) current++;
       loadQuestion(current);
     }
 
-    window.markForReview = function () {
+    window.saveAndNext = function () {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (selected) {
+        responses[current] = parseInt(selected.value);
+        status[current] = "answered";
+      } else {
+        status[current] = "not-answered";
+      }
+      nextQ();
+    }
+
+    window.saveAndMarkForReview = function () {
       const selected = document.querySelector('input[name="option"]:checked');
       if (selected) {
         responses[current] = parseInt(selected.value);
         status[current] = "ans-review";
+        nextQ();
       } else {
-        status[current] = "review";
+        alert("Please select an option first to 'Save & Mark for Review'.\nIf you don't want to answer yet, use 'Mark for Review & Next'.");
       }
-      if (current < questions.length - 1) current++;
-      loadQuestion(current);
+    }
+
+    window.markForReview = function () {
+      // Does not save response, just marks it. 
+      // If they selected something, we clear it because they didn't "Save".
+      responses[current] = null;
+      status[current] = "review";
+      nextQ();
     }
 
     window.clearResponse = function () {
@@ -448,21 +446,17 @@
       loadQuestion(current);
     }
 
-   window.goto = function (index) {
+    window.goto = function (index) {
       current = index;
       loadQuestion(index);
     }
 
-    // --- TIMER LOGIC ---
+// --- TIMER & SUBMIT ---
     function startTimer() {
       const timerElement = document.getElementById("timer");
       let startTime = sessionStorage.getItem("examStartTime");
-      if (!startTime) {
-        startTime = Date.now();
-        sessionStorage.setItem("examStartTime", startTime);
-      } else {
-        startTime = parseInt(startTime);
-      }
+      if (!startTime) { startTime = Date.now(); sessionStorage.setItem("examStartTime", startTime); } 
+      else { startTime = parseInt(startTime); }
       
       const interval = setInterval(() => {
         const now = Date.now();
@@ -481,11 +475,9 @@
       }, 1000);
     }
 
-    // --- FINAL SUBMISSION ---
     window.finalSubmit = async function (force = false) {
-      // Show confirmation popup if the student clicked the button manually
       if (!force) {
-        const confirmSubmit = confirm("⚠️ Are you sure you want to Final Submit the exam?\n\nYou will NOT be able to change your answers or take the exam again.");
+        const confirmSubmit = confirm("⚠️ Are you sure you want to FINAL SUBMIT?\n\nYou will NOT be able to change your answers.");
         if (!confirmSubmit) return;
       }
 
@@ -506,8 +498,7 @@
       const ansReview = status.filter(s => s === "ans-review").length;
 
       const responseData = {
-        name, roll, reg,
-        responses, status,
+        name, roll, reg, responses, status,
         metrics: { total, answered, notAnswered, review, ansReview },
         cheatingWarnings: warnings,
         submittedAt: serverTimestamp()
@@ -515,21 +506,17 @@
 
       try {
         await setDoc(doc(db, "examResponses", reg), responseData);
-        // Lock local session so they can't hit back button into the exam
         sessionStorage.setItem("examCompleted", "true"); 
-        
         alert(`Exam Submitted Successfully!\nYou answered ${answered} out of ${total} questions.`);
-        window.location.replace("quick-result.html"); // Redirects to results or thankyou page
+        window.location.replace("quick-result.html"); 
       } catch (err) {
-        alert("❌ Critical Error: Submission failed. Please check your internet connection.");
-        console.error("Firestore Error:", err);
+        alert("❌ Critical Error: Submission failed. Check your internet.");
         document.querySelector('.btn-submit').disabled = false;
-        document.querySelector('.btn-submit').innerText = "Final Submit";
+        document.querySelector('.btn-submit').innerText = "FINAL SUBMIT";
         document.getElementById("security-screen").style.display = "none";
       }
     }
 
-    // Trigger initialization on load
     window.onload = enforceSecurityAndInit;
 
   </script>
