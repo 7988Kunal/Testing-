@@ -34,7 +34,11 @@
       --border-color: #cbd5e1;
     }
 
-    /* Lock body height to prevent entire page from scrolling */
+    * {
+      box-sizing: border-box;
+    }
+
+    /* Lock body height on desktop to prevent entire page from scrolling */
     body {
       font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg-color); color: #333;
       -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
@@ -47,34 +51,36 @@
       justify-content: center; align-items: center; font-size: 22px; font-weight: bold; color: var(--primary);
     }
 
-    /* Header (Fixed) */
+    /* --- RESPONSIVE HEADER --- */
     .top-header {
       background: var(--primary); color: white; padding: 12px 20px;
-      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; flex-wrap: wrap; gap: 15px;
     }
-    .student-info { display: flex; gap: 20px; font-size: 15px; font-weight: 500; }
-    .tools-timer-group { display: flex; align-items: center; gap: 20px; }
-    .toolbar button { background: #fff; color: var(--primary); border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-    .timer { font-size: 22px; font-weight: bold; background: #dc3545; padding: 5px 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .student-info { display: flex; gap: 15px; font-size: 15px; font-weight: 500; flex-wrap: wrap; align-items: center; }
+    .student-info div { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; }
+    .tools-timer-group { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+    .toolbar { display: flex; gap: 8px; }
+    .toolbar button { background: #fff; color: var(--primary); border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+    .toolbar button:hover { background: #e2e8f0; }
+    .timer { font-size: 22px; font-weight: bold; background: #dc3545; padding: 5px 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.3); letter-spacing: 1px; }
 
-    /* Main Content (Flexible Height) */
+    /* --- MAIN CONTENT LAYOUT --- */
     .main-container {
       display: flex; flex: 1; padding: 10px; gap: 10px; overflow: hidden;
     }
     
-    /* --- LEFT PANEL (Question Area + Fixed Footer) --- */
+    /* LEFT PANEL (Question Area) */
     .left-panel {
       flex: 3; background: white; border-radius: 8px; border: 1px solid var(--border-color);
-      display: flex; flex-direction: column; overflow: hidden;
+      display: flex; flex-direction: column; overflow: hidden; min-width: 0;
     }
     
-    /* Header inside question area */
     .question-header {
       padding: 15px 25px; background: #f8fafc; border-bottom: 2px solid var(--border-color);
       font-size: 1.2em; font-weight: bold; color: var(--primary); flex-shrink: 0;
     }
 
-    /* The only part that scrolls! */
+    /* The only part that scrolls on Desktop! */
     .question-scroll-area {
       flex: 1; padding: 25px; overflow-y: auto; font-size: 16px; transition: font-size 0.2s;
     }
@@ -88,13 +94,13 @@
       transition: all 0.2s ease;
     }
     .options label:hover { border-color: var(--secondary); background: #f1f5f9; }
-    .options input[type="radio"] { transform: scale(1.4); margin-right: 15px; cursor: pointer; }
+    .options input[type="radio"] { transform: scale(1.4); margin-right: 15px; cursor: pointer; flex-shrink: 0; }
     .option-img { max-height: 80px; margin-left: 10px; border-radius: 4px; }
 
-    /* FIXED ACTION FOOTER */
+    /* --- ACTION FOOTER (Guaranteed Visibility) --- */
     .action-footer {
-      background: #f8fafc; padding: 15px 25px; border-top: 2px solid var(--border-color);
-      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; flex-wrap: wrap; gap: 10px;
+      background: #f8fafc; padding: 15px 20px; border-top: 2px solid var(--border-color);
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; gap: 10px;
     }
     .action-group { display: flex; gap: 10px; }
     .action-footer button {
@@ -105,10 +111,10 @@
     .btn-save-review { background: #1e90ff; } .btn-save-review:hover { background: #0073e6; }
     .btn-save { background: #5cb85c; font-size: 15px; padding: 10px 25px; } .btn-save:hover { background: #4cae4c; }
 
-    /* --- RIGHT PANEL (Navigation + Submit) --- */
+    /* RIGHT PANEL (Navigation + Submit) */
     .right-panel {
       flex: 1; background: white; border-radius: 8px; border: 1px solid var(--border-color);
-      display: flex; flex-direction: column; max-width: 340px; overflow: hidden;
+      display: flex; flex-direction: column; max-width: 340px; overflow: hidden; min-width: 250px;
     }
     
     .status-summary { padding: 15px; background: #f8fafc; border-bottom: 1px solid var(--border-color); flex-shrink: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; font-weight: bold; }
@@ -118,7 +124,7 @@
     /* Palette Grid Scrolls Independently */
     .palette-container { flex: 1; padding: 15px; overflow-y: auto; }
     .status-grid { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
-    .status-btn { width: 45px; height: 45px; border: 1px solid #ccc; background: #f4f4f4; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px; color: #333; display: flex; justify-content: center; align-items: center; }
+    .status-btn { width: 42px; height: 42px; border: 1px solid #ccc; background: #f4f4f4; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px; color: #333; display: flex; justify-content: center; align-items: center; }
     .status-btn:hover { filter: brightness(0.9); }
     
     /* Colors */
@@ -138,27 +144,59 @@
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;
     }
-    .modal-content { background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%; }
+    .modal-content { background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto;}
     .close-btn { background: #d9534f; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; float: right; font-weight: bold; }
 
     footer { background: var(--primary); color: white; text-align: center; padding: 8px; font-size: 13px; flex-shrink: 0; }
 
-    @media (max-width: 900px) {
-      .main-container { flex-direction: column; overflow-y: auto; }
-      body { height: auto; overflow: auto; }
-      .left-panel, .right-panel { flex: none; overflow: visible; }
-      .question-scroll-area { overflow: visible; }
-      .action-footer { justify-content: center; }
+    /* =========================================================
+       MOBILE RESPONSIVENESS - FIXING ALL CUT-OFF BUTTONS
+       ========================================================= */
+    @media (max-width: 950px) {
+      /* Unlock body height so the user can scroll down to the right-panel on mobile */
+      body { height: auto; overflow-y: auto; overflow-x: hidden; }
+      
+      /* Stack the left panel (questions) and right panel (palette) on top of each other */
+      .main-container { flex-direction: column; overflow: visible; height: auto; }
+      .left-panel, .right-panel { flex: none; overflow: visible; max-width: 100%; }
+      .question-scroll-area { overflow: visible; height: auto; padding: 15px; }
+
+      /* Ensure Header items align cleanly */
+      .top-header { flex-direction: column; text-align: center; justify-content: center; }
+      .student-info { justify-content: center; width: 100%; }
+      .tools-timer-group { justify-content: space-between; width: 100%; }
+
+      /* --- BUTTON GRID FIX FOR MOBILE --- */
+      /* Transforms the horizontal bar into a 2x2 grid so NO buttons get hidden */
+      .action-footer { 
+        flex-direction: column; 
+        padding: 15px 10px; 
+      }
+      .action-group { 
+        width: 100%; 
+        display: flex; 
+        justify-content: space-between; 
+        gap: 10px; 
+      }
+      .action-footer button { 
+        flex: 1; /* Makes buttons take exactly 50% width each */
+        padding: 12px 5px; 
+        font-size: 13px; 
+        line-height: 1.2;
+        white-space: normal; /* Allows text like "Mark for Review & Next" to wrap safely */
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Strict Security Cover -->
   <div id="security-screen">
     <div>Authenticating Secure Session...</div>
     <div style="font-size: 14px; margin-top: 10px; color: #666;">Please do not refresh or press back.</div>
   </div>
 
+  <!-- FIXED HEADER -->
   <div class="top-header">
     <div class="student-info">
       <div>👤 <span id="studentName">Loading...</span></div>
@@ -175,17 +213,21 @@
     </div>
   </div>
 
+  <!-- MAIN DYNAMIC CONTENT -->
   <div class="main-container">
     
+    <!-- LEFT PANEL (Questions & Actions) -->
     <div class="left-panel">
       <div class="question-header" id="q-number">Loading Question...</div>
       
+      <!-- SCROLLABLE QUESTION AREA -->
       <div class="question-scroll-area" id="question-content">
         <div id="q-text" style="margin-bottom: 15px; line-height: 1.6;"></div>
         <div id="q-image-container"></div>
         <div class="options" id="q-options" style="margin-top: 20px;"></div>
       </div>
       
+      <!-- FIXED BOTTOM ACTION BAR (Guaranteed Visible) -->
       <div class="action-footer">
         <div class="action-group">
           <button class="btn-clear" onclick="clearResponse()">Clear Response</button>
@@ -198,7 +240,9 @@
       </div>
     </div>
     
+    <!-- RIGHT PANEL (Palette & Submit) -->
     <div class="right-panel">
+      <!-- Live Stats -->
       <div class="status-summary">
         <div class="sum-item"><span class="sum-badge answered" id="stat-ans">0</span> Answered</div>
         <div class="sum-item"><span class="sum-badge not-answered" id="stat-not">0</span> Not Answered</div>
@@ -209,10 +253,12 @@
         </div>
       </div>
 
+      <!-- Scrollable Grid -->
       <div class="palette-container">
         <div class="status-grid" id="status-grid"></div>
       </div>
 
+      <!-- Permanently Visible Submit Button -->
       <div class="submit-area">
         <button class="btn-submit" onclick="finalSubmit()">FINAL SUBMIT</button>
       </div>
@@ -222,6 +268,7 @@
 
   <footer>&copy; 2026 GATE CBT Mock Platform. Secure Testing Environment.</footer>
 
+  <!-- Instructions Overlay -->
   <div id="instructions-modal">
     <div class="modal-content">
       <button class="close-btn" onclick="toggleInstructions(false)">Close</button>
@@ -231,6 +278,7 @@
         <li><strong>Save & Next (Green):</strong> Saves your answer and moves to the next question.</li>
         <li><strong>Save & Mark for Review (Blue):</strong> Saves your answer but flags it for you to double-check later.</li>
         <li><strong>Mark for Review & Next (Purple):</strong> Flags the question for review WITHOUT saving an answer.</li>
+        <li><strong>Clear Response:</strong> Erases your current selection entirely.</li>
         <li><strong>Security Warning:</strong> Switching tabs or pressing 'Back' will automatically submit your exam.</li>
       </ul>
     </div>
@@ -402,7 +450,7 @@
       sessionStorage.setItem("currentQuestion", current.toString());
     }
 
-    // --- NEW BUTTON LOGIC ---
+    // --- ACTION BUTTON LOGIC ---
     function nextQ() {
       if (current < questions.length - 1) current++;
       loadQuestion(current);
@@ -431,8 +479,6 @@
     }
 
     window.markForReview = function () {
-      // Does not save response, just marks it. 
-      // If they selected something, we clear it because they didn't "Save".
       responses[current] = null;
       status[current] = "review";
       nextQ();
@@ -451,7 +497,7 @@
       loadQuestion(index);
     }
 
-// --- TIMER & SUBMIT ---
+    // --- TIMER & SUBMIT ---
     function startTimer() {
       const timerElement = document.getElementById("timer");
       let startTime = sessionStorage.getItem("examStartTime");
