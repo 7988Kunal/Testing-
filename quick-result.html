@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Result Viewer</title>
+  
+  <script>
+    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    document.onkeydown = function(e) {
+      if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73) || (e.ctrlKey && e.keyCode === 85)) {
+        return false;
+      }
+    };
+  </script>
+
+  <style>
+    html, body {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .main-content {
+      flex: 1;
+      padding: 20px;
+    }
+
+    h1 { font-size: 32px; color: #2c3e50; margin-bottom: 25px; }
+    .input-group { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+    input { padding: 12px; width: 280px; font-size: 16px; outline: none; border: 1px solid #ccc; border-radius: 8px; }
+    input:hover { border-color: #2adaf4dd; }
+    button { padding: 12px 25px; font-size: 16px; background: linear-gradient(to right, #182848, #4b6cb7); color: white; border: none; border-radius: 8px; cursor: pointer; transition: background 0.3s ease; font-weight: bold; }
+    button:hover { background: #314d8c; }
+    
+    #error { color: red; font-weight: bold; margin: 15px; }
+    #loading { margin: 20px auto; }
+    .spinner { display: inline-block; border: 6px solid #f3f3f3; border-top: 6px solid #4b6cb7; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .hidden { display: none; }
+
+    /* Dashboard Cards */
+    #studentDetails, #resultDetails {
+      background: white; padding: 25px; margin: 20px auto;
+      border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 900px; text-align: left;
+    }
+    .summary p { margin: 8px 0; font-size: 16px; }
+    .score { color: green; font-size: 24px; font-weight: bold; }
+
+    /* --- Quick Table Styles --- */
+    h3 { color: #003366; margin-top: 30px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+    .table-container { overflow-x: auto; margin-top: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    table { width: 100%; border-collapse: collapse; background: white; font-size: 15px; }
+    th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+    th { background-color: #003366; color: white; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+    tr:nth-child(even) { background-color: #f8f9fa; }
+    tr:hover { background-color: #eef2f5; }
+
+    /* --- Detailed Scorecard Styles --- */
+    .question-card {
+      background: #fafafa; border: 1px solid #ddd; border-radius: 8px;
+      padding: 20px; margin-top: 20px; text-align: left; box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+    .q-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; font-size: 16px; }
+    .q-text { flex: 1; margin-right: 15px; line-height: 1.5; }
+    .q-img { max-width: 100%; max-height: 250px; border-radius: 5px; margin-bottom: 15px; display: block; border: 1px solid #ccc; }
+    
+    .badge { padding: 5px 10px; border-radius: 5px; font-size: 13px; font-weight: bold; color: white; white-space: nowrap; display: inline-block; }
+    .badge-correct { background-color: #28a745; }
+    .badge-incorrect { background-color: #dc3545; }
+    .badge-unattempted { background-color: #6c757d; }
+
+    .option-box {
+      padding: 12px; border: 1px solid #ccc; border-radius: 6px;
+      margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+      background: white; font-size: 15px;
+    }
+    .opt-img { max-height: 60px; border-radius: 4px; }
+    
+    /* Highlight Logic */
+    .correct-option { background-color: #d4edda; border-color: #c3e6cb; color: #155724; font-weight: bold; }
+    .correct-option::after { content: " ✔ (Correct Answer)"; font-size: 14px; margin-left: auto; color: #155724; }
+    
+    .incorrect-option { background-color: #f8d7da; border-color: #f5c6cb; color: #721c24; font-weight: bold; }
+    .incorrect-option::after { content: " ✘ (Your Selection)"; font-size: 14px; margin-left: auto; color: #721c24; }
+
+    /* --- Footer Styles --- */
+    footer {
+      background-color: #003366;
+      color: #ffffff;
+      padding: 15px 0;
+      margin-top: auto;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 600px) {
+      input, button { width: 100%; }
+      .q-header { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-content">
+    <h1>🎓 CSE-AIML Gate 2027 Mock Paper Result</h1>
+
+    <div class="input-group">
+      <input type="text" id="rollInput" placeholder="Enter Registration Number">
+      <button onclick="getStudentResult()">Get Result</button>
+    </div>
+
+    <div id="error"></div>
+    <div id="loading" class="spinner hidden"></div>
+    <div id="studentDetails" class="hidden"></div>
+    <div id="resultDetails" class="hidden"></div>
+  </div>
+
+  <footer>
+    &copy; 2026 Student Dashboard / GATE Mock CBT. All Rights Reserved.
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
+      authDomain: "studentdashboard-681a8.firebaseapp.com",
+      projectId: "studentdashboard-681a8",
+      messagingSenderId: "171483691299",
+      appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
+      measurementId: "G-RVFB0Z9TFS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let cachedQuestions = null;
+
+    async function fetchQuestions() {
+      if (cachedQuestions) return cachedQuestions;
+      try {
+        const querySnapshot = await getDocs(collection(db, "examQuestions"));
+        let qArr = [];
+        querySnapshot.forEach((doc) => qArr.push(doc.data()));
+        
+        qArr.sort((a, b) => {
+            if(a.createdAt && b.createdAt) return new Date(a.createdAt) - new Date(b.createdAt);
+            return 0;
+        });
+        cachedQuestions = qArr;
+        return qArr;
+      } catch (err) {
+        console.error("Error fetching questions: ", err);
+        throw new Error("Could not load exam questions.");
+      }
+    }
+
+    window.getStudentResult = async () => {
+      const reg = document.getElementById("rollInput").value.trim();
+      const errorDiv = document.getElementById("error");
+      const studentDiv = document.getElementById("studentDetails");
+      const resultDiv = document.getElementById("resultDetails");
+      const loadingDiv = document.getElementById("loading");
+
+      studentDiv.innerHTML = '';
+      resultDiv.innerHTML = '';
+      errorDiv.innerText = '';
+      studentDiv.classList.add("hidden");
+      resultDiv.classList.add("hidden");
+      loadingDiv.classList.remove("hidden");
+
+      if (!reg) {
+        errorDiv.innerText = "Please enter a registration number.";
+        loadingDiv.classList.add("hidden");
+        return;
+      }
+
+      try {
+        const questions = await fetchQuestions();
+        
+        if (questions.length === 0) {
+           errorDiv.innerText = "No questions found in the database. Please upload questions first.";
+           return;
+        }
+
+        const docRef = doc(db, "examResponses", reg);
+        const docSnap = await getDoc(docRef);
+
+        if (!docSnap.exists()) {
+          errorDiv.innerText = "No record found for this registration number.";
+          loadingDiv.classList.add("hidden");
+          return;
+        }
+
+        const data = docSnap.data();
+        const { name, roll, responses } = data;
+
+        studentDiv.innerHTML = `
+          <h2>Student Details</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Roll No:</strong> ${roll}</p>
+          <p><strong>Registration No:</strong> ${reg}</p>
+        `;
+        studentDiv.classList.remove("hidden");
+
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let unattemptedCount = 0;
+        let totalAttempted = 0;
+        
+        let scorecardHTML = `<h3>Detailed Question Scorecard</h3>`;
+        let tableRowsHTML = ``;
+
+        questions.forEach((q, index) => {
+          const studentAns = responses[index]; 
+          const correctAns = q.answer; 
+          
+          let badgeClass = '';
+          let badgeText = '';
+
+          // Determine Correctness
+          if (studentAns === null || studentAns === undefined) {
+            unattemptedCount++;
+            badgeClass = 'badge-unattempted';
+            badgeText = 'Unattempted (0)';
+          } else if (studentAns === correctAns) {
+            correctCount++;
+            totalAttempted++;
+            badgeClass = 'badge-correct';
+            badgeText = 'Correct (+4)';
+          } else {
+            incorrectCount++;
+            totalAttempted++;
+            badgeClass = 'badge-incorrect';
+            badgeText = 'Incorrect (-1)';
+          }
+
+          // Build Table Rows for Quick Summary
+          let stuSelectionStr = (studentAns !== null && studentAns !== undefined) ? `Option ${studentAns + 1}` : '-';
+          let correctSelectionStr = `Option ${correctAns + 1}`;
+          
+          tableRowsHTML += `
+            <tr>
+              <td><strong>${index + 1}</strong></td>
+              <td>${stuSelectionStr}</td>
+              <td>${correctSelectionStr}</td>
+              <td><span class="badge ${badgeClass}">${badgeText.replace(' (+4)','').replace(' (-1)','').replace(' (0)','')}</span></td>
+            </tr>
+          `;
+
+          // Build Detailed Options HTML
+          let optionsHTML = q.options.map((opt, optIdx) => {
+            let optClass = 'option-box';
+            if (optIdx === correctAns) {
+              optClass += ' correct-option';
+            } else if (optIdx === studentAns) {
+              optClass += ' incorrect-option';
+            }
+
+            let optText = typeof opt === 'string' ? opt : (opt.text || '');
+            let optImg = (typeof opt === 'object' && opt.image) ? `<img src="${opt.image}" class="opt-img" />` : '';
+            
+            return `<div class="${optClass}"><span><strong>Option ${optIdx + 1}:</strong> ${optText}</span> ${optImg}</div>`;
+          }).join('');
+
+          let qImg = (q.questionImage && q.questionImage.trim() !== "") 
+            ? `<img src="${q.questionImage}" class="q-img" />` 
+            : '';
+
+          scorecardHTML += `
+            <div class="question-card">
+              <div class="q-header">
+                <div class="q-text"><strong>Q${index + 1}.</strong> ${q.questionText || "Image-based Question:"}</div>
+                <div class="badge ${badgeClass}">${badgeText}</div>
+              </div>
+              ${qImg}
+              <div class="options-container">
+                ${optionsHTML}
+              </div>
+            </div>
+          `;
+        });
+
+        const finalScore = (correctCount * 4) - incorrectCount;
+
+        resultDiv.innerHTML = `
+          <h2>Result Summary</h2>
+          <div class="summary">
+            <p><strong>Total Questions:</strong> ${questions.length}</p>
+            <p><strong>Total Attempted:</strong> ${totalAttempted}</p>
+            <p><strong>Correct Answers (+4):</strong> ${correctCount}</p>
+            <p><strong>Incorrect Answers (-1):</strong> ${incorrectCount}</p>
+            <p><strong>Unattempted (0):</strong> ${unattemptedCount}</p>
+            <hr>
+            <p><strong>Final Score:</strong> <span class="score">${finalScore}</span></p>
+          </div>
+
+          <h3>Quick Response Overview</h3>
+          <div class="table-container">
+            <table>
+              <tr>
+                <th>Q.No</th>
+                <th>Your Response</th>
+                <th>Correct Option</th>
+                <th>Status</th>
+              </tr>
+              ${tableRowsHTML}
+            </table>
+          </div>
+
+          ${scorecardHTML}
+        `;
+        resultDiv.classList.remove("hidden");
+
+      } catch (error) {
+        console.error(error);
+        errorDiv.innerText = "Something went wrong while fetching data.";
+      } finally {
+        loadingDiv.classList.add("hidden");
+      }
+    };
+  </script>
+</body>
+</html>
