@@ -527,14 +527,29 @@ button:disabled {
         studentData = snapshot.val();
         useEmail = !!(studentData.email && studentData.email.trim() !== "");
 
-        if (useEmail) {
+        /*if (useEmail) {
           emailSection.classList.remove("hidden");
         } else {
           phoneSection.classList.remove("hidden");
         }
 
         loginBtn.textContent = "Send OTP";
-        step = 2;
+        step = 2;*/
+        if (useEmail) {
+  emailSection.classList.remove("hidden");
+} else {
+  phoneSection.classList.remove("hidden");
+}
+
+// Make roll number field non-editable
+rollInput.readOnly = true;
+
+// Optional: change its appearance
+rollInput.style.backgroundColor = "#e0e0e0";
+rollInput.style.cursor = "not-allowed";
+
+loginBtn.textContent = "Send OTP";
+step = 2;
 
       } catch (err) {
         console.error(err);
