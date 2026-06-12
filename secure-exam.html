@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gate Exam 2027 CBT Mock Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <script>
+    // --- BROWSER SECURITY LOCKDOWN ---
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.onkeydown = function(e) {
+      if (
+        e.key === "F12" || 
+        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i")) || 
+        (e.ctrlKey && (e.key === "U" || e.key === "u")) ||
+        (e.key === "F5") || 
+        (e.ctrlKey && (e.key === "R" || e.key === "r"))
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    };
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () { history.go(1); };
+  </script>
+
+  <style>
+    /* --- PROFESSIONAL CBT THEME --- */
+    :root {
+      --primary: #003366;
+      --secondary: #4b6cb7;
+      --bg-color: #f4f6f9;
+      --text-dark: #333;
+      --border-color: #d1d5db;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg-color); color: var(--text-dark);
+      -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+      display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+    }
+
+    /* Full-Screen Security Overlay */
+    #security-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: white; z-index: 99999; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; font-size: 22px; font-weight: bold; color: var(--primary);
+    }
+
+    /* Top Header Bar */
+    .top-header {
+      background: var(--primary); color: white; padding: 10px 20px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 10;
+    }
+    
+    .student-info { display: flex; gap: 20px; font-size: 14px; align-items: center; flex-wrap: wrap; }
+    .student-info div { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; }
+    
+    .tools-timer-group { display: flex; align-items: center; gap: 15px; }
+    .toolbar button { background: #fff; color: var(--primary); border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+    .toolbar button:hover { background: #e2e8f0; }
+    .timer { font-size: 20px; font-weight: bold; background: #dc3545; padding: 5px 15px; border-radius: 5px; letter-spacing: 1px; }
+
+    /* Stats Bar */
+    .stats-bar {
+      background: white; padding: 8px 20px; border-bottom: 1px solid var(--border-color);
+      display: flex; gap: 20px; font-size: 14px; font-weight: 600; justify-content: center;
+    }
+    .stats-bar span { padding: 4px 10px; border-radius: 12px; color: white; }
+    .st-attempted { background: #5cb85c; }
+    .st-review { background: #800080; }
+    .st-pending { background: #d9534f; }
+
+    /* Main Container layout */
+    .main-container { display: flex; flex: 1; padding: 15px; gap: 15px; overflow: hidden; }
+    
+    /* Left Panel (Question Area) */
+    .left-panel {
+      flex: 3; background: white; border-radius: 8px; border: 1px solid var(--border-color);
+      display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow: hidden;
+    }
+    .question-content { flex: 1; padding: 25px; overflow-y: auto; font-size: 16px; transition: font-size 0.2s; }
+    .question-number { font-size: 1.2em; font-weight: bold; margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 5px; }
+    
+    .question-img { max-width: 100%; max-height: 300px; margin: 15px 0; border-radius: 5px; border: 1px solid #ddd; }
+    .options label { display: flex; align-items: center; margin-bottom: 12px; background: #f8f9fa; padding: 12px; border-radius: 6px; cursor: pointer; border: 1px solid #ddd; transition: 0.2s; }
+    .options label:hover { background: #e2e8f0; }
+    .option-img { max-height: 80px; margin-left: 10px; border-radius: 4px; }
+    
+    .action-buttons { border-top: 1px solid var(--border-color); padding: 15px 25px; background: #fafafa; display: flex; gap: 10px; flex-wrap: wrap; }
+    .action-buttons button { padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.2s; }
+    .btn-save { background: #5cb85c; } .btn-save:hover { background: #4cae4c; }
+    .btn-review { background: #f0ad4e; } .btn-review:hover { background: #ec971f; }
+    .btn-clear { background: #d9534f; } .btn-clear:hover { background: #c9302c; }
+    .btn-submit { background: var(--primary); margin-left: auto; } .btn-submit:hover { background: #002244; }
+
+    /* Right Panel (Navigation Grid) */
+    .right-panel {
+      flex: 1; background: white; border-radius: 8px; border: 1px solid var(--border-color);
+      padding: 15px; display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.05); max-width: 300px;
+    }
+    .right-panel h4 { text-align: center; margin-top: 0; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 10px; }
+    .status-grid { display: flex; flex-wrap: wrap; gap: 8px; overflow-y: auto; flex: 1; align-content: flex-start; }
+    .status-btn { width: 40px; height: 40px; border: 1px solid #ccc; background: #f4f4f4; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+    .status-btn:hover { filter: brightness(0.9); }
+    
+    /* Status Colors */
+    .not-visited { background: #e2e8f0; color: #333; }
+    .not-answered { background: #d9534f; color: white; border-color: #d43f3a; }
+    .answered { background: #5cb85c; color: white; border-color: #4cae4c; }
+    .review { background: #800080; color: white; border-color: #660066; }
+    .ans-review { background: #1e90ff; color: white; border-color: #0073e6; }
+    
+    .legend { margin-top: 15px; font-size: 13px; border-top: 1px solid #eee; padding-top: 10px; }
+    .legend p { margin: 5px 0; display: flex; align-items: center; }
+    .legend span { display: inline-block; width: 16px; height: 16px; margin-right: 8px; border-radius: 3px; }
+
+    /* Instructions Modal */
+    #instructions-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%;
+      max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .modal-content h2 { color: var(--primary); margin-top: 0; }
+    .close-btn { background: #d9534f; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; float: right; font-weight: bold; }
+
+    footer { background: #cbd5e1; color: var(--primary); text-align: center; padding: 8px; font-size: 13px; font-weight: 600; border-top: 1px solid #94a3b8; }
+
+    @media (max-width: 800px) {
+      .main-container { flex-direction: column; overflow-y: auto; }
+      .right-panel { max-width: 100%; flex: none; height: 300px; }
+      .student-info { justify-content: center; width: 100%; margin-bottom: 10px; }
+      .tools-timer-group { width: 100%; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="security-screen">
+    <div>Authenticating Secure Session...</div>
+    <div style="font-size: 14px; margin-top: 10px; color: #666;">Please do not refresh or press back.</div>
+  </div>
+
+  <div class="top-header">
+    <div class="student-info">
+      <div>👤 <strong id="studentName">Loading...</strong></div>
+      <div>Reg No: <strong id="regNumber">Loading...</strong></div>
+      <div>Roll No: <strong id="rollNumber">Loading...</strong></div>
+    </div>
+    <div class="tools-timer-group">
+      <div class="toolbar">
+        <button onclick="changeZoom(-1)">A-</button>
+        <button onclick="changeZoom(1)">A+</button>
+        <button onclick="toggleInstructions(true)">Instructions</button>
+      </div>
+      <div class="timer" id="timer">--:--</div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <span class="st-attempted">Answered: <span id="stat-attempted">0</span></span>
+    <span class="st-review">Marked for Review: <span id="stat-review">0</span></span>
+    <span class="st-pending">Pending: <span id="stat-pending">0</span></span>
+  </div>
+
+  <div class="main-container">
+    <div class="left-panel">
+      <div class="question-content" id="question-content">
+        <div class="question-number" id="q-number"></div>
+        <div class="question-text" id="q-text"></div>
+        <div id="q-image-container"></div>
+        <div class="options" id="q-options"></div>
+      </div>
+      <div class="action-buttons">
+        <button class="btn-save" onclick="saveAndNext()">Save & Next</button>
+        <button class="btn-review" onclick="markForReview()">Mark for Review & Next</button>
+        <button class="btn-clear" onclick="clearResponse()">Clear Response</button>
+        <button class="btn-submit" onclick="finalSubmit()">Final Submit</button>
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      <h4>Question Navigator</h4>
+      <div class="status-grid" id="status-grid"></div>
+      <div class="legend">
+        <p><span class="not-visited"></span> Not Visited</p>
+        <p><span class="not-answered"></span> Not Answered</p>
+        <p><span class="answered"></span> Answered</p>
+        <p><span class="review"></span> Marked for Review</p>
+        <p><span class="ans-review"></span> Answered & Marked for Review</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>&copy; 2026 GATE CBT Mock Platform. Secure Testing Environment.</footer>
+
+  <div id="instructions-modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="toggleInstructions(false)">Close</button>
+      <h2>Exam Instructions</h2>
+      <ul>
+        <li><strong>Duration:</strong> 180 Minutes.</li>
+        <li><strong>Marking:</strong> Correct Answer awards +4 marks. Incorrect answer deducts -1 mark.</li>
+        <li><strong>Navigation:</strong> Use the right-hand panel to jump to any question.</li>
+        <li><strong>Security Warning:</strong> Navigating away from this tab or pressing 'Back' will result in auto-submission or disqualification.</li>
+        <li>Click <strong>Final Submit</strong> only when you are completely finished.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, setDoc, doc, collection, getDocs, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
+      authDomain: "studentdashboard-681a8.firebaseapp.com",
+      projectId: "studentdashboard-681a8",
+      messagingSenderId: "171483691299",
+      appId: "1:171483691299:web:f2bc4e00b696c55b4cf496",
+      measurementId: "G-RVFB0Z9TFS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let questions = [];
+    let current = 0;
+    let responses = [];
+    let status = [];
+    let currentZoom = 16; // Base font size
+    const TOTAL_TIME_SECONDS = 180 * 60; 
+
+    // --- ZOOM LOGIC ---
+    window.changeZoom = function(step) {
+      if(step > 0 && currentZoom < 24) currentZoom += 2;
+      if(step < 0 && currentZoom > 12) currentZoom -= 2;
+      document.getElementById('question-content').style.fontSize = currentZoom + 'px';
+    };
+
+    // --- INSTRUCTIONS LOGIC ---
+    window.toggleInstructions = function(show) {
+      document.getElementById('instructions-modal').style.display = show ? 'flex' : 'none';
+    };
+
+    // --- TAB SWITCHING SECURITY ---
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        let warnings = parseInt(sessionStorage.getItem("tabWarnings") || "0") + 1;
+        sessionStorage.setItem("tabWarnings", warnings);
+        alert(`SECURITY WARNING! Tab switching detected. Attempt ${warnings}/3.`);
+        if (warnings >= 3) {
+           alert("Maximum warnings reached. Auto-submitting exam.");
+           finalSubmit(true); // Force submit
+        }
+      }
+    });
+
+    async function enforceSecurityAndInit() {
+      const name = sessionStorage.getItem("username");
+      const reg = sessionStorage.getItem("regNo");
+      const roll = sessionStorage.getItem("rollNo") || "N/A"; // Using rollNo as Class Roll No
+      
+      // 1. Check basic session storage presence
+      if (!name || !reg) {
+        window.location.replace("index.html");
+        return;
+      }
+
+      // 2. Local check: Did they already submit this session?
+      if (sessionStorage.getItem("examCompleted") === "true") {
+        window.location.replace("quick-result.html"); // or thankyou.html
+        return;
+      }
+
+      // 3. Database Check: STRICT lock to prevent retakes across devices
+      try {
+        const docRef = doc(db, "examResponses", reg);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          sessionStorage.setItem("examCompleted", "true"); // Lock local session
+          alert("SECURITY: Our records indicate you have already submitted this exam. You cannot attempt it again.");
+          window.location.replace("quick-result.html"); 
+          return;
+        }
+      } catch (err) {
+        console.error("Database validation error:", err);
+      }
+
+      // PASSED ALL CHECKS: Populate data and unveil UI
+      document.getElementById("studentName").textContent = name;
+      document.getElementById("regNumber").textContent = reg;
+      document.getElementById("rollNumber").textContent = roll;
+
+      await loadQuestionsFromDB();
+      
+      // Remove security screen
+      document.getElementById("security-screen").style.display = "none";
+      
+      loadQuestion(current);
+      startTimer();
+      enforceFullScreen();
+    }
+
+    async function loadQuestionsFromDB() {
+      let cachedQuestions = sessionStorage.getItem("examQuestions");
+      if (cachedQuestions) {
+        questions = JSON.parse(cachedQuestions);
+      } else {
+        try {
+          const querySnapshot = await getDocs(collection(db, "examQuestions"));
+          querySnapshot.forEach((doc) => { questions.push(doc.data()); });
+          questions.sort((a, b) => {
+            if(a.createdAt && b.createdAt) return new Date(a.createdAt) - new Date(b.createdAt);
+            return 0;
+          });
+          sessionStorage.setItem("examQuestions", JSON.stringify(questions));
+        } catch (error) {
+          alert("Error loading exam database. Check connection.");
+          return;
+        }
+      }
+
+      if (questions.length === 0) {
+        document.getElementById("security-screen").innerText = "No questions found.";
+        return;
+      }
+
+      current = parseInt(sessionStorage.getItem("currentQuestion") || "0");
+      responses = JSON.parse(sessionStorage.getItem("responses") || JSON.stringify(Array(questions.length).fill(null)));
+      status = JSON.parse(sessionStorage.getItem("status") || JSON.stringify(Array(questions.length).fill("not-visited")));
+      updateLiveStats();
+    }
+
+    function enforceFullScreen() {
+      document.body.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      }, { once: true });
+    }
+
+    function updateLiveStats() {
+      const total = questions.length;
+      let attempted = 0;
+      let review = 0;
+      
+      status.forEach(s => {
+        if (s === 'answered') attempted++;
+        else if (s === 'ans-review') { attempted++; review++; }
+        else if (s === 'review') review++;
+      });
+
+      document.getElementById('stat-attempted').innerText = attempted;
+      document.getElementById('stat-review').innerText = review;
+      document.getElementById('stat-pending').innerText = total - attempted;
+    }
+
+    function loadQuestion(index) {
+      const q = questions[index];
+      document.getElementById("q-number").textContent = `Question ${index + 1} of ${questions.length}`;
+      document.getElementById("q-text").innerHTML = q.questionText || q.question;
+      
+      const imgContainer = document.getElementById("q-image-container");
+      if (q.questionImage && q.questionImage.trim() !== "") {
+        imgContainer.innerHTML = `<img src="${q.questionImage}" class="question-img" draggable="false">`;
+      } else {
+        imgContainer.innerHTML = "";
+      }
+
+      document.getElementById("q-options").innerHTML = q.options.map((opt, i) => {
+        let optText = typeof opt === 'string' ? opt : (opt.text || '');
+        let optImg = (typeof opt === 'object' && opt.image) ? `<img src="${opt.image}" class="option-img" draggable="false">` : '';
+        return `<label>
+                  <input type="radio" name="option" value="${i}" ${responses[index] === i ? 'checked' : ''}> 
+                  <span>${optText}</span> ${optImg}
+                </label>`;
+      }).join("");
+
+      if (status[index] === "not-visited") status[index] = "not-answered";
+      
+      renderStatus();
+      updateLiveStats();
+      persistData();
+    }
+
+    function renderStatus() {
+      document.getElementById("status-grid").innerHTML = status.map((s, i) =>
+        `<button class="status-btn ${s}" onclick="goto(${i})">${i + 1}</button>`
+      ).join("");
+    }
+
+    function persistData() {
+      sessionStorage.setItem("responses", JSON.stringify(responses));
+      sessionStorage.setItem("status", JSON.stringify(status));
+      sessionStorage.setItem("currentQuestion", current.toString());
+    }
+
+    window.saveAndNext = function () {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (selected) {
+        responses[current] = parseInt(selected.value);
+        status[current] = status[current] === "review" ? "ans-review" : "answered";
+      } else {
+        status[current] = "not-answered";
+      }
+      if (current < questions.length - 1) current++;
+      loadQuestion(current);
+    }
+
+    window.markForReview = function () {
+      const selected = document.querySelector('input[name="option"]:checked');
+      if (selected) {
+        responses[current] = parseInt(selected.value);
+        status[current] = "ans-review";
+      } else {
+        status[current] = "review";
+      }
+      if (current < questions.length - 1) current++;
+      loadQuestion(current);
+    }
+
+    window.clearResponse = function () {
+      responses[current] = null;
+      status[current] = "not-answered";
+      const radio = document.querySelector('input[name="option"]:checked');
+      if (radio) radio.checked = false;
+      loadQuestion(current);
+    }
+
+    window.goto = function (index) {
+      current = index;
+      loadQuestion(index);
+    }
+
+    function startTimer() {
+      const timerElement = document.getElementById("timer");
+      let startTime = sessionStorage.getItem("examStartTime");
+      if (!startTime) {
+        startTime = Date.now();
+        sessionStorage.setItem("examStartTime", startTime);
+      } else {
+        startTime = parseInt(startTime);
+      }
+      
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const elapsed = Math.floor((now - startTime) / 1000);
+        const remaining = TOTAL_TIME_SECONDS - elapsed;
+        
+        if (remaining <= 0) {
+          clearInterval(interval);
+          alert("⏰ Time is up! Your exam is being automatically submitted.");
+          finalSubmit(true); // Force submit
+        }
+        
+        const min = Math.floor(remaining / 60);
+        const sec = remaining % 60;
+        timerElement.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    window.finalSubmit = async function (force = false) {
+      // 1. POPUP CONFIRMATION (Bypass if forced by timer/cheating)
+      if (!force) {
+        const confirmSubmit = confirm("Are you sure you want to final submit the exam? You will NOT be able to change your answers or take the exam again.");
+        if (!confirmSubmit) return;
+      }
+
+      document.querySelector('.btn-submit').disabled = true;
+      document.querySelector('.btn-submit').innerText = "Submitting securely...";
+      document.getElementById("security-screen").style.display = "flex";
+      document.getElementById("security-screen").innerHTML = "Submitting to secure server... Please wait.";
+
+      const name = sessionStorage.getItem("username");
+      const roll = sessionStorage.getItem("rollNo") || "N/A";
+      const reg = sessionStorage.getItem("regNo");
+      const warnings = sessionStorage.getItem("tabWarnings") || "0";
+
+      const total = questions.length;
+      const answered = responses.filter(r => r !== null).length;
+      const notAnswered = status.filter(s => s === "not-answered").length;
+      const review = status.filter(s => s === "review").length;
+      const ansReview = status.filter(s => s === "ans-review").length;
+
+      const responseData = {
+        name, roll, reg,
+        responses, status,
+        metrics: { total, answered, notAnswered, review, ansReview },
+        cheatingWarnings: warnings,
+        submittedAt: serverTimestamp()
+      };
+
+      try {
+        await setDoc(doc(db, "examResponses", reg), responseData);
+        // Lock local session so they can't hit back button into the exam
+        sessionStorage.setItem("examCompleted", "true"); 
+        
+        alert(`Exam Submitted Successfully!\nYou answered ${answered} out of ${total} questions.`);
+        window.location.replace("quick-result.html"); 
+      } catch (err) {
+        alert("❌ Critical Error: Submission failed. Please check your internet connection.");
+        console.error("Firestore Error:", err);
+        document.querySelector('.btn-submit').disabled = false;
+        document.querySelector('.btn-submit').innerText = "Final Submit";
+        document.getElementById("security-screen").style.display = "none";
+      }
+    }
+
+    // Trigger initialization
+    window.onload = enforceSecurityAndInit;
+
+  </script>
+</body>
+</html>
