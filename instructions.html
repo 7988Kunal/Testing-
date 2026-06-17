@@ -4,251 +4,446 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AIML Exam Instructions</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-      <script>
-  document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-  });
-</script>
-<script>
-  document.onkeydown = function(e) {
-    if (
-      e.keyCode === 123 || // F12
-      (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-      (e.ctrlKey && e.keyCode === 85) // Ctrl+U
-    ) {
-      return false;
-    }
-  };
-  </script>
-  <style>
-    * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif;
-}
-body {
-  background: #f2f8ff;
-  padding: 20px;
-  color: #333;
-  min-height: 100vh;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none;
-  user-drag: none;
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
   
-}
-.container {
-  max-width: 850px;
-  margin: auto;
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
-  text-align: center;
-}
-h1 {
-  color: #004080;
-  margin-bottom: 20px;
-}
-.user-info {
-  margin-bottom: 20px;
-  font-size: 17px;
-  color: #004080;
-}
-ul {
-  line-height: 1.8;
-  font-size: 16px;
-  text-align: left;
-  display: inline-block;
-  margin: 0 auto 20px auto;
-}
-ul ul {
-  margin-left: 20px;
-}
-.timer {
-  font-size: 18px;
-  margin: 25px 0;
-  color: #d9534f;
-  font-weight: bold;
-  transition: opacity 0.3s ease;
-}
-.timer.hidden {
-  opacity: 0;
-  visibility: hidden;
-  height: 0;
-}
-.checkbox-section {
-  margin-top: 30px;
-}
-#startBtn {
-  background-color: #004080;
-  color: white;
-  padding: 10px 25px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 15px;
-  cursor: not-allowed;
-  opacity: 0.5;
-  transition: all 0.3s ease;
-}
-#startBtn.active {
-  cursor: pointer;
-  opacity: 1;
-  transform: scale(1.05);
-  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-}
-input[type="checkbox"] {
-  transform: scale(1.3);
-  margin-right: 10px;
-}
-  </style>
-<!--  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto', sans-serif; }
+  <!-- Anti-Cheat Scripts -->
+  <script>
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+    document.onkeydown = function(e) {
+      if (
+        e.keyCode === 123 || // F12
+        (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+        (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+      ) {
+        return false;
+      }
+    };
+  </script>
+
+  <style>
+    /* CSS Variables for Light & Dark Mode */
+    :root {
+      --bg-color: #f2f8ff;
+      --container-bg: #ffffff;
+      --text-color: #333333;
+      --heading-color: #004080;
+      --border-color: #e0e0e0;
+      --timer-color: #d9534f;
+      --btn-bg: #004080;
+      --btn-text: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.1);
+      
+      /* Status Colors Adaptive */
+      --color-blue: #0056b3;
+      --color-red: #d9534f;
+      --color-green: #28a745;
+      --color-purple: #6f42c1;
+    }
+
+    /* Dark Mode Variables */
+    .dark-mode {
+      --bg-color: #121212;
+      --container-bg: #1e1e1e;
+      --text-color: #e0e0e0;
+      --heading-color: #66b2ff;
+      --border-color: #333333;
+      --timer-color: #ff6b6b;
+      --btn-bg: #66b2ff;
+      --btn-text: #121212;
+      --shadow: rgba(0, 0, 0, 0.5);
+
+      /* Status Colors Adaptive */
+      --color-blue: #66b2ff;
+      --color-red: #ff6b6b;
+      --color-green: #4ade80;
+      --color-purple: #c084fc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
     body {
-      background: #f2f8ff;
-      padding: 20px;
-      color: #333;
+      background: var(--bg-color);
+      color: var(--text-color);
       min-height: 100vh;
-    -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none;
-  user-drag: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      
+      /* Anti-selection */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-user-drag: none;
+      user-drag: none;
     }
+
+    /* Header Styles */
+    header {
+      width: 100%;
+      padding: 15px 40px;
+      background: var(--container-bg);
+      box-shadow: 0 4px 10px var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
     }
+
+    header h2 {
+      color: var(--heading-color);
+      font-size: 22px;
+    }
+
+    /* Controls (Theme & Lang Toggles) */
+    .controls {
+      display: flex;
+      gap: 15px;
+    }
+
+    .toggle-btn {
+      background: var(--container-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 5px var(--shadow);
+      transition: all 0.3s ease;
+    }
+
+    .toggle-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Main Container */
     .container {
+      width: 100%;
       max-width: 850px;
-      margin: auto;
-      background: white;
-      padding: 30px;
+      background: var(--container-bg);
+      padding: 40px;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 30px var(--shadow);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 40px; /* Space before footer */
     }
+
     h1 {
+      color: var(--heading-color);
+      margin-bottom: 25px;
       text-align: center;
-      color: #004080;
-      margin-bottom: 20px;
+      font-size: 28px;
     }
+
     .user-info {
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 17px;
-      color: #004080;
+      margin-bottom: 25px;
+      font-size: 18px;
+      color: var(--heading-color);
+      background: var(--bg-color);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
     }
+
+    .instructions-list {
+      max-width: 700px;
+      margin: 0 auto 30px auto;
+    }
+
     ul {
       line-height: 1.8;
       font-size: 16px;
+      list-style-position: outside;
+      padding-left: 20px;
     }
+
+    ul ul {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    /* Adaptive Text Colors */
+    .text-blue { color: var(--color-blue); font-weight: bold; }
+    .text-red { color: var(--color-red); font-weight: bold; }
+    .text-green { color: var(--color-green); font-weight: bold; }
+    .text-purple { color: var(--color-purple); font-weight: bold; }
+
     .timer {
       text-align: center;
-      font-size: 18px;
+      font-size: 20px;
       margin: 25px 0;
-      color: #d9534f;
+      color: var(--timer-color);
       font-weight: bold;
       transition: opacity 0.3s ease;
     }
+
     .timer.hidden {
       opacity: 0;
       visibility: hidden;
       height: 0;
+      margin: 0;
     }
+
     .checkbox-section {
       margin-top: 30px;
       text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
     }
-    #startBtn {
-      background-color: #004080;
-      color: white;
-      padding: 10px 25px;
+
+    .checkbox-label {
       font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--btn-bg);
+    }
+
+    #startBtn {
+      display: block;
+      margin: 25px auto 0 auto;
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      padding: 12px 30px;
+      font-size: 18px;
+      font-weight: bold;
       border: none;
-      border-radius: 5px;
-      margin-top: 15px;
+      border-radius: 8px;
       cursor: not-allowed;
       opacity: 0.5;
       transition: all 0.3s ease;
     }
+
     #startBtn.active {
       cursor: pointer;
       opacity: 1;
-      transform: scale(1.05);
-      box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 5px 15px var(--shadow);
     }
-    input[type="checkbox"] {
-      transform: scale(1.3);
-      margin-right: 10px;
+
+    #startBtn.active:hover {
+      transform: scale(1.03);
     }
-  </style>-->
+
+    /* Footer Styles */
+    footer {
+      margin-top: auto;
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+      background: var(--container-bg);
+      color: var(--text-color);
+      box-shadow: 0 -4px 10px var(--shadow);
+      font-size: 14px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 20px;
+      }
+      .container {
+        padding: 20px;
+        width: 90%;
+      }
+    }
+
+  </style>
 </head>
-<body>
+<!-- DARK MODE BY DEFAULT -->
+<body class="dark-mode">
+
+  <!-- Header Section -->
+  <header>
+    <h2 data-i18n="portalName">AIML Exam Portal</h2>
+    <div class="controls">
+      <button class="toggle-btn" id="themeToggle">
+        <span id="themeIcon">☀️</span> <span id="themeText">Light Mode</span>
+      </button>
+      <button class="toggle-btn" id="langToggle">
+        🌐 <span id="langText">हिंदी</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
   <div class="container">
-    <h1>AIML Online Examination Instructions</h1>
+    <h1 data-i18n="title">AIML Online Examination Instructions</h1>
 
     <div class="user-info" id="userInfo"></div>
 
-    <ul>
-      <li>Total Duration of the Examination is <strong>3 Hours</strong>.</li>
-      <li>The question paper consists of <strong>Multiple Choice Questions (MCQs)</strong>.</li>
-      <li><strong>Each correct answer: +4 Marks</strong></li>
-      <li><strong>Each incorrect answer: -1 Mark (Negative Marking)</strong></li>
-      <li>No mark will be deducted for unanswered questions.</li>
-      <li>Use the <span style="color: green;"><strong>‘Save & Next’</strong></span> button to move to the next question after answering.</li>
-      <li>You can <span style="color: purple;"><strong>‘Mark for Review’</strong></span> questions for later before final submission.</li>
-      <li>Question status will be shown in different colors:
-        <ul>
-          <li><strong style="color: blue;">Not Visited</strong></li>
-          <li><strong style="color: red;">Not Answered</strong></li>
-          <li><strong style="color: green;">Answered</strong></li>
-          <li><strong style="color: purple;">Marked for Review</strong></li>
-        </ul>
-      </li>
-      <li>You can submit your exam any time but must complete your exam.<!--Once the time ends, your exam will be auto-submitted.--></li>
-    </ul>
+    <div class="instructions-list">
+      <ul>
+        <li data-i18n="duration">Total Duration of the Examination is <strong>3 Hours</strong>.</li>
+        <li data-i18n="mcq">The question paper consists of <strong>Multiple Choice Questions (MCQs)</strong>.</li>
+        <li data-i18n="correct"><strong>Each correct answer: +4 Marks</strong></li>
+        <li data-i18n="incorrect"><strong>Each incorrect answer: -1 Mark (Negative Marking)</strong></li>
+        <li data-i18n="unanswered">No mark will be deducted for unanswered questions.</li>
+        <li data-i18n="saveNext">Use the <span class='text-green'>‘Save & Next’</span> button to move to the next question after answering.</li>
+        <li data-i18n="markReview">You can <span class='text-purple'>‘Mark for Review’</span> questions for later before final submission.</li>
+        <li><span data-i18n="status">Question status will be shown in different colors:</span>
+          <ul>
+            <li class="text-blue" data-i18n="notVisited">Not Visited</li>
+            <li class="text-red" data-i18n="notAnswered">Not Answered</li>
+            <li class="text-green" data-i18n="answered">Answered</li>
+            <li class="text-purple" data-i18n="markedReview">Marked for Review</li>
+          </ul>
+        </li>
+        <li data-i18n="submitRule">You can submit your exam any time but must complete your exam.</li>
+      </ul>
+    </div>
 
     <div class="timer" id="timerSection">
-      Time Remaining: <span id="countdown">00:10</span>
+      <span data-i18n="timeRemaining">Time Remaining:</span> <span id="countdown">00:10</span>
     </div>
 
     <div class="checkbox-section">
-      <label>
+      <label class="checkbox-label">
         <input type="checkbox" id="agreeCheck" />
-        I have carefully read all instructions and I am ready to begin.
+        <span data-i18n="agreeText">I have carefully read all instructions and I am ready to begin.</span>
       </label>
       <br/>
-      <button id="startBtn">I am Ready to Begin</button>
+      <button id="startBtn" data-i18n="startBtn">I am Ready to Begin</button>
     </div>
   </div>
 
+  <!-- Footer Section -->
+  <footer>
+    &copy; 2026 <span data-i18n="portalName">AIML Exam Portal</span>. <span data-i18n="rights">All Rights Reserved.</span>
+  </footer>
+
   <script>
-    const username = sessionStorage.getItem("username");
+    // --- TRANSLATION DICTIONARY ---
+    const translations = {
+      en: {
+        portalName: "AIML Exam Portal",
+        title: "AIML Online Examination Instructions",
+        duration: "Total Duration of the Examination is <strong>3 Hours</strong>.",
+        mcq: "The question paper consists of <strong>Multiple Choice Questions (MCQs)</strong>.",
+        correct: "<strong>Each correct answer: +4 Marks</strong>",
+        incorrect: "<strong>Each incorrect answer: -1 Mark (Negative Marking)</strong>",
+        unanswered: "No mark will be deducted for unanswered questions.",
+        saveNext: "Use the <span class='text-green'>‘Save & Next’</span> button to move to the next question after answering.",
+        markReview: "You can <span class='text-purple'>‘Mark for Review’</span> questions for later before final submission.",
+        status: "Question status will be shown in different colors:",
+        notVisited: "Not Visited",
+        notAnswered: "Not Answered",
+        answered: "Answered",
+        markedReview: "Marked for Review",
+        submitRule: "You can submit your exam any time but must complete your exam.",
+        timeRemaining: "Time Remaining:",
+        agreeText: "I have carefully read all instructions and I am ready to begin.",
+        startBtn: "I am Ready to Begin",
+        rights: "All Rights Reserved.",
+        alertNoUser: "Unauthorized access. Please login first.",
+        alertConfirm: "Please confirm you have read the instructions.",
+        promptBegin: "Are you sure you want to begin the exam? You won't return to this page."
+      },
+      hi: {
+        portalName: "एआईएमएल परीक्षा पोर्टल",
+        title: "एआईएमएल (AIML) ऑनलाइन परीक्षा निर्देश",
+        duration: "परीक्षा की कुल अवधि <strong>3 घंटे</strong> है।",
+        mcq: "प्रश्न पत्र में <strong>बहुविकल्पीय प्रश्न (MCQs)</strong> शामिल हैं।",
+        correct: "<strong>प्रत्येक सही उत्तर: +4 अंक</strong>",
+        incorrect: "<strong>प्रत्येक गलत उत्तर: -1 अंक (नकारात्मक अंकन)</strong>",
+        unanswered: "अनुत्तरित प्रश्नों के लिए कोई अंक नहीं काटा जाएगा।",
+        saveNext: "उत्तर देने के बाद अगले प्रश्न पर जाने के लिए <span class='text-green'>‘Save & Next’</span> बटन का उपयोग करें।",
+        markReview: "आप अंतिम सबमिशन से पहले प्रश्नों को <span class='text-purple'>‘Mark for Review’ (समीक्षा के लिए)</span> चिह्नित कर सकते हैं।",
+        status: "प्रश्न की स्थिति विभिन्न रंगों में दिखाई जाएगी:",
+        notVisited: "देखा नहीं गया (Not Visited)",
+        notAnswered: "उत्तर नहीं दिया (Not Answered)",
+        answered: "उत्तर दिया गया (Answered)",
+        markedReview: "समीक्षा के लिए चिह्नित (Marked for Review)",
+        submitRule: "आप किसी भी समय अपनी परीक्षा जमा कर सकते हैं लेकिन आपको अपनी परीक्षा पूरी करनी होगी।",
+        timeRemaining: "शेष समय:",
+        agreeText: "मैंने सभी निर्देशों को ध्यानपूर्वक पढ़ लिया है और मैं शुरू करने के लिए तैयार हूँ।",
+        startBtn: "मैं शुरू करने के लिए तैयार हूँ",
+        rights: "सर्वाधिकार सुरक्षित।",
+        alertNoUser: "अनधिकृत पहुँच। कृपया पहले लॉगिन करें।",
+        alertConfirm: "कृपया पुष्टि करें कि आपने निर्देश पढ़ लिए हैं।",
+        promptBegin: "क्या आप वाकई परीक्षा शुरू करना चाहते हैं? आप इस पृष्ठ पर वापस नहीं आ पाएंगे।"
+      }
+    };
+
+    // ENGLISH BY DEFAULT
+    let currentLang = 'en';
+
+    // --- INITIALIZATION (USER DATA) ---
+    const username = sessionStorage.getItem("username"); 
     const rollNo = sessionStorage.getItem("rollNo");
 
-    // Redirect if not logged in
     if (!username || !rollNo) {
-      alert("Unauthorized access. Please login first.");
-      window.location.href = "index.html";
+      // You can comment out this block during local testing if sessionStorage is empty
+      alert(translations[currentLang].alertNoUser);
+      window.location.href = "index.html"; 
     } else {
       document.getElementById("userInfo").innerHTML = `👤 <strong>${username}</strong> | 🎓 Roll No: <strong>${rollNo}</strong>`;
     }
 
+    // --- DOM ELEMENTS ---
     const startBtn = document.getElementById('startBtn');
     const agreeCheck = document.getElementById('agreeCheck');
     const countdown = document.getElementById('countdown');
     const timerSection = document.getElementById('timerSection');
+    const themeToggle = document.getElementById('themeToggle');
+    const langToggle = document.getElementById('langToggle');
 
-    let time = 10; // 1 minute
+    // --- THEME TOGGLE LOGIC ---
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+      document.getElementById('themeText').textContent = isDark ? 'Light Mode' : 'Dark Mode';
+    });
+
+    // --- LANGUAGE TOGGLE LOGIC ---
+    langToggle.addEventListener('click', () => {
+      currentLang = currentLang === 'en' ? 'hi' : 'en';
+      
+      // Update button text to reflect the language you CAN switch to
+      document.getElementById('langText').textContent = currentLang === 'en' ? 'हिंदी' : 'English';
+      
+      // Update all translatable elements
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          element.innerHTML = translations[currentLang][key];
+        }
+      });
+      
+      // Update language attribute of HTML tag for accessibility
+      document.documentElement.lang = currentLang;
+    });
+
+    // --- TIMER & START EXAM LOGIC ---
+    let time = 10; // 10 seconds delay
 
     function updateButtonState() {
       if (agreeCheck.checked && time <= 0) {
@@ -277,12 +472,12 @@ input[type="checkbox"] {
 
     startBtn.addEventListener('click', () => {
       if (!agreeCheck.checked) {
-        alert("Please confirm you have read the instructions.");
+        alert(translations[currentLang].alertConfirm);
         return;
       }
       if (!startBtn.classList.contains('active')) return;
 
-      const confirmed = confirm("Are you sure you want to begin the exam? You won't return to this page.");
+      const confirmed = confirm(translations[currentLang].promptBegin);
       if (confirmed) {
         window.location.href = "secure-exam.html";
       }
@@ -290,7 +485,6 @@ input[type="checkbox"] {
 
     // Prevent refresh or accidental reload
     window.addEventListener("beforeunload", null);
-    ;
   </script>
 </body>
 </html>
