@@ -3,465 +3,1113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CSE-Artificial Intelligence & Machine Learning Exam Login 2026</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <title>CSE-AIML Exam Portal 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-    <script>
-  document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-  });
-</script>
-<script>
-  document.onkeydown = function(e) {
-    if (
-      e.keyCode === 123 || // F12
-      (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
-      (e.ctrlKey && e.keyCode === 85) // Ctrl+U
-    ) {
-      return false;
-    }
-  };
-</script>
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.onkeydown = function(e) {
+      if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && e.keyCode === 73) || (e.ctrlKey && e.keyCode === 85)) return false;
+    };
+  </script>
   <style>
-    * { 
-  margin: 0; 
-  padding: 0; 
-  box-sizing: border-box; 
-  font-family: 'Roboto', sans-serif; 
-}
+    :root {
+      --navy:   #0A0F1E;
+      --navy2:  #101828;
+      --card:   rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.10);
+      --blue:   #3B82F6;
+      --blue2:  #60A5FA;
+      --cyan:   #06B6D4;
+      --green:  #22C55E;
+      --red:    #EF4444;
+      --amber:  #F59E0B;
+      --purple: #A78BFA;
+      --text:   #F1F5F9;
+      --muted:  #94A3B8;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--navy);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-body {
-  background: linear-gradient(135deg, #141e30, #243b55);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  user-select: none;
-}
+    /* ══ HEADER ══ */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,15,30,.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .header-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px; gap: 16px;
+    }
+    .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; cursor: pointer; }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; box-shadow: 0 0 18px rgba(59,130,246,.4);
+    }
+    .logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-text strong { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: .3px; }
+    .logo-text span { font-size: 11px; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; }
 
-.login-container {
-  background: rgba(255, 255, 255, 0.12);
-  padding: 35px;
-  border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-  width: 100%;
-  max-width: 460px;
-  color: #fff;
-  backdrop-filter: blur(10px);
-  animation: fadeIn 0.9s ease-out;
-}
+    nav { display: flex; align-items: center; gap: 4px; }
+    nav a {
+      text-decoration: none; color: var(--muted); font-size: 14px; font-weight: 500;
+      padding: 7px 14px; border-radius: 8px; transition: all .2s; cursor: pointer;
+    }
+    nav a:hover { color: var(--text); background: rgba(255,255,255,.07); }
+    nav a.active { color: var(--blue2); background: rgba(59,130,246,.12); }
 
-.login-container h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  font-size: 28px;
-  font-weight: 700;
-  color: #f5f5f5;
-  letter-spacing: 1px;
-}
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px; cursor: pointer;
+      padding: 6px; border-radius: 8px; border: none; background: transparent;
+    }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--muted); border-radius: 2px; transition: all .25s; }
+    .mobile-nav { display: none; flex-direction: column; gap: 4px; padding: 12px 24px 16px; border-top: 1px solid var(--border); background: rgba(10,15,30,.97); }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      text-decoration: none; color: var(--muted); font-size: 15px; font-weight: 500;
+      padding: 10px 12px; border-radius: 8px; transition: all .2s; cursor: pointer;
+    }
+    .mobile-nav a:hover, .mobile-nav a.active { color: var(--blue2); background: rgba(59,130,246,.1); }
 
-label {
-  display: block;
-  margin-top: 18px;
-  font-weight: bold;
-  font-size: 15px;
-  color: #f0f0f0;
-  animation: slideIn 0.6s ease;
-}
+    /* ══ DRAWER OVERLAY ══ */
+    .drawer-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(5,9,20,.75);
+      backdrop-filter: blur(4px);
+      animation: fadeOverlay .25s ease;
+    }
+    .drawer-overlay.open { display: block; }
+    @keyframes fadeOverlay { from { opacity: 0; } to { opacity: 1; } }
 
-input, select {
-  width: 100%;
-  outline: none;
-  padding: 12px;
-  margin-top: 8px;
-  border: 2px solid transparent;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.9);
-  font-size: 16px;
-  color: #222;
-  transition: all 0.3s ease;
-}
+    .drawer {
+      position: fixed;
+      top: 0; right: -100%;
+      height: 100vh;
+      width: min(680px, 100vw);
+      background: #0D1524;
+      border-left: 1px solid var(--border);
+      z-index: 201;
+      display: flex; flex-direction: column;
+      transition: right .35s cubic-bezier(.22,1,.36,1);
+      overflow: hidden;
+    }
+    .drawer.open { right: 0; }
 
-input:focus, select:focus {
-  border: 2px solid #00c6ff;
-  background: #fff;
-  box-shadow: 0 0 8px rgba(0,198,255,0.5);
-}
+    .drawer-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+      background: rgba(255,255,255,.02);
+    }
+    .drawer-header-left { display: flex; align-items: center; gap: 12px; }
+    .drawer-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .drawer-icon.blue { background: rgba(59,130,246,.18); border: 1px solid rgba(59,130,246,.3); }
+    .drawer-icon.cyan { background: rgba(6,182,212,.18); border: 1px solid rgba(6,182,212,.3); }
+    .drawer-icon.green { background: rgba(34,197,94,.18); border: 1px solid rgba(34,197,94,.3); }
+    .drawer-icon.purple { background: rgba(167,139,250,.18); border: 1px solid rgba(167,139,250,.3); }
 
-input:hover, select:hover {
-  border: 2px solid #0072ff;
-}
+    .drawer-header h2 { font-size: 17px; font-weight: 700; }
+    .drawer-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
 
-.error {
-  color: #ff3333;
-  font-size: 14px;
-  font-weight: 500;
-  margin-top: 6px;
-  animation: shake 0.4s ease;
-}
+    .drawer-close {
+      width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--border);
+      background: rgba(255,255,255,.05); cursor: pointer; font-size: 18px;
+      display: flex; align-items: center; justify-content: center; color: var(--muted);
+      transition: all .2s; flex-shrink: 0;
+    }
+    .drawer-close:hover { background: rgba(239,68,68,.12); color: var(--red); border-color: rgba(239,68,68,.3); }
 
-.info {
-  font-size: 14px;
-  color: #ffc107;
-  margin-top: 12px;
-  font-style: italic;
-  text-align: center;
-}
+    .drawer-body {
+      flex: 1; overflow-y: auto; padding: 28px;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    .drawer-body::-webkit-scrollbar { width: 5px; }
+    .drawer-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
 
-button {
-  margin-top: 28px;
-  width: 100%;
-  padding: 13px;
-  background: linear-gradient(45deg, #00c6ff, #0072ff);
-  border: none;
-  font-weight: bold;
-  font-size: 17px;
-  color: #fff;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+    /* ══ SCHEDULE TABLE ══ */
+    .section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      color: var(--blue2); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,114,255,0.5);
-}
+    .schedule-table {
+      width: 100%; border-collapse: collapse; font-size: 13.5px;
+      margin-bottom: 28px;
+    }
+    .schedule-table thead tr {
+      background: rgba(59,130,246,.12);
+    }
+    .schedule-table th {
+      padding: 11px 14px; text-align: left; font-size: 11.5px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .6px; color: var(--blue2);
+      border-bottom: 1px solid rgba(59,130,246,.25);
+    }
+    .schedule-table td {
+      padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.05);
+      color: var(--text); vertical-align: middle;
+    }
+    .schedule-table tbody tr:hover td { background: rgba(255,255,255,.03); }
+    .schedule-table tbody tr:last-child td { border-bottom: none; }
 
-button:disabled {
-  background: #888;
-  cursor: not-allowed;
-}
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    }
+    .badge.active  { background: rgba(34,197,94,.15);  color: var(--green);  border: 1px solid rgba(34,197,94,.3); }
+    .badge.pending { background: rgba(245,158,11,.15); color: var(--amber);  border: 1px solid rgba(245,158,11,.3); }
+    .badge.closed  { background: rgba(148,163,184,.1); color: var(--muted);  border: 1px solid rgba(148,163,184,.2); }
+    .badge.info    { background: rgba(59,130,246,.15);  color: var(--blue2); border: 1px solid rgba(59,130,246,.3); }
 
-.hidden {
-  display: none;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.5s ease;
-}
+    /* ══ SYLLABUS ══ */
+    .syllabus-unit {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .unit-header {
+      padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; transition: background .2s;
+    }
+    .unit-header:hover { background: rgba(255,255,255,.04); }
+    .unit-header-left { display: flex; align-items: center; gap: 12px; }
+    .unit-num {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #fff; flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .unit-title { font-size: 14px; font-weight: 600; }
+    .unit-marks { font-size: 12px; color: var(--muted); }
+    .unit-chevron { font-size: 12px; color: var(--muted); transition: transform .25s; }
+    .unit-chevron.open { transform: rotate(180deg); }
+    .unit-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height .35s ease, padding .25s ease;
+      border-top: 0px solid var(--border);
+    }
+    .unit-body.open {
+      max-height: 600px;
+      border-top: 1px solid var(--border);
+      padding: 14px 18px;
+    }
+    .topic-list { list-style: none; }
+    .topic-list li {
+      padding: 6px 0; font-size: 13px; color: var(--muted);
+      display: flex; align-items: flex-start; gap: 10px; border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .topic-list li:last-child { border-bottom: none; }
+    .topic-list li::before {
+      content: '›'; color: var(--blue2); font-size: 16px; line-height: 1.2; flex-shrink: 0;
+    }
 
-.hidden.show {
-  display: block;
-  opacity: 1;
-  transform: translateY(0);
-}
+    /* ══ CONTACT ══ */
+    .contact-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-bottom: 14px;
+      transition: border-color .2s;
+    }
+    .contact-card:hover { border-color: rgba(59,130,246,.35); }
+    .contact-avatar {
+      width: 44px; height: 44px; border-radius: 11px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .contact-avatar.blue  { background: rgba(59,130,246,.15); }
+    .contact-avatar.cyan  { background: rgba(6,182,212,.15); }
+    .contact-avatar.green { background: rgba(34,197,94,.15); }
+    .contact-info { flex: 1; }
+    .contact-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .contact-info p { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .contact-info a {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; color: var(--blue2); text-decoration: none;
+      background: rgba(59,130,246,.1); padding: 5px 12px; border-radius: 7px;
+      border: 1px solid rgba(59,130,246,.2); transition: all .2s;
+    }
+    .contact-info a:hover { background: rgba(59,130,246,.2); }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    .info-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;
+    }
+    .info-tile {
+      background: rgba(255,255,255,.03); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px;
+    }
+    .info-tile .tile-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+    .info-tile .tile-val { font-size: 15px; font-weight: 700; }
 
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
+    /* ══ MAIN ══ */
+    main {
+      flex: 1; position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 48px 20px 60px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.3);
+      border-radius: 999px; padding: 6px 16px;
+      font-size: 12px; font-weight: 600; color: var(--blue2);
+      letter-spacing: .5px; text-transform: uppercase; margin-bottom: 20px;
+    }
+    .pulse-dot {
+      width: 8px; height: 8px; background: var(--green); border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,.5); }
+      50%      { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+    }
+    .hero-title {
+      font-size: clamp(22px,4vw,32px); font-weight: 800; text-align: center;
+      letter-spacing: -.5px; max-width: 560px; line-height: 1.25; margin-bottom: 8px;
+    }
+    .hero-title span {
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub { color: var(--muted); font-size: 14px; text-align: center; margin-bottom: 36px; }
 
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  50% { transform: translateX(4px); }
-  75% { transform: translateX(-4px); }
-  100% { transform: translateX(0); }
-}
+    .notice-bar {
+      width: 100%; max-width: 580px;
+      background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.25);
+      border-radius: 10px; padding: 10px 16px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 32px; overflow: hidden;
+    }
+    .notice-bar .label {
+      background: var(--amber); color: #000; font-size: 11px; font-weight: 700;
+      border-radius: 5px; padding: 2px 8px; white-space: nowrap; flex-shrink: 0;
+    }
+    .notice-bar marquee { font-size: 13px; color: #FCD34D; font-weight: 500; }
+
+    /* ══ LOGIN CARD ══ */
+    .card {
+      width: 100%; max-width: 480px;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border);
+      border-radius: 20px; padding: 36px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.04);
+      animation: cardIn .6s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes cardIn { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+
+    .card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .step-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(59,130,246,.2), rgba(6,182,212,.2));
+      border: 1px solid rgba(59,130,246,.3);
+      display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+    }
+    .card-header-text h3 { font-size: 17px; font-weight: 700; }
+    .card-header-text p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .steps { display: flex; align-items: center; margin-bottom: 28px; }
+    .step-dot {
+      width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--muted); transition: all .3s; flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .step-dot.done { background: var(--green); border-color: var(--green); color: #fff; }
+    .step-dot.active { background: var(--blue); border-color: var(--blue); color: #fff; box-shadow: 0 0 12px rgba(59,130,246,.5); }
+    .step-line { flex: 1; height: 2px; background: var(--border); transition: background .3s; }
+    .step-line.done { background: var(--green); }
+
+    .field { margin-bottom: 20px; }
+    .field label { display: block; font-size: 13px; font-weight: 600; color: #CBD5E1; margin-bottom: 8px; letter-spacing: .2px; }
+    .input-wrap { position: relative; }
+    .input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; z-index: 1; }
+    input, select {
+      width: 100%; padding: 12px 14px 12px 42px;
+      background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.1);
+      border-radius: 10px; font-size: 15px; color: var(--text); font-family: 'Inter', sans-serif;
+      outline: none; transition: all .25s; -webkit-appearance: none;
+    }
+    input::placeholder { color: #475569; }
+    input:focus, select:focus {
+      border-color: var(--blue); background: rgba(59,130,246,.07);
+      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+    }
+    input.error-input { border-color: var(--red); }
+    input.error-input:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
+    input[readonly] { background: rgba(255,255,255,.03); color: var(--muted); cursor: not-allowed; }
+    select { color: var(--text); }
+    select option { background: #1E293B; color: var(--text); }
+    .field-error {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12.5px; color: var(--red); font-weight: 500;
+      margin-top: 6px; min-height: 18px; animation: shake .35s ease;
+    }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+    .btn {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--blue), #0EA5E9);
+      border: none; border-radius: 12px; font-size: 15px; font-weight: 700; color: #fff;
+      cursor: pointer; letter-spacing: .3px; position: relative; overflow: hidden;
+      transition: transform .2s, box-shadow .2s, opacity .2s;
+      display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px;
+    }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(59,130,246,.45); }
+    .btn:active:not(:disabled) { transform: translateY(0); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .spinner {
+      width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.3);
+      border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: none;
+    }
+    .btn.loading .spinner { display: block; }
+    .btn.loading .btn-label { display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .field-group {
+      overflow: hidden; max-height: 0; opacity: 0; transform: translateY(-8px);
+      transition: max-height .4s ease, opacity .35s ease, transform .35s ease;
+    }
+    .field-group.visible { max-height: 200px; opacity: 1; transform: translateY(0); }
+    .otp-note { font-size: 12px; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+
+    /* ══ FOOTER ══ */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      background: rgba(10,15,30,.7);
+      backdrop-filter: blur(12px);
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto; padding: 32px 24px 24px;
+      display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px;
+    }
+    .footer-brand .logo { margin-bottom: 12px; }
+    .footer-brand p { font-size: 13px; color: var(--muted); line-height: 1.7; max-width: 280px; }
+    .footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--blue2); margin-bottom: 14px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { font-size: 13px; color: var(--muted); padding: 4px 0; cursor: default; transition: color .2s; }
+    .footer-col ul li:hover { color: var(--text); }
+    .footer-col ul li a { color: var(--muted); text-decoration: none; transition: color .2s; }
+    .footer-col ul li a:hover { color: var(--blue2); }
+    .footer-bottom {
+      border-top: 1px solid var(--border); padding: 16px 24px;
+      max-width: 1100px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+    .footer-bottom p { font-size: 12px; color: #475569; }
+    .footer-bottom p span { color: var(--blue2); font-family: 'JetBrains Mono', monospace; }
+
+    /* ══ TOAST ══ */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: #1E293B; border: 1px solid var(--border); border-radius: 12px;
+      padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+      font-size: 13.5px; color: var(--text); font-weight: 500;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5); z-index: 300; max-width: 340px;
+      transform: translateY(80px); opacity: 0;
+      transition: all .35s cubic-bezier(.22,1,.36,1);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success   { border-left: 3px solid var(--green); }
+    .toast.error-toast { border-left: 3px solid var(--red); }
+    .toast.info      { border-left: 3px solid var(--blue); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 768px) {
+      nav { display: none; }
+      .hamburger { display: flex; }
+      .card { padding: 28px 22px; }
+      .footer-inner { grid-template-columns: 1fr; gap: 24px; }
+      .footer-brand p { max-width: 100%; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+      .hero-title { font-size: 22px; }
+      .toast { bottom: 16px; right: 16px; left: 16px; max-width: none; }
+      .drawer { width: 100vw; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 400px) {
+      .card { padding: 22px 16px; }
+      main { padding: 32px 12px 48px; }
+    }
   </style>
 </head>
-
 <body>
-  <div class="login-container">
-    <h2><!--AIML Exam Login-->CSE-Artificial Intelligence & Machine Learning Exam Login 2026</h2>
-    <!--<a href="Result.html">Result Demo</a>-->
-    <marquee style="color:chocolate;font-size:18px;">Exam Login Time Period from 
-      20 June 2026 to 31 July 2026.Only class roll number from 1 to 76 enabled for login except some rollno. which information not available with us.</marquee>
-    <div class="info">Login using Roll number & Registered Email (OTP verification)</div>
-    <label for="roll">Exam name</label>
-    <select>
-      <!--<option  >Complete Basic Python programming 2025</option>-->
-      <option>Gate Exam 2027 Practice Paper DA & AI</option>
-    </select>
-    <label for="roll">Class Roll Number</label>
-    <input type="text" id="roll" placeholder="Enter roll number">
-    <div class="error" id="rollError"></div>
 
-    <div id="emailSection" class="hidden">
-      <label for="email">Registered Email</label>
-      <input type="email" id="email" placeholder="Enter registered email">
-      <div class="error" id="emailError"></div>
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="header-inner">
+    <div class="logo" onclick="showPage('login')">
+      <div class="logo-icon">🧠</div>
+      <div class="logo-text">
+        <strong>CSE–AIML</strong>
+        <span>Exam Portal 2026</span>
+      </div>
     </div>
-
-    <div id="phoneSection" class="hidden">
-      <label for="phone">Registered Phone</label>
-      <input type="tel" id="phone" placeholder="Enter registered phone number">
-      <div class="error" id="phoneError"></div>
-    </div>
-
-    <div id="otpSection" class="hidden">
-      <label for="otp">Enter OTP</label>
-      <input type="text" id="otp" placeholder="Enter OTP sent to your email or phone">
-      <div class="error" id="otpError"></div>
-    </div>
-
-    <button id="loginBtn">Next</button>
-    <div class="error" id="mainError"></div>
-    <div style="margin-top:15px;text-align:center;color:#fff;font-size:14px;">&copyCSE-AIML 2026 </div>
+    <nav>
+      <a id="nav-login"    class="active" onclick="showPage('login')">Login</a>
+      <a id="nav-schedule" onclick="openDrawer('schedule')">Schedule</a>
+      <a id="nav-syllabus" onclick="openDrawer('syllabus')">Syllabus</a>
+      <a id="nav-contact"  onclick="openDrawer('contact')">Contact</a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
- 
- <!--<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  <div class="mobile-nav" id="mobileNav">
+    <a class="active" onclick="showPage('login');closeMobileNav()">Login</a>
+    <a onclick="openDrawer('schedule');closeMobileNav()">Schedule</a>
+    <a onclick="openDrawer('syllabus');closeMobileNav()">Syllabus</a>
+    <a onclick="openDrawer('contact');closeMobileNav()">Contact</a>
+  </div>
+</header>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
-      authDomain: "studentdashboard-681a8.firebaseapp.com",
-      databaseURL: "https://studentdashboard-681a8-default-rtdb.firebaseio.com",
-      projectId: "studentdashboard-681a8",
-      storageBucket: "studentdashboard-681a8.appspot.com",
-      messagingSenderId: "171483691299",
-      appId: "1:171483691299:web:f2bc4e00b696c55b4cf496"
-    };
+<!-- ══ MAIN ══ -->
+<main id="mainContent">
+  <div class="hero-badge"><div class="pulse-dot"></div>Exam Active</div>
+  <h1 class="hero-title">Artificial Intelligence &<br><span>Machine Learning</span></h1>
+  <p class="hero-sub">Gate Exam 2027 Practice Paper · DA &amp; AI</p>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    emailjs.init("rai8QxGoPo_kArORG");
+  <div class="notice-bar">
+    <div class="label">NOTICE</div>
+    <marquee behavior="scroll" scrollamount="3">
+      Login period: 20 June 2026 – 31 July 2026 &nbsp;·&nbsp; Roll numbers 1–76 enabled · Some roll numbers unavailable — contact your faculty.
+    </marquee>
+  </div>
 
-    let step = 1;
-    let studentData = null;
-    let generatedOtp = "";
-    let useEmail = true;
+  <div class="card">
+    <div class="steps">
+      <div class="step-dot active" id="s1">1</div>
+      <div class="step-line" id="l1"></div>
+      <div class="step-dot" id="s2">2</div>
+      <div class="step-line" id="l2"></div>
+      <div class="step-dot" id="s3">3</div>
+    </div>
+    <div class="card-header">
+      <div class="step-icon" id="stepIcon">🎓</div>
+      <div class="card-header-text">
+        <h3 id="cardTitle">Student Verification</h3>
+        <p id="cardSub">Enter your roll number to begin</p>
+      </div>
+    </div>
 
-    const rollInput = document.getElementById("roll");
-    const emailInput = document.getElementById("email");
-    const phoneInput = document.getElementById("phone");
-    const otpInput = document.getElementById("otp");
+    <div class="field">
+      <label>Exam</label>
+      <div class="input-wrap">
+        <span class="input-icon">📋</span>
+        <select><option>Gate Exam 2027 Practice Paper — DA &amp; AI</option></select>
+      </div>
+    </div>
 
-    const rollError = document.getElementById("rollError");
-    const emailError = document.getElementById("emailError");
-    const phoneError = document.getElementById("phoneError");
-    const otpError = document.getElementById("otpError");
-    const mainError = document.getElementById("mainError");
+    <div class="field">
+      <label for="roll">Class Roll Number</label>
+      <div class="input-wrap">
+        <span class="input-icon">🔢</span>
+        <input type="text" id="roll" placeholder="e.g. 42" autocomplete="off">
+      </div>
+      <div class="field-error" id="rollError"></div>
+    </div>
 
-    const emailSection = document.getElementById("emailSection");
-    const phoneSection = document.getElementById("phoneSection");
-    const otpSection = document.getElementById("otpSection");
-    const loginBtn = document.getElementById("loginBtn");
+    <div class="field-group" id="emailSection">
+      <div class="field">
+        <label for="email">Registered Email</label>
+        <div class="input-wrap">
+          <span class="input-icon">✉️</span>
+          <input type="email" id="email" placeholder="your@email.com" autocomplete="off">
+        </div>
+        <div class="field-error" id="emailError"></div>
+      </div>
+    </div>
 
-    loginBtn.addEventListener("click", async () => {
-      // Clear errors
-      rollError.textContent = emailError.textContent = phoneError.textContent = otpError.textContent = mainError.textContent = "";
+    <div class="field-group" id="phoneSection">
+      <div class="field">
+        <label for="phone">Registered Phone</label>
+        <div class="input-wrap">
+          <span class="input-icon">📱</span>
+          <input type="tel" id="phone" placeholder="10-digit number" autocomplete="off">
+        </div>
+        <div class="field-error" id="phoneError"></div>
+      </div>
+    </div>
 
-      if (step === 1) {
-        const roll = rollInput.value.trim();
-        if (!roll) {
-          rollError.textContent = "Please enter roll number.";
-          return;
-        }
+    <div class="field-group" id="otpSection">
+      <div class="field">
+        <label for="otp">One-Time Password</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔐</span>
+          <input type="text" id="otp" placeholder="6-digit OTP" maxlength="6" autocomplete="off"
+            style="font-family:'JetBrains Mono',monospace;letter-spacing:4px;font-size:18px;">
+        </div>
+        <div class="field-error" id="otpError"></div>
+        <p class="otp-note">📩 OTP sent to your registered contact. Valid for 10 minutes.</p>
+      </div>
+    </div>
 
-        try {
-          const snapshot = await get(ref(db, `students/${roll}`));
-          if (!snapshot.exists()) {
-            rollError.textContent = "Roll number not found.";
-            return;
-          }
+    <div class="field-error" id="mainError" style="margin-top:0;margin-bottom:12px;justify-content:center;"></div>
+    <button class="btn" id="loginBtn">
+      <div class="spinner"></div>
+      <span class="btn-label">Next →</span>
+    </button>
+  </div>
+</main>
 
-          studentData = snapshot.val();
-          useEmail = !!studentData.email;
+<!-- ══ DRAWER OVERLAY ══ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 
-          if (useEmail) {
-            emailSection.classList.remove("hidden");
-          } else {
-            phoneSection.classList.remove("hidden");
-          }
+<!-- ══ SCHEDULE DRAWER ══ -->
+<div class="drawer" id="drawerSchedule">
+  <div class="drawer-header">
+    <div class="drawer-header-left">
+      <div class="drawer-icon blue">📅</div>
+      <div>
+        <h2>Exam Schedule</h2>
+        <p>Academic Year 2025–26 · CSE–AIML</p>
+      </div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
 
-          loginBtn.textContent = "Send OTP";
-          step = 2;
+    <div class="info-grid">
+      <div class="info-tile">
+        <div class="tile-label">Login Opens</div>
+        <div class="tile-val" style="color:var(--green)">20 Jun 2026</div>
+      </div>
+      <div class="info-tile">
+        <div class="tile-label">Login Closes</div>
+        <div class="tile-val" style="color:var(--amber)">31 Jul 2026</div>
+      </div>
+      <div class="info-tile">
+        <div class="tile-label">Total Questions</div>
+        <div class="tile-val">65</div>
+      </div>
+      <div class="info-tile">
+        <div class="tile-label">Duration</div>
+        <div class="tile-val">3 Hours</div>
+      </div>
+    </div>
 
-        } catch (err) {
-          mainError.textContent = "Error loading data.";
-        }
+    <div class="section-label">Exam Timeline</div>
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Event</th>
+          <th>Date / Period</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">01</td>
+          <td>Portal Registration Opens</td>
+          <td>20 Jun 2026</td>
+          <td><span class="badge active">● Active</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">02</td>
+          <td>Roll-number Verification Window</td>
+          <td>20 Jun – 10 Jul 2026</td>
+          <td><span class="badge active">● Active</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">03</td>
+          <td>Admit Card Download</td>
+          <td>12 Jul 2026</td>
+          <td><span class="badge pending">⏳ Upcoming</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">04</td>
+          <td>Gate Practice Paper — DA &amp; AI</td>
+          <td>25 Jul 2026 · 10:00 AM</td>
+          <td><span class="badge pending">⏳ Upcoming</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">05</td>
+          <td>Answer Key Release</td>
+          <td>27 Jul 2026</td>
+          <td><span class="badge pending">⏳ Upcoming</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">06</td>
+          <td>Objection Window</td>
+          <td>27 – 29 Jul 2026</td>
+          <td><span class="badge pending">⏳ Upcoming</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">07</td>
+          <td>Result Declaration</td>
+          <td>31 Jul 2026</td>
+          <td><span class="badge pending">⏳ Upcoming</span></td>
+        </tr>
+        <tr>
+          <td style="font-family:'JetBrains Mono',monospace;color:var(--muted)">08</td>
+          <td>Portal Closes</td>
+          <td>31 Jul 2026</td>
+          <td><span class="badge pending">⏳ Upcoming</span></td>
+        </tr>
+      </tbody>
+    </table>
 
-      } else if (step === 2) {
-        if (useEmail) {
-          const email = emailInput.value.trim();
-          if (!email || email.toLowerCase() !== studentData.email.toLowerCase()) {
-            emailError.textContent = "Email doesn't match.";
-            return;
-          }
-        } else {
-          const phone = phoneInput.value.trim();
-          if (!phone || phone !== studentData.phone) {
-            phoneError.textContent = "Phone number doesn't match.";
-            return;
-          }
-        }
+    <div class="section-label">Section-wise Marks</div>
+    <table class="schedule-table">
+      <thead>
+        <tr><th>Section</th><th>Questions</th><th>Marks Each</th><th>Total Marks</th><th>Type</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>General Aptitude</td><td>10</td><td>1 &amp; 2</td><td>15</td>
+          <td><span class="badge info">MCQ / MSQ</span></td>
+        </tr>
+        <tr>
+          <td>Core AI &amp; ML</td><td>55</td><td>1 &amp; 2</td><td>85</td>
+          <td><span class="badge info">MCQ / NAT</span></td>
+        </tr>
+        <tr>
+          <td style="font-weight:700">Total</td><td style="font-weight:700">65</td><td>—</td>
+          <td style="font-weight:700;color:var(--blue2)">100</td><td>—</td>
+        </tr>
+      </tbody>
+    </table>
 
-        generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    <div class="section-label">Marking Scheme</div>
+    <table class="schedule-table">
+      <thead><tr><th>Question Type</th><th>Correct</th><th>Wrong</th><th>Unattempted</th></tr></thead>
+      <tbody>
+        <tr><td>1-mark MCQ</td><td style="color:var(--green)">+1</td><td style="color:var(--red)">−⅓</td><td>0</td></tr>
+        <tr><td>2-mark MCQ</td><td style="color:var(--green)">+2</td><td style="color:var(--red)">−⅔</td><td>0</td></tr>
+        <tr><td>MSQ (Multi-select)</td><td style="color:var(--green)">+2</td><td>0</td><td>0</td></tr>
+        <tr><td>NAT (Numerical)</td><td style="color:var(--green)">+1/+2</td><td>0</td><td>0</td></tr>
+      </tbody>
+    </table>
 
-        try {
-          if (useEmail) {
-            await emailjs.send("service_l74w3wt", "template_mr8avo9", {
-              to_email: studentData.email,
-              name: studentData.name || "Student",
-              otp: generatedOtp
-            });
-          } else {
-            alert("OTP sent to phone (mock only — integrate SMS service here). OTP: " + generatedOtp);
-          }
+  </div>
+</div>
 
-          otpSection.classList.remove("hidden");
-          loginBtn.textContent = "Verify & Login";
-          step = 3;
+<!-- ══ SYLLABUS DRAWER ══ -->
+<div class="drawer" id="drawerSyllabus">
+  <div class="drawer-header">
+    <div class="drawer-header-left">
+      <div class="drawer-icon cyan">📚</div>
+      <div>
+        <h2>Exam Syllabus</h2>
+        <p>Gate 2027 DA &amp; AI — CSE–AIML</p>
+      </div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
 
-        } catch (err) {
-          mainError.textContent = "OTP send failed.";
-        }
+    <div class="info-grid">
+      <div class="info-tile">
+        <div class="tile-label">Total Units</div>
+        <div class="tile-val">7</div>
+      </div>
+      <div class="info-tile">
+        <div class="tile-label">Total Marks</div>
+        <div class="tile-val">100</div>
+      </div>
+    </div>
 
-      } else if (step === 3) {
-        const otp = otpInput.value.trim();
-        if (otp !== generatedOtp) {
-          otpError.textContent = "Invalid OTP.";
-          return;
-        }
+    <div class="section-label">Unit-wise Topics</div>
 
-        sessionStorage.setItem("username", studentData.name || "");
-        sessionStorage.setItem("rollNo", rollInput.value.trim());
-        sessionStorage.setItem("regNo", studentData.regno || "");
+    <div class="syllabus-unit">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-num">U1</div>
+          <div>
+            <div class="unit-title">Probability &amp; Statistics</div>
+            <div class="unit-marks">Foundation · ~14 Marks</div>
+          </div>
+        </div>
+        <span class="unit-chevron">▼</span>
+      </div>
+      <div class="unit-body">
+        <ul class="topic-list">
+          <li>Counting, probability axioms, random variables</li>
+          <li>Moments, standard distributions (Binomial, Poisson, Normal)</li>
+          <li>Maximum likelihood estimation, Bayesian estimation</li>
+          <li>Conditional probability, Bayes theorem</li>
+          <li>Hypothesis testing, p-values, confidence intervals</li>
+        </ul>
+      </div>
+    </div>
 
-        window.location.href = "instructions.html";
-      }
-    });
-  </script>-->
-  <!--<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    <div class="syllabus-unit">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-num">U2</div>
+          <div>
+            <div class="unit-title">Linear Algebra</div>
+            <div class="unit-marks">Core Mathematics · ~12 Marks</div>
+          </div>
+        </div>
+        <span class="unit-chevron">▼</span>
+      </div>
+      <div class="unit-body">
+        <ul class="topic-list">
+          <li>Vector spaces, matrices, determinants</li>
+          <li>Eigenvalues &amp; eigenvectors, SVD</li>
+          <li>PCA and dimensionality reduction</li>
+          <li>Norms, inner products, orthogonality</li>
+        </ul>
+      </div>
+    </div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAz-yo7PmFo0eFyzfjQwCP3yiB5GqqpTp0",
-    authDomain: "studentdashboard-681a8.firebaseapp.com",
-    databaseURL: "https://studentdashboard-681a8-default-rtdb.firebaseio.com",
-    projectId: "studentdashboard-681a8",
-    storageBucket: "studentdashboard-681a8.appspot.com",
-    messagingSenderId: "171483691299",
-    appId: "1:171483691299:web:f2bc4e00b696c55b4cf496"
-  };
+    <div class="syllabus-unit">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-num">U3</div>
+          <div>
+            <div class="unit-title">Machine Learning</div>
+            <div class="unit-marks">Core · ~22 Marks</div>
+          </div>
+        </div>
+        <span class="unit-chevron">▼</span>
+      </div>
+      <div class="unit-body">
+        <ul class="topic-list">
+          <li>Supervised: Linear/Logistic Regression, SVM, Decision Trees, Random Forest</li>
+          <li>Unsupervised: k-Means, DBSCAN, Gaussian Mixture Models</li>
+          <li>Bias-variance tradeoff, overfitting, regularization (L1/L2)</li>
+          <li>Cross-validation, evaluation metrics (F1, ROC-AUC)</li>
+          <li>Ensemble methods: Bagging, Boosting, Gradient Boosting</li>
+        </ul>
+      </div>
+    </div>
 
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-  emailjs.init("rai8QxGoPo_kArORG");
+    <div class="syllabus-unit">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-num">U4</div>
+          <div>
+            <div class="unit-title">Deep Learning</div>
+            <div class="unit-marks">Advanced · ~18 Marks</div>
+          </div>
+        </div>
+        <span class="unit-chevron">▼</span>
+      </div>
+      <div class="unit-body">
+        <ul class="topic-list">
+          <li>Feedforward neural networks, activation functions, backpropagation</li>
+          <li>CNNs: convolution, pooling, architectures (AlexNet, ResNet, VGG)</li>
+          <li>RNNs, LSTMs, GRUs, sequence modeling</li>
+          <li>Transformers, self-attention, BERT/GPT overview</li>
+          <li>Optimizers: SGD, Adam, RMSProp; batch normalisation, dropout</li>
+        </ul>
+      </div>
+    </div>
 
-  let step = 1;
-  let studentData = null;
-  let generatedOtp = "";
-  let useEmail = true;
+    <div class="syllabus-unit">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-num">U5</div>
+          <div>
+            <div class="unit-title">AI Search &amp; Reasoning</div>
+            <div class="unit-marks">Classical AI · ~10 Marks</div>
+          </div>
+        </div>
+        <span class="unit-chevron">▼</span>
+      </div>
+      <div class="unit-body">
+        <ul class="topic-list">
+          <li>Uninformed search: BFS, DFS, IDS</li>
+          <li>Informed search: A*, greedy best-first, heuristics</li>
+          <li>Constraint Satisfaction Problems (CSP)</li>
+          <li>Propositional &amp; first-order logic, resolution</li>
+          <li>Planning: STRIPS, PDDL basics</li>
+        </ul>
+      </div>
+    </div>
 
-  const rollInput = document.getElementById("roll");
-  const emailInput = document.getElementById("email");
-  const phoneInput = document.getElementById("phone");
-  const otpInput = document.getElementById("otp");
+    <div class="syllabus-unit">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-num">U6</div>
+          <div>
+            <div class="unit-title">Data Analysis &amp; Engineering</div>
+            <div class="unit-marks">DA Track · ~12 Marks</div>
+          </div>
+        </div>
+        <span class="unit-chevron">▼</span>
+      </div>
+      <div class="unit-body">
+        <ul class="topic-list">
+          <li>Descriptive statistics, exploratory data analysis (EDA)</li>
+          <li>SQL: joins, aggregations, window functions</li>
+          <li>Data preprocessing: missing values, encoding, scaling</li>
+          <li>Feature engineering, feature selection</li>
+          <li>Time series basics: trend, seasonality, ARIMA</li>
+        </ul>
+      </div>
+    </div>
 
-  const rollError = document.getElementById("rollError");
-  const emailError = document.getElementById("emailError");
-  const phoneError = document.getElementById("phoneError");
-  const otpError = document.getElementById("otpError");
-  const mainError = document.getElementById("mainError");
+    <div class="syllabus-unit">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-header-left">
+          <div class="unit-num">U7</div>
+          <div>
+            <div class="unit-title">General Aptitude</div>
+            <div class="unit-marks">All sections · 15 Marks</div>
+          </div>
+        </div>
+        <span class="unit-chevron">▼</span>
+      </div>
+      <div class="unit-body">
+        <ul class="topic-list">
+          <li>Verbal ability: reading comprehension, sentence correction</li>
+          <li>Numerical ability: arithmetic, percentages, ratios, speed-time</li>
+          <li>Logical reasoning: series, coding-decoding, syllogisms</li>
+        </ul>
+      </div>
+    </div>
 
-  const emailSection = document.getElementById("emailSection");
-  const phoneSection = document.getElementById("phoneSection");
-  const otpSection = document.getElementById("otpSection");
-  const loginBtn = document.getElementById("loginBtn");
+    <div style="margin-top:20px;padding:14px 16px;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:10px;font-size:13px;color:#67E8F9;line-height:1.7;">
+      📌 <strong>Reference Books:</strong> PRML (Bishop), Deep Learning (Goodfellow), Artificial Intelligence (Russell &amp; Norvig), Pattern Classification (Duda), Hands-On ML (Géron).
+    </div>
+  </div>
+</div>
 
-  // Hide sections initially
-  emailSection.classList.add("hidden");
-  phoneSection.classList.add("hidden");
-  otpSection.classList.add("hidden");
+<!-- ══ CONTACT DRAWER ══ -->
+<div class="drawer" id="drawerContact">
+  <div class="drawer-header">
+    <div class="drawer-header-left">
+      <div class="drawer-icon green">📬</div>
+      <div>
+        <h2>Contact &amp; Support</h2>
+        <p>CSE–AIML Department · 2026</p>
+      </div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body">
 
-  loginBtn.addEventListener("click", async () => {
-    // Clear all errors
-    rollError.textContent = emailError.textContent = phoneError.textContent = otpError.textContent = mainError.textContent = "";
+    <div class="section-label">Department Contacts</div>
 
-    if (step === 1) {
-      const roll = rollInput.value.trim();
-      if (!roll) {
-        rollError.textContent = "Please enter roll number.";
-        return;
-      }
+    <div class="contact-card">
+      <div class="contact-avatar blue">👨‍💻</div>
+      <div class="contact-info">
+        <h4>Portal Administrator</h4>
+        <p>Technical issues · Login problems · OTP errors</p>
+        <a href="mailto:kunalvats7988@gmail.com">✉️ kunalvats7988@gmail.com</a>
+      </div>
+    </div>
 
-      try {
-        const snapshot = await get(ref(db, `students/${roll}`));
-        if (!snapshot.exists()) {
-          rollError.textContent = "Roll number not found.";
-          return;
-        }
+    <div class="contact-card">
+      <div class="contact-avatar cyan">🏛️</div>
+      <div class="contact-info">
+        <h4>AIML Department Office</h4>
+        <p>Roll number queries · Missing student data</p>
+        <a href="#">📍 CSE Block, Room 204</a>
+      </div>
+    </div>
 
-        studentData = snapshot.val();
-        useEmail = !!studentData.email;
+    <div class="contact-card">
+      <div class="contact-avatar green">📋</div>
+      <div class="contact-info">
+        <h4>Exam Cell</h4>
+        <p>Schedule queries · Result disputes · Admit cards</p>
+        <a href="#">🕘 Mon–Sat · 9 AM – 5 PM</a>
+      </div>
+    </div>
 
-        if (useEmail) {
-          emailSection.classList.remove("hidden");
-        } else {
-          phoneSection.classList.remove("hidden");
-        }
+    <div class="section-label" style="margin-top:8px;">Quick Info</div>
+    <div class="info-grid">
+      <div class="info-tile">
+        <div class="tile-label">Eligible Rolls</div>
+        <div class="tile-val">1 – 76</div>
+      </div>
+      <div class="info-tile">
+        <div class="tile-label">Academic Year</div>
+        <div class="tile-val">2025–26</div>
+      </div>
+      <div class="info-tile">
+        <div class="tile-label">Department</div>
+        <div class="tile-val" style="font-size:13px;">CSE–AIML</div>
+      </div>
+      <div class="info-tile">
+        <div class="tile-label">Exam Mode</div>
+        <div class="tile-val" style="font-size:13px;">Online CBT</div>
+      </div>
+    </div>
 
-        loginBtn.textContent = "Send OTP";
-        step = 2;
+    <div style="margin-top:8px;padding:14px 16px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:10px;font-size:13px;color:#FCD34D;line-height:1.7;">
+      ⚠️ <strong>Note:</strong> If your roll number is not found during login, contact the department office with your student ID. Some entries may be pending in the system.
+    </div>
+  </div>
+</div>
 
-      } catch (err) {
-        console.error(err);
-        mainError.textContent = "Error loading data.";
-      }
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo" onclick="showPage('login')" style="margin-bottom:12px;">
+        <div class="logo-icon">🧠</div>
+        <div class="logo-text">
+          <strong>CSE–AIML</strong>
+          <span>Exam Portal 2026</span>
+        </div>
+      </div>
+      <p>A secure online examination platform for CSE students specialising in Artificial Intelligence &amp; Machine Learning.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li onclick="showPage('login')" style="cursor:pointer">Exam Login</li>
+        <li onclick="openDrawer('schedule')" style="cursor:pointer">Schedule</li>
+        <li onclick="openDrawer('syllabus')" style="cursor:pointer">Syllabus</li>
+        <li onclick="openDrawer('contact')" style="cursor:pointer">Contact</li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="mailto:kunalvats7988@gmail.com">Email Support</a></li>
+        <li>AIML Department</li>
+        <li>Roll: 1 – 76</li>
+        <li>Online CBT Mode</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2026 CSE–AIML Exam Portal · All rights reserved.</p>
+    <p>Built with ❤️ · <span>v2.1.0</span></p>
+  </div>
+</footer>
 
-    } else if (step === 2) {
-      if (useEmail) {
-        const email = emailInput.value.trim();
-        if (!email || email.toLowerCase() !== studentData.email.toLowerCase()) {
-          emailError.textContent = "Email doesn't match.";
-          return;
-        }
-      } else {
-        const phone = phoneInput.value.trim();
-        if (!phone || phone !== studentData.phone) {
-          phoneError.textContent = "Phone number doesn't match.";
-          return;
-        }
-      }
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
-      generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-      try {
-        if (useEmail) {
-          await emailjs.send("service_l74w3wt", "template_mr8avo9", {
-            to_email: studentData.email,
-            name: studentData.name || "Student",
-            otp: generatedOtp
-          });
-        } else {
-          // Simulated SMS flow (you can replace this with real SMS integration)
-          alert("OTP sent to phone (simulated): " + generatedOtp);
-        }
-
-        otpSection.classList.remove("hidden");
-        loginBtn.textContent = "Verify & Login";
-        step = 3;
-
-      } catch (err) {
-        console.error(err);
-        mainError.textContent = "OTP send failed.";
-      }
-
-    } else if (step === 3) {
-      const otp = otpInput.value.trim();
-      if (otp !== generatedOtp) {
-        otpError.textContent = "Invalid OTP.";
-        return;
-      }
-
-      sessionStorage.setItem("username", studentData.name || "");
-      sessionStorage.setItem("rollNo", rollInput.value.trim());
-      sessionStorage.setItem("regNo", studentData.regno || "");
-
-      window.location.href = "instructions.html";
-    }
+<script>
+  /* ── Hamburger ── */
+  document.getElementById('hamburger').addEventListener('click', () => {
+    document.getElementById('mobileNav').classList.toggle('open');
   });
-</script>-->
+  function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+  }
+
+  /* ── Drawer ── */
+  let activeDrawer = null;
+  function openDrawer(name) {
+    if (activeDrawer) document.getElementById('drawer'+cap(activeDrawer)).classList.remove('open');
+    activeDrawer = name;
+    document.getElementById('drawer'+cap(name)).classList.add('open');
+    document.getElementById('drawerOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // update nav active
+    ['login','schedule','syllabus','contact'].forEach(n => {
+      const el = document.getElementById('nav-'+n);
+      if (el) el.classList.toggle('active', n === name);
+    });
+  }
+  function closeDrawer() {
+    if (activeDrawer) document.getElementById('drawer'+cap(activeDrawer)).classList.remove('open');
+    activeDrawer = null;
+    document.getElementById('drawerOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    ['schedule','syllabus','contact'].forEach(n => {
+      const el = document.getElementById('nav-'+n);
+      if (el) el.classList.remove('active');
+    });
+    document.getElementById('nav-login').classList.add('active');
+  }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  function showPage(p) { closeDrawer(); }
+
+  /* ── Accordion ── */
+  function toggleUnit(header) {
+    const body = header.nextElementSibling;
+    const chev = header.querySelector('.unit-chevron');
+    const isOpen = body.classList.contains('open');
+    document.querySelectorAll('.unit-body.open').forEach(b => {
+      b.classList.remove('open');
+      b.previousElementSibling.querySelector('.unit-chevron').classList.remove('open');
+    });
+    if (!isOpen) { body.classList.add('open'); chev.classList.add('open'); }
+  }
+
+  /* ── Toast ── */
+  function showToast(msg, type = 'info') {
+    const t = document.getElementById('toast');
+    const icons = { success:'✅', error:'❌', info:'ℹ️' };
+    t.textContent = (icons[type]||'') + ' ' + msg;
+    t.className = 'toast show ' + (type==='error' ? 'error-toast' : type);
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  /* ── Error helper ── */
+  function setErr(id, msg) {
+    const el = document.getElementById(id);
+    el.innerHTML = msg ? ('⚠️ ' + msg) : '';
+    const inp = el.previousElementSibling?.querySelector('input');
+    if (inp) inp.classList.toggle('error-input', !!msg);
+  }
+  function clearErrors() {
+    ['rollError','emailError','phoneError','otpError','mainError'].forEach(id => setErr(id,''));
+  }
+
+  /* ── Step UI ── */
+  function setStep(n, opts={}) {
+    const icons = ['🎓','✉️','🔐'];
+    const titles = ['Student Verification','Identity Confirmation','OTP Verification'];
+    const subs = [
+      'Enter your roll number to begin',
+      opts.useEmail ? 'Enter your registered email address' : 'Enter your registered phone number',
+      'Enter the 6-digit code sent to you'
+    ];
+    document.getElementById('stepIcon').textContent = icons[n-1];
+    document.getElementById('cardTitle').textContent = titles[n-1];
+    document.getElementById('cardSub').textContent = subs[n-1];
+    for (let i=1;i<=3;i++) {
+      document.getElementById('s'+i).className = 'step-dot'+(i<n?' done':i===n?' active':'');
+      const l = document.getElementById('l'+i);
+      if (l) l.className = 'step-line'+(i<n?' done':'');
+    }
+  }
+  function setLoading(on) {
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = on;
+    btn.classList.toggle('loading', on);
+  }
+</script>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -477,139 +1125,71 @@ button:disabled {
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  const db  = getDatabase(app);
   emailjs.init("rai8QxGoPo_kArORG");
 
-  let step = 1;
-  let studentData = null;
-  let generatedOtp = "";
-  let useEmail = true;
+  let step=1, studentData=null, generatedOtp="", useEmail=true;
+  const rollInput=document.getElementById("roll");
+  const emailInput=document.getElementById("email");
+  const phoneInput=document.getElementById("phone");
+  const otpInput=document.getElementById("otp");
+  const emailSection=document.getElementById("emailSection");
+  const phoneSection=document.getElementById("phoneSection");
+  const otpSection=document.getElementById("otpSection");
+  const loginBtn=document.getElementById("loginBtn");
 
-  const rollInput = document.getElementById("roll");
-  const emailInput = document.getElementById("email");
-  const phoneInput = document.getElementById("phone");
-  const otpInput = document.getElementById("otp");
-
-  const rollError = document.getElementById("rollError");
-  const emailError = document.getElementById("emailError");
-  const phoneError = document.getElementById("phoneError");
-  const otpError = document.getElementById("otpError");
-  const mainError = document.getElementById("mainError");
-
-  const emailSection = document.getElementById("emailSection");
-  const phoneSection = document.getElementById("phoneSection");
-  const otpSection = document.getElementById("otpSection");
-  const loginBtn = document.getElementById("loginBtn");
-
-  // Hide all fields initially
-  emailSection.classList.add("hidden");
-  phoneSection.classList.add("hidden");
-  otpSection.classList.add("hidden");
+  function setLabel(txt){ document.querySelector('.btn-label').textContent=txt; }
 
   loginBtn.addEventListener("click", async () => {
-    // Clear all errors
-    rollError.textContent = emailError.textContent = phoneError.textContent = otpError.textContent = mainError.textContent = "";
-
-    if (step === 1) {
-      const roll = rollInput.value.trim();
-      if (!roll) {
-        rollError.textContent = "Please enter roll number.";
-        return;
-      }
-
+    clearErrors();
+    if (step===1) {
+      const roll=rollInput.value.trim();
+      if (!roll){ setErr("rollError","Please enter your roll number."); return; }
+      setLoading(true);
       try {
-        const snapshot = await get(ref(db, `students/${roll}`));
-        if (!snapshot.exists()) {
-          rollError.textContent = "Roll number not found.";
-          return;
-        }
-
-        studentData = snapshot.val();
-        useEmail = !!(studentData.email && studentData.email.trim() !== "");
-
-        /*if (useEmail) {
-          emailSection.classList.remove("hidden");
-        } else {
-          phoneSection.classList.remove("hidden");
-        }
-
-        loginBtn.textContent = "Send OTP";
-        step = 2;*/
-        if (useEmail) {
-  emailSection.classList.remove("hidden");
-} else {
-  phoneSection.classList.remove("hidden");
-}
-
-// Make roll number field non-editable
-rollInput.readOnly = true;
-
-// Optional: change its appearance
-rollInput.style.backgroundColor = "#e0e0e0";
-rollInput.style.cursor = "not-allowed";
-
-loginBtn.textContent = "Send OTP";
-step = 2;
-
-      } catch (err) {
-        console.error(err);
-        mainError.textContent = "Error loading data.";
-      }
-
-    } else if (step === 2) {
-      const roll = rollInput.value.trim();
-      const email = emailInput.value.trim().toLowerCase();
-      const phone = phoneInput.value.trim();
-
-      const dbEmail = (studentData.email || "").toLowerCase().trim();
-      const dbPhone = (studentData.phone || "").toString().trim();
-
+        const snap=await get(ref(db,`students/${roll}`));
+        if (!snap.exists()){ setErr("rollError","Roll number not found."); setLoading(false); return; }
+        studentData=snap.val();
+        useEmail=!!(studentData.email&&studentData.email.trim());
+        if (useEmail) emailSection.classList.add("visible");
+        else phoneSection.classList.add("visible");
+        rollInput.readOnly=true; rollInput.style.opacity='.6';
+        setStep(2,{useEmail}); setLabel("Send OTP →"); step=2;
+        showToast("Roll number verified ✓","success");
+      } catch(e){ setErr("mainError","Connection error. Please try again."); showToast("Connection error","error"); }
+      setLoading(false);
+    } else if (step===2) {
+      const dbEmail=(studentData.email||"").toLowerCase().trim();
+      const dbPhone=(studentData.phone||"").toString().trim();
       if (useEmail) {
-        if (!email || email !== dbEmail) {
-          emailError.textContent = "Email doesn't match.";
-          return;
-        }
+        const email=emailInput.value.trim().toLowerCase();
+        if (!email||email!==dbEmail){ setErr("emailError","Email doesn't match our records."); return; }
       } else {
-        if (!phone || phone !== dbPhone) {
-          phoneError.textContent = "Phone number doesn't match.";
-          return;
-        }
+        const phone=phoneInput.value.trim();
+        if (!phone||phone!==dbPhone){ setErr("phoneError","Phone number doesn't match."); return; }
       }
-
-      generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
+      generatedOtp=Math.floor(100000+Math.random()*900000).toString();
+      setLoading(true);
       try {
         if (useEmail) {
-          await emailjs.send("service_wxyleg2", "template_mr8avo9", {
-            to_email: dbEmail,
-            name: studentData.name || "Student",
-            otp: generatedOtp
+          await emailjs.send("service_wxyleg2","template_mr8avo9",{
+            to_email:dbEmail, name:studentData.name||"Student", otp:generatedOtp
           });
-        } else {
-          alert("OTP sent to phone (simulated): " + generatedOtp);
-        }
-
-        otpSection.classList.remove("hidden");
-        loginBtn.textContent = "Verify & Login";
-        step = 3;
-
-      } catch (err) {
-        console.error(err);
-        mainError.textContent = "OTP send failed.";
-      }
-
-    } else if (step === 3) {
-      const otp = otpInput.value.trim();
-      if (otp !== generatedOtp) {
-        otpError.textContent = "Invalid OTP.";
-        return;
-      }
-
-      sessionStorage.setItem("username", studentData.name || "");
-      sessionStorage.setItem("rollNo", rollInput.value.trim());
-      sessionStorage.setItem("regNo", studentData.regno || "");
-
-      window.location.href = "instructions.html";
+        } else { alert("OTP (simulated): "+generatedOtp); }
+        otpSection.classList.add("visible");
+        setStep(3,{useEmail}); setLabel("Verify & Login →"); step=3;
+        showToast("OTP sent! Check your "+(useEmail?"email":"phone"),"success");
+      } catch(e){ setErr("mainError","Failed to send OTP. Try again."); showToast("OTP send failed","error"); }
+      setLoading(false);
+    } else if (step===3) {
+      const otp=otpInput.value.trim();
+      if (otp!==generatedOtp){ setErr("otpError","Incorrect OTP. Please try again."); return; }
+      setLoading(true);
+      sessionStorage.setItem("username",studentData.name||"");
+      sessionStorage.setItem("rollNo",rollInput.value.trim());
+      sessionStorage.setItem("regNo",studentData.regno||"");
+      showToast("Login successful! Redirecting…","success");
+      setTimeout(()=>{ window.location.href="instructions.html"; },900);
     }
   });
 </script>
